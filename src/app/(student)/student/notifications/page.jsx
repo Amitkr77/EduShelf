@@ -1,0 +1,325 @@
+'use client';
+
+import { useEffect, useState, useCallback } from 'react';
+import {
+  Bell,
+  BellOff,
+  BookOpen,
+  AlertTriangle,
+  CalendarCheck,
+  DollarSign,
+  CheckCircle2,
+  Info,
+  CheckCheck,
+  Filter,
+  Clock,
+} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import EmptyState from '@/components/shared/EmptyState';
+import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import apiFetch from '@/lib/fetcher';
+import { toast } from 'sonner';
+
+const typeIcons = {
+  due_reminder: Clock,
+  overdue_alert: AlertTriangle,
+  reservation_update: CalendarCheck,
+  new_book: BookOpen,
+  fine: DollarSign,
+  borrow_approved: CheckCircle2,
+  borrow_rejected: AlertTriangle,
+  general: Info,
+};
+
+const typeColors = {
+  due_reminder: 'bg-amber-100 text-amber-600',
+  overdue_alert: 'bg-rose-100 text-rose-600',
+  reservation_update: 'bg-teal-100 text-teal-600',
+  new_book: 'bg-emerald-100 text-emerald-600',
+  fine: 'bg-rose-100 text-rose-600',
+  borrow_approved: 'bg-emerald-100 text-emerald-600',
+  borrow_rejected: 'bg-rose-100 text-rose-600',
+  general: 'bg-gray-100 text-gray-600',
+};
+
+const typeLabels = {
+  due_reminder: 'Due Reminder',
+  overdue_alert: 'Overdue Alert',
+  reservation_update: 'Reservation',
+  new_book: 'New Book',
+  fine: 'Fine',
+  borrow_approved: 'Borrow Approved',
+  borrow_rejected: 'Borrow Rejected',
+  general: 'General',
+};
+
+function groupNotificationsByDate(notifications) {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+  const groups = {
+    today: [],
+    yesterday: [],
+    earlier: [],
+  };
+
+  notifications.forEach((notification) => {
+    const date = new Date(notification.createdAt);
+    if (date >= today) {
+      groups.today.push(notification);
+    } else if (date >= yesterday) {
+      groups.yesterday.push(notification);
+    } else {
+      groups.earlier.push(notification);
+    }
+  });
+
+  return groups;
+}
+
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+export default function NotificationsPage() {
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [filterType, setFilterType] = useState('all');
+  const [markingAll, setMarkingAll] = useState(false);
+
+  const loadNotifications = useCallback(async () => {
+    setLoading(true);
+    try {
+      let endpoint = '/notifications?limit=100';
+      if (filterType && filterType !== 'all') {
+        endpoint += `&type=${filterType}`;
+      }
+      const res = await apiFetch(endpoint);
+      setNotifications(res.data.items || []);
+    } catch (error) {
+      toast.error('Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  }, [filterType]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
+
+  async function handleMarkAsRead(notificationId) {
+    try {
+      await apiFetch(`/notifications/${notificationId}`, { method: 'PUT' });
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n._id === notificationId ? { ...n, isRead: !n.isRead } : n
+        )
+      );
+    } catch (error) {
+      toast.error('Failed to update notification');
+    }
+  }
+
+  async function handleMarkAllAsRead() {
+    setMarkingAll(true);
+    try {
+      const unread = notifications.filter((n) => !n.isRead);
+      await Promise.all(
+        unread.map((n) =>
+          apiFetch(`/notifications/${n._id}`, { method: 'PUT' })
+        )
+      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      toast.success('All notifications marked as read');
+    } catch (error) {
+      toast.error('Failed to mark all as read');
+    } finally {
+      setMarkingAll(false);
+    }
+  }
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const grouped = groupNotificationsByDate(notifications);
+
+  if (loading) {
+    return <LoadingSpinner message="Loading notifications..." />;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+          <p className="text-muted-foreground">
+            Stay updated with your library activity.
+            {unreadCount > 0 && (
+              <span className="ml-1 text-emerald-600 font-medium">
+                {unreadCount} unread
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Filter */}
+          <Select
+            value={filterType}
+            onValueChange={setFilterType}
+          >
+            <SelectTrigger className="w-44">
+              <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="due_reminder">Due Reminder</SelectItem>
+              <SelectItem value="overdue_alert">Overdue Alert</SelectItem>
+              <SelectItem value="reservation_update">Reservation</SelectItem>
+              <SelectItem value="fine">Fine</SelectItem>
+              <SelectItem value="borrow_approved">Borrow Approved</SelectItem>
+              <SelectItem value="borrow_rejected">Borrow Rejected</SelectItem>
+              <SelectItem value="general">General</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {unreadCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleMarkAllAsRead}
+              disabled={markingAll}
+              className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+            >
+              <CheckCheck className="h-4 w-4 mr-1" />
+              {markingAll ? 'Marking...' : 'Mark All Read'}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Notifications List */}
+      {notifications.length === 0 ? (
+        <EmptyState
+          icon={BellOff}
+          title="No notifications"
+          description={
+            filterType !== 'all'
+              ? `No ${typeLabels[filterType] || filterType} notifications found.`
+              : "You're all caught up! Notifications will appear here."
+          }
+          actionLabel={
+            filterType !== 'all' ? 'Clear Filter' : undefined
+          }
+          onAction={
+            filterType !== 'all' ? () => setFilterType('all') : undefined
+          }
+        />
+      ) : (
+        <div className="space-y-6">
+          {['today', 'yesterday', 'earlier'].map((group) => {
+            const items = grouped[group];
+            if (items.length === 0) return null;
+
+            return (
+              <div key={group}>
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                  {group === 'today'
+                    ? 'Today'
+                    : group === 'yesterday'
+                    ? 'Yesterday'
+                    : 'Earlier'}
+                </h3>
+                <div className="space-y-2">
+                  {items.map((notification) => {
+                    const Icon = typeIcons[notification.type] || Info;
+                    const color =
+                      typeColors[notification.type] || 'bg-gray-100 text-gray-600';
+
+                    return (
+                      <Card
+                        key={notification._id}
+                        className={`cursor-pointer transition-all hover:shadow-md ${
+                          !notification.isRead
+                            ? 'border-emerald-200 bg-emerald-50/30'
+                            : 'border-border'
+                        }`}
+                        onClick={() => handleMarkAsRead(notification._id)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            {/* Icon */}
+                            <div
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${color}`}
+                            >
+                              <Icon className="h-4 w-4" />
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2 mb-0.5">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs px-1.5 py-0"
+                                    >
+                                      {typeLabels[notification.type] || 'General'}
+                                    </Badge>
+                                    {!notification.isRead && (
+                                      <div className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+                                    )}
+                                  </div>
+                                  <p
+                                    className={`text-sm leading-relaxed ${
+                                      !notification.isRead
+                                        ? 'font-medium text-foreground'
+                                        : 'text-muted-foreground'
+                                    }`}
+                                  >
+                                    {notification.message}
+                                  </p>
+                                </div>
+                                <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">
+                                  {formatTime(notification.createdAt)}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
