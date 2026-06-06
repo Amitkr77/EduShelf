@@ -9,7 +9,6 @@ import {
   Trash2,
   ShoppingBag,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import EmptyState from '@/components/shared/EmptyState';
@@ -17,17 +16,17 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import apiFetch from '@/lib/fetcher';
 import { toast } from 'sonner';
 
-const COVER_COLORS = [
-  'from-emerald-200 to-teal-300',
-  'from-teal-200 to-cyan-300',
-  'from-amber-200 to-orange-300',
-  'from-rose-200 to-pink-300',
-  'from-violet-200 to-purple-300',
-  'from-sky-200 to-blue-300',
+const COVER_GRADIENTS = [
+  'from-[#7C9AA5]/30 to-[#5D7480]/40',
+  'from-[#84C7E8]/30 to-[#4A8DB7]/40',
+  'from-[#F3C47A]/30 to-[#C4952A]/40',
+  'from-[#7CCB7A]/30 to-[#6B8F83]/40',
+  'from-[#F28B82]/30 to-[#C25B4F]/40',
+  'from-[#8CA5AF]/30 to-[#688997]/40',
 ];
 
-function getCoverColor(index) {
-  return COVER_COLORS[index % COVER_COLORS.length];
+function getCoverGradient(index) {
+  return COVER_GRADIENTS[index % COVER_GRADIENTS.length];
 }
 
 export default function WishlistPage() {
@@ -66,6 +65,18 @@ export default function WishlistPage() {
     }
   }
 
+  async function handleBorrow(bookId) {
+    try {
+      await apiFetch('/borrow', {
+        method: 'POST',
+        body: JSON.stringify({ bookId }),
+      });
+      toast.success('Borrow request submitted! Waiting for approval.');
+    } catch (error) {
+      toast.error(error.message || 'Failed to request borrow');
+    }
+  }
+
   if (loading) {
     return <LoadingSpinner message="Loading your wishlist..." />;
   }
@@ -75,16 +86,16 @@ export default function WishlistPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Wishlist</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">My Wishlist</h1>
+          <p className="text-[#6B7280] mt-1">
             Books you want to read in the future.
           </p>
         </div>
         {wishlistItems.length > 0 && (
-          <Badge variant="secondary" className="bg-rose-100 text-rose-700 hover:bg-rose-100">
-            <Heart className="h-3 w-3 mr-1 fill-rose-500" />
+          <span className="inline-flex items-center gap-1 rounded-2xl px-3 py-1.5 text-sm font-medium bg-[#FDE8E6]/60 text-[#C25B4F]">
+            <Heart className="h-3.5 w-3.5 fill-[#F28B82]" />
             {wishlistItems.length} book{wishlistItems.length !== 1 ? 's' : ''}
-          </Badge>
+          </span>
         )}
       </div>
 
@@ -97,20 +108,20 @@ export default function WishlistPage() {
           onAction={() => (window.location.href = '/student/books')}
         />
       ) : (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {wishlistItems.map((item, index) => {
             const book = item.bookId || {};
             const isAvailable = book.availableCopies > 0;
 
             return (
-              <Card
+              <div
                 key={item._id}
-                className="group overflow-hidden transition-all hover:shadow-lg hover:border-emerald-200"
+                className="group rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[#7C9AA5]/40 flex flex-col"
               >
                 {/* Cover */}
                 <Link href={`/student/books/${book._id || '#'}`}>
                   <div
-                    className={`aspect-[4/3] bg-gradient-to-br ${getCoverColor(
+                    className={`aspect-[4/3] bg-gradient-to-br ${getCoverGradient(
                       index
                     )} flex items-center justify-center relative overflow-hidden`}
                   >
@@ -121,38 +132,38 @@ export default function WishlistPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <BookOpen className="h-12 w-12 text-white/60" />
+                      <BookOpen className="h-12 w-12 text-[#7C9AA5]/40" />
                     )}
 
                     {/* Availability badge */}
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3">
                       {isAvailable ? (
-                        <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 text-xs">
+                        <span className="inline-block rounded-xl px-2.5 py-1 text-xs font-medium bg-[#E8F0EC] text-[#6B8F83]">
                           Available
-                        </Badge>
+                        </span>
                       ) : (
-                        <Badge variant="destructive" className="text-xs">
+                        <span className="inline-block rounded-xl px-2.5 py-1 text-xs font-medium bg-[#FDE8E6] text-[#C25B4F]">
                           Unavailable
-                        </Badge>
+                        </span>
                       )}
                     </div>
                   </div>
                 </Link>
 
-                <CardContent className="p-4">
+                <div className="p-4 flex-1 flex flex-col">
                   <Link href={`/student/books/${book._id || '#'}`}>
-                    <h3 className="font-semibold text-sm truncate group-hover:text-emerald-600 transition-colors">
+                    <h3 className="font-semibold text-sm truncate group-hover:text-[#5D7480] transition-colors text-[#1F2937]">
                       {book.title || 'Unknown Book'}
                     </h3>
                   </Link>
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  <p className="text-xs text-[#6B7280] mt-0.5 truncate">
                     {book.author || 'Unknown Author'}
                   </p>
 
                   {/* Rating */}
                   <div className="flex items-center gap-1 mt-2">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    <span className="text-xs text-muted-foreground">
+                    <Star className="h-3.5 w-3.5 fill-[#F3C47A] text-[#F3C47A]" />
+                    <span className="text-xs text-[#6B7280]">
                       {book.rating?.toFixed(1) || '0.0'}
                     </span>
                   </div>
@@ -160,20 +171,19 @@ export default function WishlistPage() {
                   {/* Actions */}
                   <div className="flex items-center gap-2 mt-3">
                     {isAvailable && (
-                      <Link href={`/student/books/${book._id}`} className="flex-1">
-                        <Button
-                          size="sm"
-                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs"
-                        >
-                          <ShoppingBag className="h-3 w-3 mr-1" />
-                          Borrow
-                        </Button>
-                      </Link>
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-[#7C9AA5] hover:bg-[#5D7480] text-white text-xs rounded-xl transition-all duration-200"
+                        onClick={() => handleBorrow(book._id)}
+                      >
+                        <ShoppingBag className="h-3 w-3 mr-1" />
+                        Borrow
+                      </Button>
                     )}
                     <Button
                       variant="outline"
                       size="sm"
-                      className="text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 text-xs"
+                      className="text-[#C25B4F] border-[#F28B82]/30 hover:bg-[#FDE8E6]/30 hover:text-[#C25B4F] text-xs rounded-xl transition-all duration-200"
                       onClick={() => handleRemove(item._id, book.title)}
                       disabled={removing === item._id}
                     >
@@ -181,8 +191,8 @@ export default function WishlistPage() {
                       {removing === item._id ? 'Removing...' : 'Remove'}
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>

@@ -14,14 +14,14 @@ import {
   UserCircle,
   Library,
   BookPlus,
-  ArrowRightLeft,
   RotateCcw,
   Users,
   Receipt,
   BarChart3,
   LogOut,
-  ChevronLeft,
   GraduationCap,
+  ChevronDown,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +34,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import apiFetch from '@/lib/fetcher';
 
 const studentItems = [
@@ -56,7 +64,7 @@ const librarianItems = [
   { name: 'Reports', href: '/librarian/reports', icon: BarChart3 },
 ];
 
-function SidebarContent({ items, currentPath, role, onNavigate }) {
+function SidebarContent({ items, currentPath, role, user, onNavigate }) {
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -68,92 +76,121 @@ function SidebarContent({ items, currentPath, role, onNavigate }) {
     router.push('/login');
   };
 
+  const initials = user?.name
+    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : 'U';
+
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col justify-between py-8 px-6">
       {/* Brand / Logo */}
-      <div className="flex items-center gap-3 px-4 py-5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
-          <BookOpen className="h-5 w-5" />
+      <div>
+        <div className="flex items-center gap-3 mb-8">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+            <BookOpen className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h1 className="text-lg font-bold text-white tracking-tight">EduShelf</h1>
+            <p className="text-xs text-white/60">Library System</p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-base font-bold text-foreground">EduShelf</h1>
-          <p className="text-xs text-muted-foreground">Library System</p>
+
+        {/* Role Badge */}
+        <div className="mb-6">
+          <Badge className="bg-white/15 text-white border-0 hover:bg-white/15 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium">
+            <GraduationCap className="h-3 w-3 mr-1.5" />
+            {role === 'admin' ? 'Administrator' : role.charAt(0).toUpperCase() + role.slice(1)}
+          </Badge>
         </div>
-      </div>
 
-      {/* Role Badge */}
-      <div className="px-4 pb-3">
-        <Badge
-          variant="secondary"
-          className={
-            role === 'librarian' || role === 'admin'
-              ? 'bg-teal-100 text-teal-700 hover:bg-teal-100'
-              : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-          }
-        >
-          <GraduationCap className="h-3 w-3 mr-1" />
-          {role === 'admin' ? 'Administrator' : role.charAt(0).toUpperCase() + role.slice(1)}
-        </Badge>
-      </div>
+        <Separator className="bg-white/10 mb-4" />
 
-      <Separator />
+        {/* Navigation Items */}
+        <ScrollArea className="flex-1">
+          <nav className="space-y-1" role="navigation" aria-label="Main navigation">
+            {items.map((item) => {
+              const isActive =
+                currentPath === item.href ||
+                (item.href !== '/' && currentPath.startsWith(item.href + '/'));
+              const Icon = item.icon;
 
-      {/* Navigation Items */}
-      <ScrollArea className="flex-1 px-3 py-3">
-        <nav className="space-y-1">
-          {items.map((item) => {
-            const isActive =
-              currentPath === item.href ||
-              (item.href !== '/' && currentPath.startsWith(item.href + '/'));
-            const Icon = item.icon;
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onNavigate}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                }`}
-              >
-                <Icon
-                  className={`h-5 w-5 ${
-                    isActive ? 'text-emerald-600' : 'text-muted-foreground'
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onNavigate}
+                  role="menuitem"
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`sidebar-link text-white/70 hover:text-white focus-ring ${
+                    isActive ? 'sidebar-link-active text-white' : ''
                   }`}
-                />
-                {item.name}
-                {isActive && (
-                  <div className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </ScrollArea>
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span>{item.name}</span>
+                  {isActive && (
+                    <div className="ml-auto h-1.5 w-1.5 rounded-full bg-white/80" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </ScrollArea>
+      </div>
 
-      <Separator />
+      {/* User Profile Section at Bottom */}
+      <div className="mt-6">
+        <Separator className="bg-white/10 mb-4" />
 
-      {/* Logout Button */}
-      <div className="p-3">
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-rose-600 hover:bg-rose-50"
-          onClick={handleLogout}
-        >
-          <LogOut className="h-5 w-5" />
-          Log Out
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-3 w-full rounded-2xl p-3 text-left transition-all duration-200 hover:bg-white/8 focus-ring" aria-label="User menu">
+              <Avatar className="h-9 w-9 border-2 border-white/20">
+                <AvatarFallback className="bg-white/20 text-white text-xs font-semibold border-0">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
+                <p className="text-xs text-white/50 truncate">{user?.email || ''}</p>
+              </div>
+              <ChevronDown className="h-4 w-4 text-white/40 shrink-0" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="start" className="w-48 rounded-xl">
+            <DropdownMenuItem
+              onClick={() => {
+                if (role === 'student') router.push('/student/profile');
+                onNavigate?.();
+              }}
+              className="rounded-lg"
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              Account Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                if (role === 'student') router.push('/student/profile');
+                onNavigate?.();
+              }}
+              className="rounded-lg"
+            >
+              <UserCircle className="mr-2 h-4 w-4" />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-[#F28B82] rounded-lg">
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
 }
 
-export default function Sidebar({ items, currentPath, role }) {
+export default function Sidebar({ items, currentPath, role, user }) {
   const [open, setOpen] = useState(false);
 
-  // Get the right items based on role
   const sidebarItems =
     items ||
     (role === 'librarian' || role === 'admin' ? librarianItems : studentItems);
@@ -161,11 +198,12 @@ export default function Sidebar({ items, currentPath, role }) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0 border-r bg-white">
+      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 bg-[#688997] z-30">
         <SidebarContent
           items={sidebarItems}
           currentPath={currentPath}
           role={role}
+          user={user}
         />
       </aside>
 
@@ -175,27 +213,17 @@ export default function Sidebar({ items, currentPath, role }) {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden fixed top-3 left-3 z-40"
+            className="lg:hidden fixed top-4 left-4 z-40 h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm text-[#5D7480] hover:bg-white/20 hover:text-[#5D7480]"
+            aria-label="Open navigation menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="12" y2="12" />
               <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
-            <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-60 p-0 bg-[#688997] border-0">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation</SheetTitle>
           </SheetHeader>
@@ -203,6 +231,7 @@ export default function Sidebar({ items, currentPath, role }) {
             items={sidebarItems}
             currentPath={currentPath}
             role={role}
+            user={user}
             onNavigate={() => setOpen(false)}
           />
         </SheetContent>

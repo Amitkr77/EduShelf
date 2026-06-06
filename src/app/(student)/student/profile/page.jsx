@@ -12,8 +12,9 @@ import {
   Lock,
   Eye,
   EyeOff,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -141,7 +142,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Unable to load profile data.</p>
+        <p className="text-[#6B7280]">Unable to load profile data.</p>
       </div>
     );
   }
@@ -150,69 +151,66 @@ export default function ProfilePage() {
     <div className="space-y-6 max-w-3xl">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Profile</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">My Profile</h1>
+        <p className="text-[#6B7280] mt-1">
           Manage your personal information and account settings.
         </p>
       </div>
 
       {/* Profile Overview Card */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="relative group">
-              <Avatar className="h-24 w-24">
-                {avatar ? (
-                  <AvatarImage src={avatar} alt={name} />
-                ) : null}
-                <AvatarFallback className="bg-emerald-100 text-emerald-700 text-2xl font-bold">
-                  {getInitials(name)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="text-center sm:text-left">
-              <h2 className="text-xl font-bold">{user.name}</h2>
-              <p className="text-muted-foreground">{user.email}</p>
-              <div className="flex items-center gap-2 mt-2 justify-center sm:justify-start">
-                <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                  <GraduationCap className="h-3 w-3 mr-1" />
-                  Student
-                </Badge>
-                {user.studentId && (
-                  <Badge variant="secondary" className="text-xs">
-                    ID: {user.studentId}
-                  </Badge>
-                )}
-                <Badge
-                  variant="secondary"
-                  className={
-                    user.status === 'active'
-                      ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-50'
-                      : 'bg-gray-100 text-gray-600'
-                  }
-                >
-                  {user.status}
-                </Badge>
-              </div>
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-6">
+        <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="relative group">
+            <Avatar className="h-24 w-24 border-4 border-[#DDE7EA]">
+              {avatar ? (
+                <AvatarImage src={avatar} alt={name} />
+              ) : null}
+              <AvatarFallback className="bg-[#DDE7EA] text-[#5D7480] text-2xl font-bold border-0">
+                {getInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="text-center sm:text-left">
+            <h2 className="text-xl font-bold text-[#1F2937]">{user.name}</h2>
+            <p className="text-[#6B7280]">{user.email}</p>
+            <div className="flex items-center gap-2 mt-2 justify-center sm:justify-start flex-wrap">
+              <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium bg-[#DDE7EA] text-[#5D7480]">
+                <GraduationCap className="h-3 w-3" />
+                Student
+              </span>
+              {user.studentId && (
+                <span className="inline-flex items-center rounded-xl px-2.5 py-1 text-xs font-medium bg-[#F9FAFB] text-[#6B7280] border border-[#E5E7EB]">
+                  ID: {user.studentId}
+                </span>
+              )}
+              <span
+                className={`inline-flex items-center rounded-xl px-2.5 py-1 text-xs font-medium ${
+                  user.status === 'active'
+                    ? 'bg-[#E8F0EC] text-[#6B8F83]'
+                    : 'bg-[#F9FAFB] text-[#6B7280]'
+                }`}
+              >
+                {user.status}
+              </span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Edit Profile Form */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Edit Profile</CardTitle>
-          <CardDescription>
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className="p-6 pb-2">
+          <h2 className="text-lg font-semibold text-[#1F2937]">Edit Profile</h2>
+          <p className="text-sm text-[#6B7280] mt-1">
             Update your personal information.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </p>
+        </div>
+        <div className="px-6 pb-6 space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
+              <Label htmlFor="name" className="flex items-center gap-2 text-[#1F2937]">
+                <User className="h-4 w-4 text-[#6B7280]" />
                 Full Name
               </Label>
               <Input
@@ -220,30 +218,31 @@ export default function ProfilePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
+              <Label htmlFor="email" className="flex items-center gap-2 text-[#1F2937]">
+                <Mail className="h-4 w-4 text-[#6B7280]" />
                 Email
               </Label>
               <Input
                 id="email"
                 value={user.email}
                 disabled
-                className="bg-muted/50"
+                className="rounded-xl border-[#E5E7EB] bg-[#F9FAFB]/60 text-[#6B7280]"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[#6B7280]">
                 Email cannot be changed.
               </p>
             </div>
 
             {/* Phone */}
             <div className="space-y-2">
-              <Label htmlFor="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
+              <Label htmlFor="phone" className="flex items-center gap-2 text-[#1F2937]">
+                <Phone className="h-4 w-4 text-[#6B7280]" />
                 Phone Number
               </Label>
               <Input
@@ -251,13 +250,14 @@ export default function ProfilePage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Enter your phone number"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
 
             {/* Department */}
             <div className="space-y-2">
-              <Label htmlFor="department" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-muted-foreground" />
+              <Label htmlFor="department" className="flex items-center gap-2 text-[#1F2937]">
+                <Building2 className="h-4 w-4 text-[#6B7280]" />
                 Department
               </Label>
               <Input
@@ -265,14 +265,15 @@ export default function ProfilePage() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="Enter your department"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
           </div>
 
           {/* Avatar URL */}
           <div className="space-y-2">
-            <Label htmlFor="avatar" className="flex items-center gap-2">
-              <Camera className="h-4 w-4 text-muted-foreground" />
+            <Label htmlFor="avatar" className="flex items-center gap-2 text-[#1F2937]">
+              <Camera className="h-4 w-4 text-[#6B7280]" />
               Avatar URL
             </Label>
             <Input
@@ -280,26 +281,27 @@ export default function ProfilePage() {
               value={avatar}
               onChange={(e) => setAvatar(e.target.value)}
               placeholder="Enter avatar image URL"
+              className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
             />
           </div>
 
           {/* Student ID (read-only) */}
           <div className="space-y-2">
-            <Label htmlFor="studentId" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+            <Label htmlFor="studentId" className="flex items-center gap-2 text-[#1F2937]">
+              <GraduationCap className="h-4 w-4 text-[#6B7280]" />
               Student ID
             </Label>
             <Input
               id="studentId"
               value={user.studentId || 'Not assigned'}
               disabled
-              className="bg-muted/50"
+              className="rounded-xl border-[#E5E7EB] bg-[#F9FAFB]/60 text-[#6B7280]"
             />
           </div>
 
           <div className="flex justify-end pt-2">
             <Button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
               onClick={handleSaveProfile}
               disabled={saving}
             >
@@ -307,38 +309,40 @@ export default function ProfilePage() {
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Change Password */}
-      <Card>
-        <CardHeader
-          className="cursor-pointer"
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div
+          className="p-6 pb-2 cursor-pointer flex items-center justify-between"
           onClick={() => setShowPasswordSection(!showPasswordSection)}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Lock className="h-5 w-5" />
-                Change Password
-              </CardTitle>
-              <CardDescription className="mt-1">
-                Update your account password for security.
-              </CardDescription>
-            </div>
-            <Button variant="ghost" size="sm">
-              {showPasswordSection ? 'Hide' : 'Show'}
-            </Button>
+          <div>
+            <h2 className="text-lg font-semibold text-[#1F2937] flex items-center gap-2">
+              <Lock className="h-5 w-5 text-[#5D7480]" />
+              Change Password
+            </h2>
+            <p className="text-sm text-[#6B7280] mt-1">
+              Update your account password for security.
+            </p>
           </div>
-        </CardHeader>
+          <Button variant="ghost" size="sm" className="text-[#6B7280] hover:bg-transparent">
+            {showPasswordSection ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
 
         {showPasswordSection && (
-          <CardContent className="space-y-4">
-            <Separator className="mb-4" />
+          <div className="px-6 pb-6 space-y-4">
+            <Separator className="bg-[#E5E7EB]" />
 
             {/* Current Password */}
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">Current Password</Label>
+              <Label htmlFor="currentPassword" className="text-[#1F2937]">Current Password</Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
@@ -346,6 +350,7 @@ export default function ProfilePage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Enter current password"
+                  className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
                 />
                 <Button
                   type="button"
@@ -355,9 +360,9 @@ export default function ProfilePage() {
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                 >
                   {showCurrentPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    <EyeOff className="h-4 w-4 text-[#6B7280]" />
                   ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4 text-[#6B7280]" />
                   )}
                 </Button>
               </div>
@@ -365,7 +370,7 @@ export default function ProfilePage() {
 
             {/* New Password */}
             <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="newPassword" className="text-[#1F2937]">New Password</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -373,6 +378,7 @@ export default function ProfilePage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Enter new password (min. 6 characters)"
+                  className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
                 />
                 <Button
                   type="button"
@@ -382,9 +388,9 @@ export default function ProfilePage() {
                   onClick={() => setShowNewPassword(!showNewPassword)}
                 >
                   {showNewPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                    <EyeOff className="h-4 w-4 text-[#6B7280]" />
                   ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <Eye className="h-4 w-4 text-[#6B7280]" />
                   )}
                 </Button>
               </div>
@@ -392,22 +398,23 @@ export default function ProfilePage() {
 
             {/* Confirm Password */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword" className="text-[#1F2937]">Confirm New Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
               {confirmPassword && newPassword !== confirmPassword && (
-                <p className="text-xs text-rose-600">Passwords do not match</p>
+                <p className="text-xs text-[#C25B4F]">Passwords do not match</p>
               )}
             </div>
 
             <div className="flex justify-end pt-2">
               <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
                 onClick={handleChangePassword}
                 disabled={
                   changingPassword ||
@@ -421,20 +428,20 @@ export default function ProfilePage() {
                 {changingPassword ? 'Changing...' : 'Change Password'}
               </Button>
             </div>
-          </CardContent>
+          </div>
         )}
-      </Card>
+      </div>
 
       {/* Account Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Account Information</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className="p-6 pb-2">
+          <h2 className="text-lg font-semibold text-[#1F2937]">Account Information</h2>
+        </div>
+        <div className="px-6 pb-6">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Account Created:</span>
-              <span className="font-medium">
+              <span className="text-[#6B7280]">Account Created:</span>
+              <span className="font-medium text-[#1F2937]">
                 {user.createdAt
                   ? new Date(user.createdAt).toLocaleDateString('en-US', {
                       month: 'long',
@@ -445,8 +452,8 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Last Updated:</span>
-              <span className="font-medium">
+              <span className="text-[#6B7280]">Last Updated:</span>
+              <span className="font-medium text-[#1F2937]">
                 {user.updatedAt
                   ? new Date(user.updatedAt).toLocaleDateString('en-US', {
                       month: 'long',
@@ -457,8 +464,8 @@ export default function ProfilePage() {
               </span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

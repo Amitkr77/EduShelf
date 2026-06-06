@@ -13,7 +13,6 @@ import {
   ChevronRight,
   SlidersHorizontal,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,24 +31,23 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import EmptyState from '@/components/shared/EmptyState';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import apiFetch from '@/lib/fetcher';
 import { toast } from 'sonner';
 
-const COVER_COLORS = [
-  'from-emerald-200 to-teal-300',
-  'from-teal-200 to-cyan-300',
-  'from-amber-200 to-orange-300',
-  'from-rose-200 to-pink-300',
-  'from-violet-200 to-purple-300',
-  'from-sky-200 to-blue-300',
+const COVER_GRADIENTS = [
+  'from-[#7C9AA5]/30 to-[#5D7480]/40',
+  'from-[#84C7E8]/30 to-[#4A8DB7]/40',
+  'from-[#F3C47A]/30 to-[#C4952A]/40',
+  'from-[#7CCB7A]/30 to-[#6B8F83]/40',
+  'from-[#F28B82]/30 to-[#C25B4F]/40',
+  'from-[#8CA5AF]/30 to-[#688997]/40',
 ];
 
-function getCoverColor(index) {
-  return COVER_COLORS[index % COVER_COLORS.length];
+function getCoverGradient(index) {
+  return COVER_GRADIENTS[index % COVER_GRADIENTS.length];
 }
 
 function StarRating({ rating }) {
@@ -60,12 +58,12 @@ function StarRating({ rating }) {
           key={star}
           className={`h-3.5 w-3.5 ${
             star <= Math.round(rating)
-              ? 'fill-amber-400 text-amber-400'
-              : 'text-gray-300'
+              ? 'fill-[#F3C47A] text-[#F3C47A]'
+              : 'text-[#E5E7EB]'
           }`}
         />
       ))}
-      <span className="text-xs text-muted-foreground ml-1">
+      <span className="text-xs text-[#6B7280] ml-1">
         ({rating?.toFixed(1) || '0.0'})
       </span>
     </div>
@@ -158,9 +156,9 @@ export default function BooksBrowsePage() {
     <div className="space-y-4">
       {/* Category Filter */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Category</Label>
+        <Label className="text-sm font-medium text-[#1F2937]">Category</Label>
         <Select value={category} onValueChange={(val) => { setCategory(val); setPage(1); }}>
-          <SelectTrigger>
+          <SelectTrigger className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -174,13 +172,13 @@ export default function BooksBrowsePage() {
         </Select>
       </div>
 
-      <Separator />
+      <Separator className="bg-[#E5E7EB]" />
 
       {/* Availability Filter */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Availability</Label>
+        <Label className="text-sm font-medium text-[#1F2937]">Availability</Label>
         <Select value={availability} onValueChange={(val) => { setAvailability(val); setPage(1); }}>
-          <SelectTrigger>
+          <SelectTrigger className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]">
             <SelectValue placeholder="All" />
           </SelectTrigger>
           <SelectContent>
@@ -190,13 +188,13 @@ export default function BooksBrowsePage() {
         </Select>
       </div>
 
-      <Separator />
+      <Separator className="bg-[#E5E7EB]" />
 
       {/* Sort */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium">Sort By</Label>
+        <Label className="text-sm font-medium text-[#1F2937]">Sort By</Label>
         <Select value={sort} onValueChange={(val) => { setSort(val); setPage(1); }}>
-          <SelectTrigger>
+          <SelectTrigger className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -209,10 +207,10 @@ export default function BooksBrowsePage() {
 
       {hasActiveFilters && (
         <>
-          <Separator />
+          <Separator className="bg-[#E5E7EB]" />
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full rounded-2xl border-[#E5E7EB] text-[#6B7280] hover:bg-[#F9FAFB] hover:text-[#1F2937]"
             onClick={clearFilters}
           >
             <X className="h-4 w-4 mr-2" />
@@ -227,8 +225,8 @@ export default function BooksBrowsePage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Browse Books</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Browse Books</h1>
+        <p className="text-[#6B7280] mt-1">
           Explore our library collection and find your next great read.
         </p>
       </div>
@@ -237,16 +235,19 @@ export default function BooksBrowsePage() {
       <div className="flex gap-3">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <Input
               type="search"
               placeholder="Search by title, author, or ISBN..."
-              className="pl-9"
+              className="pl-9 rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] bg-white/80 backdrop-blur-sm"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0">
+          <Button
+            type="submit"
+            className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl shrink-0 transition-all duration-200"
+          >
             Search
           </Button>
         </form>
@@ -254,7 +255,10 @@ export default function BooksBrowsePage() {
         {/* Mobile filter toggle */}
         <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="lg:hidden shrink-0">
+            <Button
+              variant="outline"
+              className="lg:hidden shrink-0 rounded-2xl border-[#E5E7EB] bg-white/80 backdrop-blur-sm"
+            >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
           </SheetTrigger>
@@ -272,15 +276,13 @@ export default function BooksBrowsePage() {
       <div className="flex gap-6">
         {/* Desktop Sidebar Filters */}
         <aside className="hidden lg:block w-64 shrink-0">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filters
-              </h3>
-              <FilterControls />
-            </CardContent>
-          </Card>
+          <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-5">
+            <h3 className="font-semibold mb-3 flex items-center gap-2 text-[#1F2937]">
+              <Filter className="h-4 w-4 text-[#5D7480]" />
+              Filters
+            </h3>
+            <FilterControls />
+          </div>
         </aside>
 
         {/* Book Grid */}
@@ -302,12 +304,12 @@ export default function BooksBrowsePage() {
           ) : (
             <>
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-[#6B7280]">
                   Showing {books.length} of {pagination.total} books
                 </p>
               </div>
 
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {books.map((book, index) => {
                   const catName =
                     book.category?.name ||
@@ -319,10 +321,10 @@ export default function BooksBrowsePage() {
                       href={`/student/books/${book._id}`}
                       className="group"
                     >
-                      <Card className="h-full transition-all hover:shadow-lg hover:border-emerald-200 overflow-hidden">
+                      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[#7C9AA5]/40 h-full flex flex-col">
                         {/* Cover Image Area */}
                         <div
-                          className={`aspect-[4/3] bg-gradient-to-br ${getCoverColor(
+                          className={`aspect-[4/3] bg-gradient-to-br ${getCoverGradient(
                             index
                           )} flex items-center justify-center relative overflow-hidden`}
                         >
@@ -333,51 +335,48 @@ export default function BooksBrowsePage() {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <BookOpen className="h-12 w-12 text-white/60" />
+                            <BookOpen className="h-12 w-12 text-[#7C9AA5]/40" />
                           )}
                           {/* Availability Badge */}
-                          <div className="absolute top-2 right-2">
+                          <div className="absolute top-3 right-3">
                             {book.availableCopies > 0 ? (
-                              <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 text-xs">
+                              <span className="inline-block rounded-xl px-2.5 py-1 text-xs font-medium bg-[#E8F0EC] text-[#6B8F83]">
                                 Available
-                              </Badge>
+                              </span>
                             ) : (
-                              <Badge variant="destructive" className="text-xs">
+                              <span className="inline-block rounded-xl px-2.5 py-1 text-xs font-medium bg-[#FDE8E6] text-[#C25B4F]">
                                 Unavailable
-                              </Badge>
+                              </span>
                             )}
                           </div>
                         </div>
 
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-sm truncate group-hover:text-emerald-600 transition-colors">
+                        <div className="p-4 flex-1 flex flex-col">
+                          <h3 className="font-semibold text-sm truncate group-hover:text-[#5D7480] transition-colors text-[#1F2937]">
                             {book.title}
                           </h3>
-                          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          <p className="text-xs text-[#6B7280] mt-0.5 truncate">
                             {book.author}
                           </p>
 
                           <div className="flex items-center justify-between mt-2">
-                            {catName && catName !== 'Uncategorized' && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-50"
-                              >
+                            {catName && catName !== 'Uncategorized' ? (
+                              <span className="text-xs font-medium rounded-xl px-2 py-0.5 bg-[#E3F2FA] text-[#4A8DB7]">
                                 {catName}
-                              </Badge>
+                              </span>
+                            ) : (
+                              <div />
                             )}
-                            {(!catName || catName === 'Uncategorized') && <div />}
                             <StarRating rating={book.rating || 0} />
                           </div>
 
                           {book.availableCopies > 0 && (
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {book.availableCopies} of {book.totalCopies} copies
-                              available
+                            <p className="text-xs text-[#6B7280] mt-2">
+                              {book.availableCopies} of {book.totalCopies} copies available
                             </p>
                           )}
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     </Link>
                   );
                 })}
@@ -391,6 +390,7 @@ export default function BooksBrowsePage() {
                     size="sm"
                     disabled={page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="rounded-2xl border-[#E5E7EB] text-[#6B7280]"
                   >
                     <ChevronLeft className="h-4 w-4" />
                     Previous
@@ -418,8 +418,8 @@ export default function BooksBrowsePage() {
                             size="sm"
                             className={
                               page === pageNum
-                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                                : ''
+                                ? 'bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl'
+                                : 'rounded-2xl border-[#E5E7EB] text-[#6B7280]'
                             }
                             onClick={() => setPage(pageNum)}
                           >
@@ -435,6 +435,7 @@ export default function BooksBrowsePage() {
                     size="sm"
                     disabled={page >= pagination.pages}
                     onClick={() => setPage((p) => p + 1)}
+                    className="rounded-2xl border-[#E5E7EB] text-[#6B7280]"
                   >
                     Next
                     <ChevronRight className="h-4 w-4" />

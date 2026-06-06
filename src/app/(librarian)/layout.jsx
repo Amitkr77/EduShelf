@@ -18,7 +18,6 @@ export default function LibrarianLayout({ children }) {
         const res = await apiFetch('/auth/me');
         const fetchedUser = res.data.user;
 
-        // Check if user has librarian or admin role
         if (fetchedUser.role !== 'librarian' && fetchedUser.role !== 'admin') {
           if (fetchedUser.role === 'student') {
             router.replace('/student/dashboard');
@@ -40,7 +39,11 @@ export default function LibrarianLayout({ children }) {
   }, [router]);
 
   if (loading) {
-    return <LoadingSpinner message="Loading admin panel..." />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#688997] via-[#8CA5AF] to-[#C7BEB2]">
+        <LoadingSpinner message="Loading admin panel..." />
+      </div>
+    );
   }
 
   if (!user) {

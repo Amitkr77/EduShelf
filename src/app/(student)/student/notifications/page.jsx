@@ -14,7 +14,6 @@ import {
   Filter,
   Clock,
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,14 +40,25 @@ const typeIcons = {
 };
 
 const typeColors = {
-  due_reminder: 'bg-amber-100 text-amber-600',
-  overdue_alert: 'bg-rose-100 text-rose-600',
-  reservation_update: 'bg-teal-100 text-teal-600',
-  new_book: 'bg-emerald-100 text-emerald-600',
-  fine: 'bg-rose-100 text-rose-600',
-  borrow_approved: 'bg-emerald-100 text-emerald-600',
-  borrow_rejected: 'bg-rose-100 text-rose-600',
-  general: 'bg-gray-100 text-gray-600',
+  due_reminder: 'bg-[#FEF3E2] text-[#C4952A]',
+  overdue_alert: 'bg-[#FDE8E6] text-[#C25B4F]',
+  reservation_update: 'bg-[#DDE7EA] text-[#5D7480]',
+  new_book: 'bg-[#E8F0EC] text-[#6B8F83]',
+  fine: 'bg-[#FDE8E6] text-[#C25B4F]',
+  borrow_approved: 'bg-[#E8F0EC] text-[#6B8F83]',
+  borrow_rejected: 'bg-[#FDE8E6] text-[#C25B4F]',
+  general: 'bg-[#F9FAFB] text-[#6B7280]',
+};
+
+const typeBadgeColors = {
+  due_reminder: 'bg-[#FEF3E2] text-[#C4952A]',
+  overdue_alert: 'bg-[#FDE8E6] text-[#C25B4F]',
+  reservation_update: 'bg-[#E3F2FA] text-[#4A8DB7]',
+  new_book: 'bg-[#E8F0EC] text-[#6B8F83]',
+  fine: 'bg-[#FDE8E6] text-[#C25B4F]',
+  borrow_approved: 'bg-[#E8F0EC] text-[#6B8F83]',
+  borrow_rejected: 'bg-[#FDE8E6] text-[#C25B4F]',
+  general: 'bg-[#F9FAFB] text-[#6B7280]',
 };
 
 const typeLabels = {
@@ -175,11 +185,11 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Notifications</h1>
+          <p className="text-[#6B7280] mt-1">
             Stay updated with your library activity.
             {unreadCount > 0 && (
-              <span className="ml-1 text-emerald-600 font-medium">
+              <span className="ml-1 text-[#5D7480] font-medium">
                 {unreadCount} unread
               </span>
             )}
@@ -191,8 +201,8 @@ export default function NotificationsPage() {
             value={filterType}
             onValueChange={setFilterType}
           >
-            <SelectTrigger className="w-44">
-              <Filter className="h-4 w-4 mr-2 text-muted-foreground" />
+            <SelectTrigger className="w-44 rounded-xl border-[#E5E7EB] bg-white/80 backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-[#5D7480]">
+              <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
@@ -213,7 +223,7 @@ export default function NotificationsPage() {
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={markingAll}
-              className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+              className="text-[#5D7480] border-[#E5E7EB] hover:bg-[#DDE7EA]/30 rounded-2xl transition-all duration-200"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               {markingAll ? 'Marking...' : 'Mark All Read'}
@@ -247,7 +257,7 @@ export default function NotificationsPage() {
 
             return (
               <div key={group}>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-[#6B7280] mb-3 uppercase tracking-wider">
                   {group === 'today'
                     ? 'Today'
                     : group === 'yesterday'
@@ -258,23 +268,25 @@ export default function NotificationsPage() {
                   {items.map((notification) => {
                     const Icon = typeIcons[notification.type] || Info;
                     const color =
-                      typeColors[notification.type] || 'bg-gray-100 text-gray-600';
+                      typeColors[notification.type] || 'bg-[#F9FAFB] text-[#6B7280]';
+                    const badgeColor =
+                      typeBadgeColors[notification.type] || 'bg-[#F9FAFB] text-[#6B7280]';
 
                     return (
-                      <Card
+                      <div
                         key={notification._id}
-                        className={`cursor-pointer transition-all hover:shadow-md ${
+                        className={`rounded-2xl bg-white/90 backdrop-blur-[20px] border cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
                           !notification.isRead
-                            ? 'border-emerald-200 bg-emerald-50/30'
-                            : 'border-border'
+                            ? 'border-[#7C9AA5]/30 shadow-[0_2px_8px_rgba(124,154,165,0.1)]'
+                            : 'border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]'
                         }`}
                         onClick={() => handleMarkAsRead(notification._id)}
                       >
-                        <CardContent className="p-4">
+                        <div className="p-4">
                           <div className="flex items-start gap-3">
                             {/* Icon */}
                             <div
-                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${color}`}
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${color}`}
                             >
                               <Icon className="h-4 w-4" />
                             </div>
@@ -284,34 +296,33 @@ export default function NotificationsPage() {
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-2 mb-0.5">
-                                    <Badge
-                                      variant="secondary"
-                                      className="text-xs px-1.5 py-0"
+                                    <span
+                                      className={`text-xs font-medium rounded-xl px-2 py-0.5 ${badgeColor}`}
                                     >
                                       {typeLabels[notification.type] || 'General'}
-                                    </Badge>
+                                    </span>
                                     {!notification.isRead && (
-                                      <div className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
+                                      <div className="h-2 w-2 rounded-full bg-[#7C9AA5] shrink-0" />
                                     )}
                                   </div>
                                   <p
                                     className={`text-sm leading-relaxed ${
                                       !notification.isRead
-                                        ? 'font-medium text-foreground'
-                                        : 'text-muted-foreground'
+                                        ? 'font-medium text-[#1F2937]'
+                                        : 'text-[#6B7280]'
                                     }`}
                                   >
                                     {notification.message}
                                   </p>
                                 </div>
-                                <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">
+                                <span className="text-xs text-[#6B7280] shrink-0 whitespace-nowrap">
                                   {formatTime(notification.createdAt)}
                                 </span>
                               </div>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>

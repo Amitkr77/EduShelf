@@ -13,9 +13,6 @@ import {
   DollarSign,
   Filter,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -47,6 +44,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import EmptyState from '@/components/shared/EmptyState';
 import apiFetch from '@/lib/fetcher';
@@ -146,19 +144,19 @@ export default function StudentsPage() {
     switch (status) {
       case 'active':
         return (
-          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+          <Badge className="bg-[#E8F0EC] text-[#6B8F83] hover:bg-[#E8F0EC] border-0">
             Active
           </Badge>
         );
       case 'suspended':
         return (
-          <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100">
+          <Badge className="bg-[#FDE8E6] text-[#C25B4F] hover:bg-[#FDE8E6] border-0">
             Suspended
           </Badge>
         );
       case 'inactive':
         return (
-          <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">
+          <Badge className="bg-[#F9FAFB] text-[#6B7280] hover:bg-[#F9FAFB] border-0">
             Inactive
           </Badge>
         );
@@ -181,223 +179,217 @@ export default function StudentsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Student Management</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Student Management</h1>
+        <p className="text-[#6B7280] mt-1">
           {pagination.total} registered student{pagination.total !== 1 ? 's' : ''}
         </p>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <form onSubmit={handleSearchSubmit} className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, email, or student ID..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </form>
-            <Select
-              value={statusFilter}
-              onValueChange={(val) => {
-                setStatusFilter(val);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-[160px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="suspended">Suspended</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Students Table */}
-      <Card>
-        <CardContent className="p-0">
-          {loading ? (
-            <LoadingSpinner message="Loading students..." />
-          ) : students.length === 0 ? (
-            <div className="p-6">
-              <EmptyState
-                icon={Users}
-                title="No students found"
-                description={
-                  search || statusFilter !== 'all'
-                    ? 'Try adjusting your search or filters.'
-                    : 'No students have registered yet.'
-                }
+      {/* Search/Filter - Glass Card */}
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSearchSubmit} className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+              <input
+                placeholder="Search by name, email, or student ID..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
               />
             </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Student ID
-                      </TableHead>
-                      <TableHead className="hidden lg:table-cell">
-                        Department
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-center">Borrowed</TableHead>
-                      <TableHead className="text-center hidden sm:table-cell">
-                        Pending Fines
-                      </TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {students.map((student) => {
-                      const stats = studentStats[student._id] || {
-                        borrowed: 0,
-                        fines: 0,
-                      };
-                      return (
-                        <TableRow key={student._id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-9 w-9">
-                                <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs">
-                                  {getInitials(student.name)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="min-w-0">
-                                <p className="font-medium text-sm truncate">
-                                  {student.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Mail className="h-3 w-3" />
-                                  {student.email}
-                                </p>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            <Badge variant="outline" className="font-mono text-xs">
-                              {student.studentId || 'N/A'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="hidden lg:table-cell text-sm">
-                            {student.department || 'N/A'}
-                          </TableCell>
-                          <TableCell>{getStatusBadge(student.status)}</TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <BookOpen className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-sm font-medium">
-                                {stats.borrowed}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center hidden sm:table-cell">
-                            {stats.fines > 0 ? (
-                              <div className="flex items-center justify-center gap-1 text-rose-600">
-                                <DollarSign className="h-3 w-3" />
-                                <span className="text-sm font-medium">
-                                  {stats.fines.toFixed(2)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-sm text-muted-foreground">
-                                —
-                              </span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  Actions
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                {student.status === 'active' ? (
-                                  <DropdownMenuItem
-                                    className="text-rose-600 focus:text-rose-600"
-                                    onClick={() =>
-                                      setActionDialog({
-                                        open: true,
-                                        type: 'suspend',
-                                        student,
-                                      })
-                                    }
-                                  >
-                                    <ShieldBan className="h-4 w-4 mr-2" />
-                                    Suspend
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem
-                                    className="text-emerald-600 focus:text-emerald-600"
-                                    onClick={() =>
-                                      setActionDialog({
-                                        open: true,
-                                        type: 'activate',
-                                        student,
-                                      })
-                                    }
-                                  >
-                                    <ShieldCheck className="h-4 w-4 mr-2" />
-                                    Activate
-                                  </DropdownMenuItem>
-                                )}
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+          </form>
+          <Select
+            value={statusFilter}
+            onValueChange={(val) => {
+              setStatusFilter(val);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+              <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="flex items-center justify-between border-t px-4 py-3">
-                  <p className="text-sm text-muted-foreground">
-                    Page {pagination.page} of {pagination.pages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page <= 1}
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page >= pagination.pages}
-                      onClick={() => setPage((p) => p + 1)}
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+      {/* Students Table */}
+      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+        {loading ? (
+          <LoadingSpinner message="Loading students..." />
+        ) : students.length === 0 ? (
+          <div className="p-6">
+            <EmptyState
+              icon={Users}
+              title="No students found"
+              description={
+                search || statusFilter !== 'all'
+                  ? 'Try adjusting your search or filters.'
+                  : 'No students have registered yet.'
+              }
+            />
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
+                    <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
+                    <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">
+                      Student ID
+                    </TableHead>
+                    <TableHead className="hidden lg:table-cell text-[#6B7280] font-semibold">
+                      Department
+                    </TableHead>
+                    <TableHead className="text-[#6B7280] font-semibold">Status</TableHead>
+                    <TableHead className="text-center text-[#6B7280] font-semibold">Borrowed</TableHead>
+                    <TableHead className="text-center hidden sm:table-cell text-[#6B7280] font-semibold">
+                      Pending Fines
+                    </TableHead>
+                    <TableHead className="text-right text-[#6B7280] font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {students.map((student) => {
+                    const stats = studentStats[student._id] || {
+                      borrowed: 0,
+                      fines: 0,
+                    };
+                    return (
+                      <TableRow key={student._id} className="hover:bg-[#F4F8F9] transition-colors border-[#E5E7EB]">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9">
+                              <AvatarFallback className="bg-[#E3F2FA] text-[#4A8DB7] text-xs">
+                                {getInitials(student.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="font-medium text-sm text-[#1F2937] truncate">
+                                {student.name}
+                              </p>
+                              <p className="text-xs text-[#6B7280] flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {student.email}
+                              </p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <Badge variant="outline" className="font-mono text-xs border-[#E5E7EB] text-[#6B7280]">
+                            {student.studentId || 'N/A'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-sm text-[#6B7280]">
+                          {student.department || 'N/A'}
+                        </TableCell>
+                        <TableCell>{getStatusBadge(student.status)}</TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <BookOpen className="h-3 w-3 text-[#6B7280]" />
+                            <span className="text-sm font-medium text-[#1F2937]">
+                              {stats.borrowed}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center hidden sm:table-cell">
+                          {stats.fines > 0 ? (
+                            <div className="flex items-center justify-center gap-1 text-[#C25B4F]">
+                              <DollarSign className="h-3 w-3" />
+                              <span className="text-sm font-medium">
+                                {stats.fines.toFixed(2)}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-[#6B7280]">
+                              —
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-[#6B7280] hover:text-[#1F2937]">
+                                Actions
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="rounded-xl">
+                              {student.status === 'active' ? (
+                                <DropdownMenuItem
+                                  className="text-[#C4952A] focus:text-[#C4952A] rounded-lg"
+                                  onClick={() =>
+                                    setActionDialog({
+                                      open: true,
+                                      type: 'suspend',
+                                      student,
+                                    })
+                                  }
+                                >
+                                  <ShieldBan className="h-4 w-4 mr-2" />
+                                  Suspend
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  className="text-[#6B8F83] focus:text-[#6B8F83] rounded-lg"
+                                  onClick={() =>
+                                    setActionDialog({
+                                      open: true,
+                                      type: 'activate',
+                                      student,
+                                    })
+                                  }
+                                >
+                                  <ShieldCheck className="h-4 w-4 mr-2" />
+                                  Activate
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
+            {pagination.pages > 1 && (
+              <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3">
+                <p className="text-sm text-[#6B7280]">
+                  Page {pagination.page} of {pagination.pages}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={pagination.page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+                  <button
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={pagination.page >= pagination.pages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Status Change Confirmation Dialog */}
       <Dialog
@@ -406,31 +398,31 @@ export default function StudentsPage() {
           !open && setActionDialog({ open: false, type: '', student: null })
         }
       >
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[#1F2937]">
               {actionDialog.type === 'suspend'
                 ? 'Suspend Student'
                 : 'Activate Student'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'suspend'
                 ? `Are you sure you want to suspend ${actionDialog.student?.name}? They will not be able to borrow books or access the library until reactivated.`
                 : `Are you sure you want to reactivate ${actionDialog.student?.name}? They will regain full access to the library.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() =>
                 setActionDialog({ open: false, type: '', student: null })
               }
             >
               Cancel
-            </Button>
+            </button>
             {actionDialog.type === 'suspend' ? (
-              <Button
-                variant="destructive"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
                 onClick={() =>
                   handleStatusChange(
                     actionDialog.student?._id,
@@ -439,20 +431,20 @@ export default function StudentsPage() {
                 }
                 disabled={processing}
               >
-                <ShieldBan className="h-4 w-4 mr-2" />
+                <ShieldBan className="h-4 w-4" />
                 {processing ? 'Suspending...' : 'Suspend Student'}
-              </Button>
+              </button>
             ) : (
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
                 onClick={() =>
                   handleStatusChange(actionDialog.student?._id, 'active')
                 }
                 disabled={processing}
               >
-                <ShieldCheck className="h-4 w-4 mr-2" />
+                <ShieldCheck className="h-4 w-4" />
                 {processing ? 'Activating...' : 'Activate Student'}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>

@@ -14,11 +14,9 @@ import {
   Plus,
   RotateCcw,
   BookPlus,
+  Clock,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
@@ -74,7 +72,6 @@ export default function LibrarianDashboardPage() {
         apiFetch('/borrow?status=requested&limit=10').catch(() => ({ data: { items: [] } })),
       ]);
 
-      // Calculate issued today
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const issuedToday = (issuedRes.data?.items || []).filter((b) => {
@@ -83,7 +80,6 @@ export default function LibrarianDashboardPage() {
         return issueDate >= today;
       }).length;
 
-      // Calculate total fines collected
       const totalFinesCollected = (finesRes.data?.items || []).reduce(
         (sum, f) => sum + (f.amount || 0),
         0
@@ -167,12 +163,12 @@ export default function LibrarianDashboardPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Librarian Dashboard</h1>
-        <p className="text-muted-foreground">Manage your library operations at a glance.</p>
+        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Dashboard</h1>
+        <p className="text-[#6B7280] mt-1">Manage your library operations at a glance.</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-5">
         <StatsCard
           title="Total Books"
           value={stats.totalBooks.toLocaleString()}
@@ -213,19 +209,19 @@ export default function LibrarianDashboardPage() {
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Pending Borrow Requests */}
-        <Card>
-          <CardHeader className="pb-3">
+        {/* Pending Borrow Requests - Glass Card */}
+        <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+          <div className="p-6 pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">Pending Borrow Requests</CardTitle>
+              <h2 className="text-lg font-semibold text-[#1F2937]">Pending Borrow Requests</h2>
               {pendingRequests.length > 0 && (
-                <Badge variant="secondary" className="bg-amber-100 text-amber-700">
+                <Badge className="bg-[#FEF3E2] text-[#C4952A] hover:bg-[#FEF3E2] border-0 rounded-full px-3">
                   {pendingRequests.length} pending
                 </Badge>
               )}
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             {pendingRequests.length === 0 ? (
               <EmptyState
                 icon={BookOpen}
@@ -238,31 +234,31 @@ export default function LibrarianDashboardPage() {
                   {pendingRequests.map((request) => (
                     <div
                       key={request._id}
-                      className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors"
+                      className="flex items-start justify-between gap-3 rounded-2xl border border-[#E5E7EB] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm bg-white"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium truncate">
+                          <p className="text-sm font-medium text-[#1F2937] truncate">
                             {request.bookId?.title || 'Unknown Book'}
                           </p>
-                          <Badge variant="outline" className="text-xs shrink-0">
+                          <Badge variant="outline" className="text-xs shrink-0 border-[#E5E7EB] text-[#6B7280]">
                             {request.bookId?.ISBN}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-xs text-[#6B7280] mt-1">
                           Requested by{' '}
-                          <span className="font-medium text-foreground">
+                          <span className="font-medium text-[#1F2937]">
                             {request.userId?.name || 'Unknown Student'}
                           </span>
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-[#6B7280] flex items-center gap-1 mt-0.5">
+                          <Clock className="h-3 w-3" />
                           {formatRelativeDate(request.requestDate || request.createdAt)}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <Button
-                          size="sm"
-                          className="h-8 bg-emerald-600 hover:bg-emerald-700 text-white"
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
                           onClick={() =>
                             setActionDialog({
                               open: true,
@@ -271,13 +267,11 @@ export default function LibrarianDashboardPage() {
                             })
                           }
                         >
-                          <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                          <CheckCircle className="h-3.5 w-3.5" />
                           Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                        </button>
+                        <button
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium bg-[#FDE8E6] text-[#C25B4F] hover:opacity-90 transition-all duration-200"
                           onClick={() =>
                             setActionDialog({
                               open: true,
@@ -286,34 +280,34 @@ export default function LibrarianDashboardPage() {
                             })
                           }
                         >
-                          <XCircle className="h-3.5 w-3.5 mr-1" />
+                          <XCircle className="h-3.5 w-3.5" />
                           Reject
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Overdue Books Alert */}
-        <Card>
-          <CardHeader className="pb-3">
+        {/* Overdue Books Alert - Glass Card */}
+        <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+          <div className="p-6 pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-rose-500" />
+              <h2 className="text-lg font-semibold text-[#1F2937] flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-[#C25B4F]" />
                 Overdue Books Alert
-              </CardTitle>
+              </h2>
               {overdueBooks.length > 0 && (
-                <Badge variant="secondary" className="bg-rose-100 text-rose-700">
+                <Badge className="bg-[#FDE8E6] text-[#C25B4F] hover:bg-[#FDE8E6] border-0 rounded-full px-3">
                   {stats.overdueBooks} overdue
                 </Badge>
               )}
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="px-6 pb-6">
             {overdueBooks.length === 0 ? (
               <EmptyState
                 icon={CheckCircle}
@@ -333,32 +327,32 @@ export default function LibrarianDashboardPage() {
                     return (
                       <div
                         key={borrow._id}
-                        className="flex items-start justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50/50 p-3"
+                        className="flex items-start justify-between gap-3 rounded-2xl border border-[#F28B82]/30 bg-[#FDE8E6]/40 p-4 transition-all duration-200 hover:-translate-y-0.5"
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
+                          <p className="text-sm font-medium text-[#1F2937] truncate">
                             {borrow.bookId?.title || 'Unknown Book'}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <p className="text-xs text-[#6B7280] mt-1">
                             Borrowed by{' '}
-                            <span className="font-medium text-foreground">
+                            <span className="font-medium text-[#1F2937]">
                               {borrow.userId?.name || 'Unknown'}
                             </span>
                           </p>
                           <div className="flex items-center gap-3 mt-1">
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-[#6B7280]">
                               Due: {formatDate(borrow.dueDate)}
                             </span>
-                            <Badge variant="destructive" className="text-xs">
+                            <Badge className="bg-[#FDE8E6] text-[#C25B4F] hover:bg-[#FDE8E6] border-0 text-xs">
                               {daysOverdue}d overdue
                             </Badge>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-semibold text-rose-600">
+                          <p className="text-sm font-semibold text-[#C25B4F]">
                             ${(daysOverdue * 2).toFixed(2)}
                           </p>
-                          <p className="text-xs text-muted-foreground">estimated fine</p>
+                          <p className="text-xs text-[#6B7280]">estimated fine</p>
                         </div>
                       </div>
                     );
@@ -366,43 +360,41 @@ export default function LibrarianDashboardPage() {
                 </div>
               </ScrollArea>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Quick Actions - Glass Card */}
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className="p-6 pb-3">
+          <h2 className="text-lg font-semibold text-[#1F2937]">Quick Actions</h2>
+        </div>
+        <div className="px-6 pb-6">
           <div className="flex flex-wrap gap-3">
-            <Button
+            <button
               onClick={() => router.push('/librarian/books/add')}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Add Book
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => router.push('/librarian/issues')}
-              variant="outline"
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium border-[#7C9AA5] border-2 text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
             >
-              <BookPlus className="h-4 w-4 mr-2" />
+              <BookPlus className="h-4 w-4" />
               Issue Book
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => router.push('/librarian/returns')}
-              variant="outline"
-              className="border-teal-200 text-teal-700 hover:bg-teal-50"
+              className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium border-[#7C9AA5] border-2 text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
+              <RotateCcw className="h-4 w-4" />
               Process Return
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Confirmation Dialog */}
       <Dialog
@@ -411,44 +403,44 @@ export default function LibrarianDashboardPage() {
           !open && setActionDialog({ open: false, type: '', item: null })
         }
       >
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[#1F2937]">
               {actionDialog.type === 'approve'
                 ? 'Approve & Issue Book'
                 : 'Reject Borrow Request'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'approve'
                 ? `Are you sure you want to approve and issue "${actionDialog.item?.bookId?.title}" to ${actionDialog.item?.userId?.name}?`
                 : `Are you sure you want to reject the borrow request for "${actionDialog.item?.bookId?.title}" by ${actionDialog.item?.userId?.name}?`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-[#7C9AA5] border-2 text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() =>
                 setActionDialog({ open: false, type: '', item: null })
               }
             >
               Cancel
-            </Button>
+            </button>
             {actionDialog.type === 'approve' ? (
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200"
                 onClick={() => handleApprove(actionDialog.item?._id)}
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle className="h-4 w-4" />
                 Approve & Issue
-              </Button>
+              </button>
             ) : (
-              <Button
-                variant="destructive"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200"
                 onClick={() => handleReject(actionDialog.item?._id)}
               >
-                <XCircle className="h-4 w-4 mr-2" />
+                <XCircle className="h-4 w-4" />
                 Reject Request
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>

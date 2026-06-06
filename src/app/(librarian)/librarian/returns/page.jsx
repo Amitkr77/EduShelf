@@ -10,9 +10,6 @@ import {
   Calendar,
   DollarSign,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -50,7 +47,6 @@ export default function ReturnsPage() {
   const fetchIssuedBooks = useCallback(async () => {
     try {
       setLoading(true);
-      // Fetch both issued and overdue books
       const [issuedRes, overdueRes] = await Promise.all([
         apiFetch('/borrow?status=issued&limit=100').catch(() => ({
           data: { items: [] },
@@ -160,179 +156,169 @@ export default function ReturnsPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Process Returns</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Process Returns</h1>
+        <p className="text-[#6B7280] mt-1">
           Manage book returns and renewals.
         </p>
       </div>
 
-      {/* Search */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by book title, student name, or ISBN..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Search - Glass Card */}
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+          <input
+            placeholder="Search by book title, student name, or ISBN..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+          />
+        </div>
+      </div>
 
       {/* Books Table */}
-      <Card>
-        <CardHeader className="pb-3">
+      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div className="p-6 pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Currently Issued Books</CardTitle>
-            <Badge variant="secondary" className="bg-teal-100 text-teal-700">
+            <h2 className="text-lg font-semibold text-[#1F2937]">Currently Issued Books</h2>
+            <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0 rounded-full px-3">
               {filteredBooks.length} book{filteredBooks.length !== 1 ? 's' : ''}
             </Badge>
           </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {filteredBooks.length === 0 ? (
-            <div className="p-6">
-              <EmptyState
-                icon={RotateCcw}
-                title="No issued books found"
-                description={
-                  searchQuery
-                    ? 'Try adjusting your search query.'
-                    : 'There are no books currently issued.'
-                }
-              />
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Book Title</TableHead>
-                    <TableHead>Student</TableHead>
-                    <TableHead className="hidden md:table-cell">
-                      Issue Date
-                    </TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="hidden lg:table-cell">
-                      Fine Estimate
-                    </TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredBooks.map((borrow) => {
-                    const isOverdue = borrow.status === 'overdue' || getDaysOverdue(borrow.dueDate) > 0;
-                    const daysOverdue = getDaysOverdue(borrow.dueDate);
-                    const estimatedFine = getEstimatedFine(borrow.dueDate);
+        </div>
+        {filteredBooks.length === 0 ? (
+          <div className="px-6 pb-6">
+            <EmptyState
+              icon={RotateCcw}
+              title="No issued books found"
+              description={
+                searchQuery
+                  ? 'Try adjusting your search query.'
+                  : 'There are no books currently issued.'
+              }
+            />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
+                  <TableHead className="text-[#6B7280] font-semibold">Book Title</TableHead>
+                  <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
+                  <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">
+                    Issue Date
+                  </TableHead>
+                  <TableHead className="text-[#6B7280] font-semibold">Due Date</TableHead>
+                  <TableHead className="text-[#6B7280] font-semibold">Status</TableHead>
+                  <TableHead className="hidden lg:table-cell text-[#6B7280] font-semibold">
+                    Fine Estimate
+                  </TableHead>
+                  <TableHead className="text-right text-[#6B7280] font-semibold">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredBooks.map((borrow) => {
+                  const isOverdue = borrow.status === 'overdue' || getDaysOverdue(borrow.dueDate) > 0;
+                  const daysOverdue = getDaysOverdue(borrow.dueDate);
+                  const estimatedFine = getEstimatedFine(borrow.dueDate);
 
-                    return (
-                      <TableRow
-                        key={borrow._id}
-                        className={isOverdue ? 'bg-rose-50/50' : ''}
-                      >
-                        <TableCell>
-                          <div className="min-w-0">
-                            <p className="font-medium text-sm truncate max-w-[180px]">
-                              {borrow.bookId?.title || 'Unknown'}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {borrow.bookId?.author}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm">
-                            {borrow.userId?.name || 'Unknown'}
+                  return (
+                    <TableRow
+                      key={borrow._id}
+                      className={`${isOverdue ? 'bg-[#FDE8E6]/60' : ''} hover:bg-[#F4F8F9] transition-colors border-[#E5E7EB]`}
+                    >
+                      <TableCell>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-[#1F2937] truncate max-w-[180px]">
+                            {borrow.bookId?.title || 'Unknown'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {borrow.userId?.email}
+                          <p className="text-xs text-[#6B7280]">
+                            {borrow.bookId?.author}
                           </p>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm">
-                          {formatDate(borrow.issueDate)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">
-                              {formatDate(borrow.dueDate)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-[#1F2937]">
+                          {borrow.userId?.name || 'Unknown'}
+                        </p>
+                        <p className="text-xs text-[#6B7280]">
+                          {borrow.userId?.email}
+                        </p>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-[#6B7280]">
+                        {formatDate(borrow.issueDate)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3 text-[#6B7280]" />
+                          <span className="text-sm text-[#1F2937]">
+                            {formatDate(borrow.dueDate)}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {isOverdue ? (
+                          <Badge className="bg-[#FDE8E6] text-[#C25B4F] hover:bg-[#FDE8E6] border-0 gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {daysOverdue}d overdue
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0">
+                            Issued
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        {isOverdue ? (
+                          <div className="flex items-center gap-1 text-[#C25B4F]">
+                            <DollarSign className="h-3 w-3" />
+                            <span className="text-sm font-medium">
+                              ${estimatedFine}
                             </span>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          {isOverdue ? (
-                            <Badge
-                              variant="destructive"
-                              className="gap-1"
-                            >
-                              <AlertTriangle className="h-3 w-3" />
-                              {daysOverdue}d overdue
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                              Issued
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="hidden lg:table-cell">
-                          {isOverdue ? (
-                            <div className="flex items-center gap-1 text-rose-600">
-                              <DollarSign className="h-3 w-3" />
-                              <span className="text-sm font-medium">
-                                ${estimatedFine}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-muted-foreground">
-                              —
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="border-teal-200 text-teal-700 hover:bg-teal-50"
-                              onClick={() =>
-                                setActionDialog({
-                                  open: true,
-                                  type: 'renew',
-                                  item: borrow,
-                                })
-                              }
-                            >
-                              <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                              Renew
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                              onClick={() =>
-                                setActionDialog({
-                                  open: true,
-                                  type: 'return',
-                                  item: borrow,
-                                })
-                              }
-                            >
-                              <RotateCcw className="h-3.5 w-3.5 mr-1" />
-                              Return
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                        ) : (
+                          <span className="text-sm text-[#6B7280]">
+                            —
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+                            onClick={() =>
+                              setActionDialog({
+                                open: true,
+                                type: 'renew',
+                                item: borrow,
+                              })
+                            }
+                          >
+                            <RefreshCw className="h-3.5 w-3.5" />
+                            Renew
+                          </button>
+                          <button
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                            onClick={() =>
+                              setActionDialog({
+                                open: true,
+                                type: 'return',
+                                item: borrow,
+                              })
+                            }
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Return
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </div>
 
       {/* Confirmation Dialog */}
       <Dialog
@@ -341,14 +327,14 @@ export default function ReturnsPage() {
           !open && setActionDialog({ open: false, type: '', item: null })
         }
       >
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[#1F2937]">
               {actionDialog.type === 'return'
                 ? 'Process Return'
                 : 'Renew Book'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'return'
                 ? (() => {
                     const isOverdue =
@@ -362,26 +348,26 @@ export default function ReturnsPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() =>
                 setActionDialog({ open: false, type: '', item: null })
               }
             >
               Cancel
-            </Button>
+            </button>
             {actionDialog.type === 'return' ? (
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7CCB7A] hover:opacity-90 text-white transition-all duration-200"
                 onClick={() => handleReturn(actionDialog.item?._id)}
                 disabled={processing}
               >
-                <RotateCcw className="h-4 w-4 mr-2" />
+                <RotateCcw className="h-4 w-4" />
                 {processing ? 'Processing...' : 'Confirm Return'}
-              </Button>
+              </button>
             ) : (
-              <Button
-                className="bg-teal-600 hover:bg-teal-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200"
                 onClick={() =>
                   handleRenew(
                     actionDialog.item?._id,
@@ -390,9 +376,9 @@ export default function ReturnsPage() {
                 }
                 disabled={processing}
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
+                <RefreshCw className="h-4 w-4" />
                 {processing ? 'Renewing...' : 'Confirm Renewal'}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>

@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CardContent, CardFooter } from '@/components/ui/card';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import apiFetch from '@/lib/fetcher';
 
@@ -27,7 +23,7 @@ export default function RegisterPage() {
   function validate() {
     const newErrors = {};
     if (!form.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Full name is required';
     }
     if (!form.email.trim()) {
       newErrors.email = 'Email is required';
@@ -54,7 +50,6 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      // Register
       await apiFetch('/auth/register', {
         method: 'POST',
         body: {
@@ -64,7 +59,6 @@ export default function RegisterPage() {
         },
       });
 
-      // Auto-login after registration
       const loginRes = await apiFetch('/auth/login', {
         method: 'POST',
         body: {
@@ -92,164 +86,169 @@ export default function RegisterPage() {
     }
   }
 
+  const inputBase =
+    'w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#9CA3AF] outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#5D7480] focus-visible:ring-offset-0 focus-visible:border-[#5D7480]';
+
   return (
-    <form onSubmit={handleSubmit}>
-      <CardContent className="space-y-4 pt-6">
-        <div className="text-center mb-2">
-          <h2 className="text-xl font-semibold">Create your account</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Join EduShelf as a student
-          </p>
-        </div>
-
-        {/* Name */}
-        <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="John Doe"
-            value={form.name}
-            onChange={(e) => updateField('name', e.target.value)}
-            aria-invalid={!!errors.name}
-            className={errors.name ? 'border-rose-300 focus-visible:ring-rose-400' : ''}
-          />
-          {errors.name && (
-            <p className="text-xs text-rose-500">{errors.name}</p>
-          )}
-        </div>
-
-        {/* Email */}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={(e) => updateField('email', e.target.value)}
-            aria-invalid={!!errors.email}
-            className={errors.email ? 'border-rose-300 focus-visible:ring-rose-400' : ''}
-          />
-          {errors.email && (
-            <p className="text-xs text-rose-500">{errors.email}</p>
-          )}
-        </div>
-
-        {/* Password */}
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="At least 6 characters"
-              value={form.password}
-              onChange={(e) => updateField('password', e.target.value)}
-              aria-invalid={!!errors.password}
-              className={
-                errors.password
-                  ? 'border-rose-300 focus-visible:ring-rose-400 pr-10'
-                  : 'pr-10'
-              }
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-          {errors.password && (
-            <p className="text-xs text-rose-500">{errors.password}</p>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <div className="relative">
-            <Input
-              id="confirmPassword"
-              type={showConfirm ? 'text' : 'password'}
-              placeholder="Confirm your password"
-              value={form.confirmPassword}
-              onChange={(e) => updateField('confirmPassword', e.target.value)}
-              aria-invalid={!!errors.confirmPassword}
-              className={
-                errors.confirmPassword
-                  ? 'border-rose-300 focus-visible:ring-rose-400 pr-10'
-                  : 'pr-10'
-              }
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              {showConfirm ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
-          {errors.confirmPassword && (
-            <p className="text-xs text-rose-500">{errors.confirmPassword}</p>
-          )}
-        </div>
-      </CardContent>
-
-      <CardFooter className="flex flex-col gap-4 pb-6">
-        <Button
-          type="submit"
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Creating account...
-            </span>
-          ) : (
-            'Create account'
-          )}
-        </Button>
-
-        <p className="text-sm text-muted-foreground text-center">
-          Already have an account?{' '}
-          <Link
-            href="/login"
-            className="text-emerald-600 hover:text-emerald-700 font-medium"
-          >
-            Sign in
-          </Link>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Header */}
+      <div className="text-center mb-5">
+        <h2 className="text-2xl font-bold text-[#1F2937]">Create your account</h2>
+        <p className="text-sm text-[#6B7280] mt-1.5">
+          Join EduShelf as a student
         </p>
-      </CardFooter>
+      </div>
+
+      {/* Full Name */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="name"
+          className="text-sm font-medium text-[#1F2937]"
+        >
+          Full Name
+        </label>
+        <input
+          id="name"
+          type="text"
+          placeholder="John Doe"
+          value={form.name}
+          onChange={(e) => updateField('name', e.target.value)}
+          aria-invalid={!!errors.name}
+          className={`${inputBase} ${
+            errors.name ? 'border-[#F28B82] focus-visible:ring-[#F28B82] focus-visible:border-[#F28B82]' : ''
+          }`}
+        />
+        {errors.name && (
+          <p className="text-xs text-[#F28B82] mt-1">{errors.name}</p>
+        )}
+      </div>
+
+      {/* Email */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="email"
+          className="text-sm font-medium text-[#1F2937]"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          value={form.email}
+          onChange={(e) => updateField('email', e.target.value)}
+          aria-invalid={!!errors.email}
+          className={`${inputBase} ${
+            errors.email ? 'border-[#F28B82] focus-visible:ring-[#F28B82] focus-visible:border-[#F28B82]' : ''
+          }`}
+        />
+        {errors.email && (
+          <p className="text-xs text-[#F28B82] mt-1">{errors.email}</p>
+        )}
+      </div>
+
+      {/* Password */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="password"
+          className="text-sm font-medium text-[#1F2937]"
+        >
+          Password
+        </label>
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="At least 6 characters"
+            value={form.password}
+            onChange={(e) => updateField('password', e.target.value)}
+            aria-invalid={!!errors.password}
+            className={`${inputBase} pr-11 ${
+              errors.password ? 'border-[#F28B82] focus-visible:ring-[#F28B82] focus-visible:border-[#F28B82]' : ''
+            }`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200 p-1"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+        {errors.password && (
+          <p className="text-xs text-[#F28B82] mt-1">{errors.password}</p>
+        )}
+      </div>
+
+      {/* Confirm Password */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="confirmPassword"
+          className="text-sm font-medium text-[#1F2937]"
+        >
+          Confirm Password
+        </label>
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type={showConfirm ? 'text' : 'password'}
+            placeholder="Confirm your password"
+            value={form.confirmPassword}
+            onChange={(e) => updateField('confirmPassword', e.target.value)}
+            aria-invalid={!!errors.confirmPassword}
+            className={`${inputBase} pr-11 ${
+              errors.confirmPassword ? 'border-[#F28B82] focus-visible:ring-[#F28B82] focus-visible:border-[#F28B82]' : ''
+            }`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirm(!showConfirm)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200 p-1"
+            aria-label={showConfirm ? 'Hide password' : 'Show password'}
+          >
+            {showConfirm ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+        {errors.confirmPassword && (
+          <p className="text-xs text-[#F28B82] mt-1">{errors.confirmPassword}</p>
+        )}
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full h-12 rounded-2xl bg-[#7C9AA5] hover:bg-[#5D7480] text-white font-semibold text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Creating account...
+          </>
+        ) : (
+          'Create account'
+        )}
+      </button>
+
+      {/* Footer link */}
+      <p className="text-sm text-[#6B7280] text-center">
+        Already have an account?{' '}
+        <Link
+          href="/login"
+          className="text-[#7C9AA5] hover:text-[#5D7480] font-medium transition-colors duration-200"
+        >
+          Sign in
+        </Link>
+      </p>
     </form>
   );
 }

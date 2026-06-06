@@ -10,9 +10,6 @@ import {
   BookOpen,
   User,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -23,13 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
@@ -156,16 +146,11 @@ export default function IssuesPage() {
 
     try {
       setIssuing(true);
-      // First create the borrow request
       const borrowRes = await apiFetch('/borrow', {
         method: 'POST',
         body: { bookId: manualIssue.bookId },
       });
 
-      // This creates a borrow as the current user (librarian), but we need
-      // to issue it on behalf of the student. Let's use a different approach.
-      // The borrow API creates as the logged-in user, so we need to
-      // handle it differently - we'll create the request and immediately issue it.
       const borrowId = borrowRes.data?._id;
 
       if (borrowId) {
@@ -221,46 +206,49 @@ export default function IssuesPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Issue Books</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Issue Books</h1>
+          <p className="text-[#6B7280] mt-1">
             Approve borrow requests and issue books to students.
           </p>
         </div>
-        <Button
+        <button
           onClick={() => setManualDialog(true)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
         >
-          <BookPlus className="h-4 w-4 mr-2" />
+          <BookPlus className="h-4 w-4" />
           Manual Issue
-        </Button>
+        </button>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="pending" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="pending" className="gap-2">
+        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-1">
+          <TabsTrigger
+            value="pending"
+            className="gap-2 rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-4 py-2 text-sm font-medium text-[#6B7280] transition-all"
+          >
             Pending Requests
             {pendingRequests.length > 0 && (
-              <Badge
-                variant="secondary"
-                className="bg-amber-100 text-amber-700 ml-1"
-              >
+              <Badge className="bg-[#FEF3E2] text-[#C4952A] hover:bg-[#FEF3E2] border-0 rounded-full px-2 py-0.5 text-xs ml-1">
                 {pendingRequests.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="issued" className="gap-2">
+          <TabsTrigger
+            value="issued"
+            className="gap-2 rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-4 py-2 text-sm font-medium text-[#6B7280] transition-all"
+          >
             Recently Issued
           </TabsTrigger>
         </TabsList>
 
         {/* Pending Requests */}
         <TabsContent value="pending">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Pending Borrow Requests</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="p-6 pb-4">
+              <h2 className="text-lg font-semibold text-[#1F2937]">Pending Borrow Requests</h2>
+            </div>
+            <div className="px-6 pb-6">
               {pendingRequests.length === 0 ? (
                 <EmptyState
                   icon={Clock}
@@ -273,19 +261,19 @@ export default function IssuesPage() {
                     {pendingRequests.map((request) => (
                       <div
                         key={request._id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 shrink-0">
-                            <BookOpen className="h-5 w-5 text-amber-600" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FEF3E2] shrink-0">
+                            <BookOpen className="h-5 w-5 text-[#C4952A]" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-sm">
+                            <p className="font-medium text-sm text-[#1F2937]">
                               {request.bookId?.title || 'Unknown Book'}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <User className="h-3 w-3 text-muted-foreground" />
-                              <p className="text-xs text-muted-foreground">
+                              <User className="h-3 w-3 text-[#6B7280]" />
+                              <p className="text-xs text-[#6B7280]">
                                 {request.userId?.name || 'Unknown Student'}
                                 {request.userId?.studentId && (
                                   <span className="ml-1">
@@ -294,7 +282,7 @@ export default function IssuesPage() {
                                 )}
                               </p>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-0.5">
+                            <p className="text-xs text-[#6B7280] mt-0.5">
                               Requested{' '}
                               {formatRelativeDate(
                                 request.requestDate || request.createdAt
@@ -303,9 +291,8 @@ export default function IssuesPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <Button
-                            size="sm"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          <button
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
                             onClick={() =>
                               setActionDialog({
                                 open: true,
@@ -314,13 +301,11 @@ export default function IssuesPage() {
                               })
                             }
                           >
-                            <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                            <CheckCircle className="h-3.5 w-3.5" />
                             Approve & Issue
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                          </button>
+                          <button
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-medium bg-[#FDE8E6] text-[#C25B4F] hover:opacity-90 transition-all duration-200"
                             onClick={() =>
                               setActionDialog({
                                 open: true,
@@ -329,26 +314,26 @@ export default function IssuesPage() {
                               })
                             }
                           >
-                            <XCircle className="h-3.5 w-3.5 mr-1" />
+                            <XCircle className="h-3.5 w-3.5" />
                             Reject
-                          </Button>
+                          </button>
                         </div>
                       </div>
                     ))}
                   </div>
                 </ScrollArea>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
 
         {/* Recently Issued */}
         <TabsContent value="issued">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Recently Issued Books</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="p-6 pb-4">
+              <h2 className="text-lg font-semibold text-[#1F2937]">Recently Issued Books</h2>
+            </div>
+            <div className="px-6 pb-6">
               {recentlyIssued.length === 0 ? (
                 <EmptyState
                   icon={BookOpen}
@@ -361,19 +346,19 @@ export default function IssuesPage() {
                     {recentlyIssued.map((borrow) => (
                       <div
                         key={borrow._id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg border p-4"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 shrink-0">
-                            <BookOpen className="h-5 w-5 text-emerald-600" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E8F0EC] shrink-0">
+                            <BookOpen className="h-5 w-5 text-[#6B8F83]" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-sm">
+                            <p className="font-medium text-sm text-[#1F2937]">
                               {borrow.bookId?.title || 'Unknown Book'}
                             </p>
                             <div className="flex items-center gap-2 mt-1">
-                              <User className="h-3 w-3 text-muted-foreground" />
-                              <p className="text-xs text-muted-foreground">
+                              <User className="h-3 w-3 text-[#6B7280]" />
+                              <p className="text-xs text-[#6B7280]">
                                 {borrow.userId?.name || 'Unknown Student'}
                               </p>
                             </div>
@@ -381,14 +366,14 @@ export default function IssuesPage() {
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
                           <div className="text-right">
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-[#6B7280]">
                               Issued: {formatDate(borrow.issueDate)}
                             </p>
-                            <p className="text-xs font-medium">
+                            <p className="text-xs font-medium text-[#1F2937]">
                               Due: {formatDate(borrow.dueDate)}
                             </p>
                           </div>
-                          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
+                          <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0">
                             Issued
                           </Badge>
                         </div>
@@ -397,8 +382,8 @@ export default function IssuesPage() {
                   </div>
                 </ScrollArea>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
 
@@ -409,46 +394,46 @@ export default function IssuesPage() {
           !open && setActionDialog({ open: false, type: '', item: null })
         }
       >
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[#1F2937]">
               {actionDialog.type === 'approve'
                 ? 'Approve & Issue Book'
                 : 'Reject Borrow Request'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'approve'
                 ? `Are you sure you want to approve and issue "${actionDialog.item?.bookId?.title}" to ${actionDialog.item?.userId?.name}? The book will be due in 14 days.`
                 : `Are you sure you want to reject the borrow request for "${actionDialog.item?.bookId?.title}" by ${actionDialog.item?.userId?.name}?`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() =>
                 setActionDialog({ open: false, type: '', item: null })
               }
             >
               Cancel
-            </Button>
+            </button>
             {actionDialog.type === 'approve' ? (
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200"
                 onClick={() => handleApprove(actionDialog.item?._id)}
                 disabled={processing}
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle className="h-4 w-4" />
                 {processing ? 'Issuing...' : 'Approve & Issue'}
-              </Button>
+              </button>
             ) : (
-              <Button
-                variant="destructive"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200"
                 onClick={() => handleReject(actionDialog.item?._id)}
                 disabled={processing}
               >
-                <XCircle className="h-4 w-4 mr-2" />
+                <XCircle className="h-4 w-4" />
                 {processing ? 'Rejecting...' : 'Reject Request'}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>
@@ -456,34 +441,38 @@ export default function IssuesPage() {
 
       {/* Manual Issue Dialog */}
       <Dialog open={manualDialog} onOpenChange={setManualDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Manual Issue</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-[#1F2937]">Manual Issue</DialogTitle>
+            <DialogDescription className="text-[#6B7280]">
               Issue a book directly to a student.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {/* Student Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Student</label>
-              <Input
-                placeholder="Search by name, email, or student ID..."
-                value={studentSearch}
-                onChange={(e) => {
-                  setStudentSearch(e.target.value);
-                  searchStudents(e.target.value);
-                }}
-              />
+              <label className="text-sm font-medium text-[#1F2937]">Student</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <input
+                  placeholder="Search by name, email, or student ID..."
+                  value={studentSearch}
+                  onChange={(e) => {
+                    setStudentSearch(e.target.value);
+                    searchStudents(e.target.value);
+                  }}
+                  className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                />
+              </div>
               {students.length > 0 && (
-                <div className="border rounded-md max-h-40 overflow-y-auto">
+                <div className="border border-[#E5E7EB] rounded-xl max-h-40 overflow-y-auto">
                   {students.map((student) => (
                     <button
                       key={student._id}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-[#F4F8F9] transition-colors ${
                         manualIssue.studentId === student._id
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : ''
+                          ? 'bg-[#E8F0EC] text-[#6B8F83]'
+                          : 'text-[#1F2937]'
                       }`}
                       onClick={() => {
                         setManualIssue((prev) => ({
@@ -495,46 +484,47 @@ export default function IssuesPage() {
                       }}
                     >
                       <p className="font-medium">{student.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-[#6B7280]">
                         {student.email}
-                        {student.studentId && ` • ${student.studentId}`}
+                        {student.studentId && ` · ${student.studentId}`}
                       </p>
                     </button>
                   ))}
                 </div>
               )}
               {manualIssue.studentId && (
-                <Badge
-                  variant="secondary"
-                  className="bg-emerald-100 text-emerald-700"
-                >
+                <Badge className="bg-[#E8F0EC] text-[#6B8F83] hover:bg-[#E8F0EC] border-0">
                   Student selected
                 </Badge>
               )}
             </div>
 
-            <Separator />
+            <Separator className="bg-[#E5E7EB]" />
 
             {/* Book Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Book</label>
-              <Input
-                placeholder="Search by title, author, or ISBN..."
-                value={bookSearch}
-                onChange={(e) => {
-                  setBookSearch(e.target.value);
-                  searchBooks(e.target.value);
-                }}
-              />
+              <label className="text-sm font-medium text-[#1F2937]">Book</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <input
+                  placeholder="Search by title, author, or ISBN..."
+                  value={bookSearch}
+                  onChange={(e) => {
+                    setBookSearch(e.target.value);
+                    searchBooks(e.target.value);
+                  }}
+                  className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                />
+              </div>
               {books.length > 0 && (
-                <div className="border rounded-md max-h-40 overflow-y-auto">
+                <div className="border border-[#E5E7EB] rounded-xl max-h-40 overflow-y-auto">
                   {books.map((book) => (
                     <button
                       key={book._id}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors ${
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-[#F4F8F9] transition-colors ${
                         manualIssue.bookId === book._id
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : ''
+                          ? 'bg-[#E8F0EC] text-[#6B8F83]'
+                          : 'text-[#1F2937]'
                       }`}
                       onClick={() => {
                         setManualIssue((prev) => ({
@@ -546,37 +536,37 @@ export default function IssuesPage() {
                       }}
                     >
                       <p className="font-medium">{book.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {book.author} • {book.availableCopies} available
+                      <p className="text-xs text-[#6B7280]">
+                        {book.author} · {book.availableCopies} available
                       </p>
                     </button>
                   ))}
                 </div>
               )}
               {manualIssue.bookId && (
-                <Badge
-                  variant="secondary"
-                  className="bg-teal-100 text-teal-700"
-                >
+                <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0">
                   Book selected
                 </Badge>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setManualDialog(false)}>
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              onClick={() => setManualDialog(false)}
+            >
               Cancel
-            </Button>
-            <Button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            </button>
+            <button
+              className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 disabled:opacity-50"
               onClick={handleManualIssue}
               disabled={
                 issuing || !manualIssue.studentId || !manualIssue.bookId
               }
             >
-              <BookPlus className="h-4 w-4 mr-2" />
+              <BookPlus className="h-4 w-4" />
               {issuing ? 'Issuing...' : 'Issue Book'}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

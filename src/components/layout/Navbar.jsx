@@ -8,12 +8,11 @@ import {
   User,
   Settings,
   LogOut,
-  Menu,
   X,
+  MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -46,12 +45,7 @@ export default function Navbar({ user, onMobileMenuToggle }) {
   }, [user]);
 
   const initials = user?.name
-    ? user.name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
+    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
   const handleLogout = async () => {
@@ -66,26 +60,33 @@ export default function Navbar({ user, onMobileMenuToggle }) {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/student/books?search=${encodeURIComponent(searchQuery.trim())}`);
+      const basePath = user?.role === 'librarian' || user?.role === 'admin' ? '/librarian' : '/student';
+      router.push(`${basePath}/books?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchOpen(false);
     }
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="flex h-16 items-center gap-4 px-4 lg:px-6">
-        {/* Mobile menu button placeholder (handled by Sidebar) */}
+    <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]/60">
+      <div className="flex h-16 items-center gap-4 px-4 lg:px-8">
+        {/* Mobile menu spacer */}
         <div className="w-10 lg:hidden" />
 
+        {/* Page Title - visible on desktop */}
+        <div className="hidden lg:block">
+          <h2 className="text-lg font-semibold text-[#1F2937]">Dashboard</h2>
+        </div>
+
         {/* Search */}
-        <div className="flex-1 flex items-center">
+        <div className="flex-1 flex items-center justify-center lg:justify-end">
           {/* Desktop search */}
-          <form onSubmit={handleSearch} className="hidden sm:flex relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <form onSubmit={handleSearch} className="hidden sm:flex relative w-full max-w-[360px]">
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <Input
               type="search"
-              placeholder="Search books, authors..."
-              className="pl-9 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-emerald-500"
+              placeholder="Search..."
+              aria-label="Search books and records"
+              className="pl-11 h-12 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480] focus-visible:ring-offset-0 focus-visible:border-[#5D7480] placeholder:text-[#6B7280]/60"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -95,8 +96,9 @@ export default function Navbar({ user, onMobileMenuToggle }) {
           <Button
             variant="ghost"
             size="icon"
-            className="sm:hidden"
+            className="sm:hidden h-10 w-10 rounded-xl text-[#6B7280]"
             onClick={() => setSearchOpen(!searchOpen)}
+            aria-label="Toggle search"
           >
             {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
           </Button>
@@ -104,42 +106,51 @@ export default function Navbar({ user, onMobileMenuToggle }) {
 
         {/* Right side actions */}
         <div className="flex items-center gap-2">
+          {/* Messages Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 rounded-full text-[#6B7280] hover:bg-[#F4F8F9] hover:text-[#5D7480] transition-colors duration-200 focus-ring"
+            aria-label="Messages"
+          >
+            <MessageSquare className="h-5 w-5" />
+          </Button>
+
           {/* Notification Bell */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative"
+            className="relative h-11 w-11 rounded-full text-[#6B7280] hover:bg-[#F4F8F9] hover:text-[#5D7480] transition-colors duration-200 focus-ring"
             onClick={() => {
-              if (user?.role === 'student') {
-                router.push('/student/notifications');
-              }
+              const basePath = user?.role === 'librarian' || user?.role === 'admin' ? '/librarian' : '/student';
+              router.push(`${basePath}/notifications`);
             }}
+            aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#F28B82] text-[10px] font-bold text-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
-            <span className="sr-only">Notifications</span>
           </Button>
 
           {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Button variant="ghost" className="relative h-11 w-11 rounded-full hover:bg-[#F4F8F9] focus-ring" aria-label="User menu">
                 <Avatar className="h-9 w-9">
-                  <AvatarFallback className="bg-emerald-100 text-emerald-700 text-sm font-semibold">
+                  <AvatarFallback className="bg-[#7C9AA5] text-white text-xs font-semibold">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-56 rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.08)]" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user?.name || 'User'}</p>
-                  <p className="text-xs leading-none text-muted-foreground">
+                  <p className="text-sm font-medium leading-none text-[#1F2937]">{user?.name || 'User'}</p>
+                  <p className="text-xs leading-none text-[#6B7280]">
                     {user?.email || ''}
                   </p>
                 </div>
@@ -148,21 +159,21 @@ export default function Navbar({ user, onMobileMenuToggle }) {
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   onClick={() => {
-                    if (user?.role === 'student') {
-                      router.push('/student/profile');
-                    }
+                    const basePath = user?.role === 'librarian' || user?.role === 'admin' ? '/librarian' : '/student';
+                    router.push(`${basePath}/profile`);
                   }}
+                  className="rounded-lg focus-ring"
                 >
-                  <User className="mr-2 h-4 w-4" />
+                  <User className="mr-2 h-4 w-4 text-[#6B7280]" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="rounded-lg focus-ring">
+                  <Settings className="mr-2 h-4 w-4 text-[#6B7280]" />
                   Settings
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-rose-600">
+              <DropdownMenuItem onClick={handleLogout} className="text-[#F28B82] rounded-lg focus-ring">
                 <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
@@ -173,13 +184,14 @@ export default function Navbar({ user, onMobileMenuToggle }) {
 
       {/* Mobile search bar (expandable) */}
       {searchOpen && (
-        <div className="sm:hidden border-t px-4 py-2">
+        <div className="sm:hidden border-t border-[#E5E7EB]/60 px-4 py-3">
           <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <Input
               type="search"
-              placeholder="Search books, authors..."
-              className="pl-9 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-emerald-500"
+              placeholder="Search..."
+              aria-label="Search"
+              className="pl-11 h-12 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus

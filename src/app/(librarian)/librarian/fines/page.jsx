@@ -13,9 +13,6 @@ import {
   Filter,
   AlertTriangle,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Select,
@@ -77,27 +74,9 @@ export default function FinesPage() {
       if (statusFilter && statusFilter !== 'all')
         params.set('status', statusFilter);
 
-      const [finesRes, paidRes, pendingRes, waivedRes] = await Promise.all([
-        apiFetch(`/fines?${params.toString()}`),
-        apiFetch('/fines?status=paid&limit=1').catch(() => ({
-          data: { pagination: { total: 0 }, items: [] },
-        })),
-        apiFetch('/fines?status=pending&limit=1').catch(() => ({
-          data: { pagination: { total: 0 }, items: [] },
-        })),
-        apiFetch('/fines?status=waived&limit=1').catch(() => ({
-          data: { pagination: { total: 0 }, items: [] },
-        })),
-      ]);
-
-      setFines(finesRes.data?.items || []);
-      setPagination(
-        finesRes.data?.pagination || { page: 1, pages: 1, total: 0 }
-      );
-
-      // We need actual totals for amounts. Let's fetch all fines for summary
-      const [allPaidRes, allPendingRes, allWaivedRes, allRes] =
+      const [finesRes, allPaidRes, allPendingRes, allWaivedRes, allRes] =
         await Promise.all([
+          apiFetch(`/fines?${params.toString()}`),
           apiFetch('/fines?status=paid&limit=1000').catch(() => ({
             data: { items: [] },
           })),
@@ -111,6 +90,11 @@ export default function FinesPage() {
             data: { items: [] },
           })),
         ]);
+
+      setFines(finesRes.data?.items || []);
+      setPagination(
+        finesRes.data?.pagination || { page: 1, pages: 1, total: 0 }
+      );
 
       const totalAmount = (allRes.data?.items || []).reduce(
         (sum, f) => sum + (f.amount || 0),
@@ -211,19 +195,19 @@ export default function FinesPage() {
     switch (status) {
       case 'pending':
         return (
-          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">
+          <Badge className="bg-[#FEF3E2] text-[#C4952A] hover:bg-[#FEF3E2] border-0">
             Pending
           </Badge>
         );
       case 'paid':
         return (
-          <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+          <Badge className="bg-[#E8F0EC] text-[#6B8F83] hover:bg-[#E8F0EC] border-0">
             Paid
           </Badge>
         );
       case 'waived':
         return (
-          <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">
+          <Badge className="bg-[#F9FAFB] text-[#6B7280] hover:bg-[#F9FAFB] border-0">
             Waived
           </Badge>
         );
@@ -247,23 +231,23 @@ export default function FinesPage() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Fine Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Fine Management</h1>
+          <p className="text-[#6B7280] mt-1">
             Track and manage overdue fines.
           </p>
         </div>
-        <Button
+        <button
           onClick={handleCalculateOverdue}
           disabled={calculating}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480] disabled:opacity-50"
         >
-          <Calculator className="h-4 w-4 mr-2" />
+          <Calculator className="h-4 w-4" />
           {calculating ? 'Calculating...' : 'Calculate Overdue Fines'}
-        </Button>
+        </button>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Summary Stat Cards */}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Fines"
           value={`$${summary.total.toFixed(2)}`}
@@ -290,183 +274,173 @@ export default function FinesPage() {
         />
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by student name or book title..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select
-              value={statusFilter}
-              onValueChange={(val) => {
-                setStatusFilter(val);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full sm:w-[160px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="paid">Paid</SelectItem>
-                <SelectItem value="waived">Waived</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Search/Filter - Glass Card */}
+      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+            <input
+              placeholder="Search by student name or book title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <Select
+            value={statusFilter}
+            onValueChange={(val) => {
+              setStatusFilter(val);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+              <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="waived">Waived</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {/* Fines Table */}
-      <Card>
-        <CardContent className="p-0">
-          {loading ? (
-            <LoadingSpinner message="Loading fines..." />
-          ) : filteredFines.length === 0 ? (
-            <div className="p-6">
-              <EmptyState
-                icon={Receipt}
-                title="No fines found"
-                description={
-                  searchQuery || statusFilter !== 'all'
-                    ? 'Try adjusting your search or filters.'
-                    : 'No overdue fines have been recorded yet.'
-                }
-              />
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Book</TableHead>
-                      <TableHead className="text-center">Amount</TableHead>
-                      <TableHead className="text-center hidden sm:table-cell">
-                        Days Overdue
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="hidden md:table-cell">Date</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredFines.map((fine) => (
-                      <TableRow key={fine._id}>
-                        <TableCell>
-                          <p className="font-medium text-sm">
-                            {fine.userId?.name || 'Unknown'}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {fine.userId?.email}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm truncate max-w-[150px]">
-                            {fine.bookId?.title || 'Unknown Book'}
-                          </p>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-sm font-semibold">
-                            ${fine.amount?.toFixed(2)}
+      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+        {loading ? (
+          <LoadingSpinner message="Loading fines..." />
+        ) : filteredFines.length === 0 ? (
+          <div className="p-6">
+            <EmptyState
+              icon={Receipt}
+              title="No fines found"
+              description={
+                searchQuery || statusFilter !== 'all'
+                  ? 'Try adjusting your search or filters.'
+                  : 'No overdue fines have been recorded yet.'
+              }
+            />
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
+                    <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
+                    <TableHead className="text-[#6B7280] font-semibold">Book</TableHead>
+                    <TableHead className="text-center text-[#6B7280] font-semibold">Amount</TableHead>
+                    <TableHead className="text-center hidden sm:table-cell text-[#6B7280] font-semibold">
+                      Days Overdue
+                    </TableHead>
+                    <TableHead className="text-[#6B7280] font-semibold">Status</TableHead>
+                    <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">Date</TableHead>
+                    <TableHead className="text-right text-[#6B7280] font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredFines.map((fine) => (
+                    <TableRow key={fine._id} className="hover:bg-[#F4F8F9] transition-colors border-[#E5E7EB]">
+                      <TableCell>
+                        <p className="font-medium text-sm text-[#1F2937]">
+                          {fine.userId?.name || 'Unknown'}
+                        </p>
+                        <p className="text-xs text-[#6B7280]">
+                          {fine.userId?.email}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-[#1F2937] truncate max-w-[150px]">
+                          {fine.bookId?.title || 'Unknown Book'}
+                        </p>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="text-sm font-semibold text-[#1F2937]">
+                          ${fine.amount?.toFixed(2)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center hidden sm:table-cell">
+                        <Badge variant="outline" className="text-xs border-[#E5E7EB] text-[#6B7280]">
+                          {fine.daysOverdue}d
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{getStatusBadge(fine.status)}</TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-[#6B7280]">
+                        {formatDate(fine.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {fine.status === 'pending' ? (
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                              onClick={() =>
+                                setActionDialog({
+                                  open: true,
+                                  type: 'pay',
+                                  fine,
+                                })
+                              }
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" />
+                              Paid
+                            </button>
+                            <button
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
+                              onClick={() =>
+                                setActionDialog({
+                                  open: true,
+                                  type: 'waive',
+                                  fine,
+                                })
+                              }
+                            >
+                              <Ban className="h-3.5 w-3.5" />
+                              Waive
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-[#6B7280]">
+                            —
                           </span>
-                        </TableCell>
-                        <TableCell className="text-center hidden sm:table-cell">
-                          <Badge variant="outline" className="text-xs">
-                            {fine.daysOverdue}d
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{getStatusBadge(fine.status)}</TableCell>
-                        <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
-                          {formatDate(fine.createdAt)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {fine.status === 'pending' ? (
-                            <div className="flex items-center justify-end gap-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-8"
-                                onClick={() =>
-                                  setActionDialog({
-                                    open: true,
-                                    type: 'pay',
-                                    fine,
-                                  })
-                                }
-                              >
-                                <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                                Paid
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="border-gray-200 text-gray-600 hover:bg-gray-50 h-8"
-                                onClick={() =>
-                                  setActionDialog({
-                                    open: true,
-                                    type: 'waive',
-                                    fine,
-                                  })
-                                }
-                              >
-                                <Ban className="h-3.5 w-3.5 mr-1" />
-                                Waive
-                              </Button>
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              —
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-              {/* Pagination */}
-              {pagination.pages > 1 && (
-                <div className="flex items-center justify-between border-t px-4 py-3">
-                  <p className="text-sm text-muted-foreground">
-                    Page {pagination.page} of {pagination.pages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page <= 1}
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={pagination.page >= pagination.pages}
-                      onClick={() => setPage((p) => p + 1)}
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
+            {/* Pagination */}
+            {pagination.pages > 1 && (
+              <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3">
+                <p className="text-sm text-[#6B7280]">
+                  Page {pagination.page} of {pagination.pages}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={pagination.page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Previous
+                  </button>
+                  <button
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={pagination.page >= pagination.pages}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Action Confirmation Dialog */}
       <Dialog
@@ -475,46 +449,46 @@ export default function FinesPage() {
           !open && setActionDialog({ open: false, type: '', fine: null })
         }
       >
-        <DialogContent>
+        <DialogContent className="rounded-2xl">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-[#1F2937]">
               {actionDialog.type === 'pay'
                 ? 'Mark Fine as Paid'
                 : 'Waive Fine'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'pay'
                 ? `Are you sure you want to mark the fine of $${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name}) as paid?`
                 : `Are you sure you want to waive the fine of $${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name})? The student will no longer be required to pay this fine.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
+            <button
+              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() =>
                 setActionDialog({ open: false, type: '', fine: null })
               }
             >
               Cancel
-            </Button>
+            </button>
             {actionDialog.type === 'pay' ? (
-              <Button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
                 onClick={() => handleMarkPaid(actionDialog.fine?._id)}
                 disabled={processing}
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle className="h-4 w-4" />
                 {processing ? 'Processing...' : 'Mark as Paid'}
-              </Button>
+              </button>
             ) : (
-              <Button
-                variant="secondary"
+              <button
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
                 onClick={() => handleWaiveFine(actionDialog.fine?._id)}
                 disabled={processing}
               >
-                <Ban className="h-4 w-4 mr-2" />
+                <Ban className="h-4 w-4" />
                 {processing ? 'Processing...' : 'Waive Fine'}
-              </Button>
+              </button>
             )}
           </DialogFooter>
         </DialogContent>

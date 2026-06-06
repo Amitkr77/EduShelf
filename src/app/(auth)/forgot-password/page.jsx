@@ -2,11 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Mail, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { CardContent, CardFooter } from '@/components/ui/card';
+import { ArrowLeft, Mail, CheckCircle2, Loader2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import apiFetch from '@/lib/fetcher';
 
@@ -44,142 +40,144 @@ export default function ForgotPasswordPage() {
       toast.success('Reset token generated', {
         description: 'Check the details below to reset your password.',
       });
-    } catch (error) {
-      toast.error('Error', { description: error.message });
+    } catch (err) {
+      toast.error('Error', { description: err.message });
     } finally {
       setLoading(false);
     }
   }
 
+  const inputBase =
+    'w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#9CA3AF] outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#5D7480] focus-visible:ring-offset-0 focus-visible:border-[#5D7480]';
+
   if (sent) {
     return (
-      <CardContent className="pt-6 space-y-4">
+      <div className="space-y-5">
+        {/* Success header */}
         <div className="flex flex-col items-center text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 mb-4">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#7CCB7A]/15 mb-4">
+            <CheckCircle2 className="h-8 w-8 text-[#7CCB7A]" />
           </div>
-          <h2 className="text-xl font-semibold">Check your email</h2>
-          <p className="text-sm text-muted-foreground mt-1 max-w-xs">
-            If an account with <span className="font-medium">{email}</span> exists,
+          <h2 className="text-2xl font-bold text-[#1F2937]">Check your email</h2>
+          <p className="text-sm text-[#6B7280] mt-1.5 max-w-xs">
+            If an account with <span className="font-medium text-[#1F2937]">{email}</span> exists,
             a reset token has been generated.
           </p>
         </div>
 
+        {/* Reset token display */}
         {resetToken && (
-          <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">
+          <div className="rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-4 space-y-3">
+            <p className="text-xs font-medium text-[#6B7280]">
               Reset Token (for testing):
             </p>
-            <p className="text-sm font-mono break-all bg-white rounded p-2 border">
-              {resetToken}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => {
-                navigator.clipboard.writeText(resetToken);
-                toast.success('Token copied to clipboard');
-              }}
-            >
-              Copy Token
-            </Button>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-mono break-all bg-white rounded-lg p-2.5 border border-[#E5E7EB] flex-1 text-[#1F2937]">
+                {resetToken}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(resetToken);
+                  toast.success('Token copied to clipboard');
+                }}
+                className="flex items-center justify-center h-9 w-9 rounded-xl border border-[#E5E7EB] bg-white text-[#6B7280] hover:text-[#1F2937] hover:border-[#5D7480] transition-colors duration-200 shrink-0"
+                aria-label="Copy token"
+              >
+                <Copy className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
 
-        <Link href={`/reset-password?token=${encodeURIComponent(resetToken)}`}>
-          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+        {/* Reset password button */}
+        <Link href={`/reset-password?token=${encodeURIComponent(resetToken)}`} className="block">
+          <button
+            type="button"
+            className="w-full h-12 rounded-2xl bg-[#7C9AA5] hover:bg-[#5D7480] text-white font-semibold text-sm transition-colors duration-200"
+          >
             Reset Password
-          </Button>
+          </button>
         </Link>
 
+        {/* Back to login */}
         <Link
           href="/login"
-          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground mt-4"
+          className="flex items-center justify-center gap-2 text-sm text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to login
         </Link>
-      </CardContent>
+      </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <CardContent className="space-y-4 pt-6">
-        <div className="text-center mb-2">
-          <div className="flex justify-center mb-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50">
-              <Mail className="h-6 w-6 text-emerald-600" />
-            </div>
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Header */}
+      <div className="text-center mb-2">
+        <div className="flex justify-center mb-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#7C9AA5]/10">
+            <Mail className="h-6 w-6 text-[#7C9AA5]" />
           </div>
-          <h2 className="text-xl font-semibold">Forgot your password?</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Enter your email and we&apos;ll send you a reset token
-          </p>
         </div>
+        <h2 className="text-2xl font-bold text-[#1F2937]">Forgot your password?</h2>
+        <p className="text-sm text-[#6B7280] mt-1.5">
+          Enter your email and we&apos;ll send you a reset link
+        </p>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (error) setError('');
-            }}
-            aria-invalid={!!error}
-            className={error ? 'border-rose-300 focus-visible:ring-rose-400' : ''}
-          />
-          {error && <p className="text-xs text-rose-500">{error}</p>}
-        </div>
-      </CardContent>
-
-      <CardFooter className="flex flex-col gap-4 pb-6">
-        <Button
-          type="submit"
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-          disabled={loading}
+      {/* Email */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="email"
+          className="text-sm font-medium text-[#1F2937]"
         >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              Sending...
-            </span>
-          ) : (
-            'Send reset token'
-          )}
-        </Button>
+          Email address
+        </label>
+        <input
+          id="email"
+          type="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError('');
+          }}
+          aria-invalid={!!error}
+          className={`${inputBase} ${
+            error ? 'border-[#F28B82] focus-visible:ring-[#F28B82] focus-visible:border-[#F28B82]' : ''
+          }`}
+        />
+        {error && (
+          <p className="text-xs text-[#F28B82] mt-1">{error}</p>
+        )}
+      </div>
 
-        <Link
-          href="/login"
-          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to login
-        </Link>
-      </CardFooter>
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full h-12 rounded-2xl bg-[#7C9AA5] hover:bg-[#5D7480] text-white font-semibold text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        {loading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Sending...
+          </>
+        ) : (
+          'Send reset link'
+        )}
+      </button>
+
+      {/* Back to login */}
+      <Link
+        href="/login"
+        className="flex items-center justify-center gap-2 text-sm text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to login
+      </Link>
     </form>
   );
 }

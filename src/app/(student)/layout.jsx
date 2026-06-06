@@ -18,7 +18,6 @@ export default function StudentLayout({ children }) {
         const res = await apiFetch('/auth/me');
         const fetchedUser = res.data.user;
 
-        // Check if user has student role
         if (fetchedUser.role !== 'student') {
           if (fetchedUser.role === 'librarian' || fetchedUser.role === 'admin') {
             router.replace('/librarian/dashboard');
@@ -40,7 +39,11 @@ export default function StudentLayout({ children }) {
   }, [router]);
 
   if (loading) {
-    return <LoadingSpinner message="Loading your dashboard..." />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#688997] via-[#8CA5AF] to-[#C7BEB2]">
+        <LoadingSpinner message="Loading your dashboard..." />
+      </div>
+    );
   }
 
   if (!user) {

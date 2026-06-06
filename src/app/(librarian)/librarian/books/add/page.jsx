@@ -9,9 +9,6 @@ import {
   Plus,
   BookCheck,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -167,16 +164,15 @@ export default function AddBookPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={() => router.push('/librarian/books')}
+          className="inline-flex items-center justify-center h-10 w-10 rounded-xl text-[#6B7280] hover:text-[#1F2937] hover:bg-[#7C9AA5]/10 transition-all duration-200"
         >
           <ArrowLeft className="h-5 w-5" />
-        </Button>
+        </button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Add New Book</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Add New Book</h1>
+          <p className="text-[#6B7280] mt-1">
             Fill in the details to add a new book to the library.
           </p>
         </div>
@@ -186,71 +182,71 @@ export default function AddBookPage() {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-emerald-600" />
+            {/* Basic Information - Glass Card */}
+            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+              <div className="p-6 pb-4">
+                <h2 className="text-lg font-semibold text-[#1F2937] flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-[#7C9AA5]" />
                   Basic Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+                </h2>
+              </div>
+              <div className="px-6 pb-6 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="title">
-                      Title <span className="text-rose-500">*</span>
+                    <Label htmlFor="title" className="text-sm font-medium text-[#1F2937]">
+                      Title <span className="text-[#F28B82]">*</span>
                     </Label>
-                    <Input
+                    <input
                       id="title"
                       placeholder="Enter book title"
                       value={form.title}
                       onChange={(e) => handleChange('title', e.target.value)}
-                      className={errors.title ? 'border-rose-300' : ''}
+                      className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.title ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                     />
                     {errors.title && (
-                      <p className="text-xs text-rose-500">{errors.title}</p>
+                      <p className="text-xs text-[#C25B4F]">{errors.title}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="author">
-                      Author <span className="text-rose-500">*</span>
+                    <Label htmlFor="author" className="text-sm font-medium text-[#1F2937]">
+                      Author <span className="text-[#F28B82]">*</span>
                     </Label>
-                    <Input
+                    <input
                       id="author"
                       placeholder="Enter author name"
                       value={form.author}
                       onChange={(e) => handleChange('author', e.target.value)}
-                      className={errors.author ? 'border-rose-300' : ''}
+                      className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.author ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                     />
                     {errors.author && (
-                      <p className="text-xs text-rose-500">{errors.author}</p>
+                      <p className="text-xs text-[#C25B4F]">{errors.author}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="ISBN">
-                      ISBN <span className="text-rose-500">*</span>
+                    <Label htmlFor="ISBN" className="text-sm font-medium text-[#1F2937]">
+                      ISBN <span className="text-[#F28B82]">*</span>
                     </Label>
-                    <Input
+                    <input
                       id="ISBN"
                       placeholder="e.g., 978-3-16-148410-0"
                       value={form.ISBN}
                       onChange={(e) => handleChange('ISBN', e.target.value)}
-                      className={errors.ISBN ? 'border-rose-300' : ''}
+                      className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.ISBN ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                     />
                     {errors.ISBN && (
-                      <p className="text-xs text-rose-500">{errors.ISBN}</p>
+                      <p className="text-xs text-[#C25B4F]">{errors.ISBN}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category" className="text-sm font-medium text-[#1F2937]">Category</Label>
                     <Select
                       value={form.category}
                       onValueChange={(val) => handleChange('category', val)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] text-[#1F2937]">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -265,68 +261,71 @@ export default function AddBookPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-sm font-medium text-[#1F2937]">Description</Label>
                   <Textarea
                     id="description"
                     placeholder="Enter book description..."
                     value={form.description}
                     onChange={(e) => handleChange('description', e.target.value)}
                     rows={4}
+                    className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] text-[#1F2937] placeholder:text-[#6B7280] focus-visible:ring-2 focus-visible:ring-[#5D7480] min-h-[120px]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tags">Tags (comma-separated)</Label>
-                  <Input
+                  <Label htmlFor="tags" className="text-sm font-medium text-[#1F2937]">Tags (comma-separated)</Label>
+                  <input
                     id="tags"
                     placeholder="e.g., fiction, adventure, classic"
                     value={form.tags}
                     onChange={(e) => handleChange('tags', e.target.value)}
+                    className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Publication Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Publication Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            {/* Publication Details - Glass Card */}
+            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+              <div className="p-6 pb-4">
+                <h2 className="text-lg font-semibold text-[#1F2937]">Publication Details</h2>
+              </div>
+              <div className="px-6 pb-6 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="publisher">Publisher</Label>
-                    <Input
+                    <Label htmlFor="publisher" className="text-sm font-medium text-[#1F2937]">Publisher</Label>
+                    <input
                       id="publisher"
                       placeholder="Enter publisher name"
                       value={form.publisher}
                       onChange={(e) => handleChange('publisher', e.target.value)}
+                      className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="publishedYear">Published Year</Label>
-                    <Input
+                    <Label htmlFor="publishedYear" className="text-sm font-medium text-[#1F2937]">Published Year</Label>
+                    <input
                       id="publishedYear"
                       type="number"
                       placeholder="e.g., 2024"
                       value={form.publishedYear}
                       onChange={(e) => handleChange('publishedYear', e.target.value)}
-                      className={errors.publishedYear ? 'border-rose-300' : ''}
+                      className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.publishedYear ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                     />
                     {errors.publishedYear && (
-                      <p className="text-xs text-rose-500">{errors.publishedYear}</p>
+                      <p className="text-xs text-[#C25B4F]">{errors.publishedYear}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="language">Language</Label>
+                    <Label htmlFor="language" className="text-sm font-medium text-[#1F2937]">Language</Label>
                     <Select
                       value={form.language}
                       onValueChange={(val) => handleChange('language', val)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] text-[#1F2937]">
                         <SelectValue placeholder="Select language" />
                       </SelectTrigger>
                       <SelectContent>
@@ -342,37 +341,37 @@ export default function AddBookPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="pages">Number of Pages</Label>
-                    <Input
+                    <Label htmlFor="pages" className="text-sm font-medium text-[#1F2937]">Number of Pages</Label>
+                    <input
                       id="pages"
                       type="number"
                       placeholder="e.g., 350"
                       value={form.pages}
                       onChange={(e) => handleChange('pages', e.target.value)}
-                      className={errors.pages ? 'border-rose-300' : ''}
+                      className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.pages ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                     />
                     {errors.pages && (
-                      <p className="text-xs text-rose-500">{errors.pages}</p>
+                      <p className="text-xs text-[#C25B4F]">{errors.pages}</p>
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Inventory & Location */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Inventory & Location</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            {/* Inventory & Location - Glass Card */}
+            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+              <div className="p-6 pb-4">
+                <h2 className="text-lg font-semibold text-[#1F2937]">Inventory & Location</h2>
+              </div>
+              <div className="px-6 pb-6 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="totalCopies">
-                    Total Copies <span className="text-rose-500">*</span>
+                  <Label htmlFor="totalCopies" className="text-sm font-medium text-[#1F2937]">
+                    Total Copies <span className="text-[#F28B82]">*</span>
                   </Label>
-                  <Input
+                  <input
                     id="totalCopies"
                     type="number"
                     min="1"
@@ -384,55 +383,57 @@ export default function AddBookPage() {
                         handleChange('availableCopies', val);
                       }
                     }}
-                    className={errors.totalCopies ? 'border-rose-300' : ''}
+                    className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.totalCopies ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                   />
                   {errors.totalCopies && (
-                    <p className="text-xs text-rose-500">{errors.totalCopies}</p>
+                    <p className="text-xs text-[#C25B4F]">{errors.totalCopies}</p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="availableCopies">Available Copies</Label>
-                  <Input
+                  <Label htmlFor="availableCopies" className="text-sm font-medium text-[#1F2937]">Available Copies</Label>
+                  <input
                     id="availableCopies"
                     type="number"
                     min="0"
                     value={form.availableCopies}
                     onChange={(e) => handleChange('availableCopies', e.target.value)}
-                    className={errors.availableCopies ? 'border-rose-300' : ''}
+                    className={`w-full rounded-xl h-12 bg-[#F9FAFB] border ${errors.availableCopies ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`}
                   />
                   {errors.availableCopies && (
-                    <p className="text-xs text-rose-500">{errors.availableCopies}</p>
+                    <p className="text-xs text-[#C25B4F]">{errors.availableCopies}</p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="shelfLocation">Shelf Location</Label>
-                  <Input
+                  <Label htmlFor="shelfLocation" className="text-sm font-medium text-[#1F2937]">Shelf Location</Label>
+                  <input
                     id="shelfLocation"
                     placeholder="e.g., A3-R2-S5"
                     value={form.shelfLocation}
                     onChange={(e) => handleChange('shelfLocation', e.target.value)}
+                    className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Cover Image */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Cover Image</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            {/* Cover Image - Glass Card */}
+            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+              <div className="p-6 pb-4">
+                <h2 className="text-lg font-semibold text-[#1F2937]">Cover Image</h2>
+              </div>
+              <div className="px-6 pb-6 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="coverImage">Image URL</Label>
-                  <Input
+                  <Label htmlFor="coverImage" className="text-sm font-medium text-[#1F2937]">Image URL</Label>
+                  <input
                     id="coverImage"
                     placeholder="https://example.com/cover.jpg"
                     value={form.coverImage}
                     onChange={(e) => handleChange('coverImage', e.target.value)}
+                    className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                   />
                 </div>
                 {form.coverImage && (
-                  <div className="rounded-lg border overflow-hidden">
+                  <div className="rounded-xl border border-[#E5E7EB] overflow-hidden">
                     <img
                       src={form.coverImage}
                       alt="Cover preview"
@@ -443,42 +444,38 @@ export default function AddBookPage() {
                     />
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* Actions */}
-            <Card>
-              <CardContent className="p-4 space-y-3">
-                <Button
-                  type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                  disabled={submitting}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {submitting ? 'Adding Book...' : 'Add Book'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
-                  disabled={submitting}
-                  onClick={(e) => handleSubmit(e, true)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Another
-                </Button>
-                <Separator />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full"
-                  onClick={() => router.push('/librarian/books')}
-                >
-                  <BookCheck className="h-4 w-4 mr-2" />
-                  Go to Books List
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Actions - Glass Card */}
+            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 space-y-3">
+              <button
+                type="submit"
+                className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480] disabled:opacity-50"
+                disabled={submitting}
+              >
+                <Save className="h-4 w-4" />
+                {submitting ? 'Adding Book...' : 'Add Book'}
+              </button>
+              <button
+                type="button"
+                className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480] disabled:opacity-50"
+                disabled={submitting}
+                onClick={(e) => handleSubmit(e, true)}
+              >
+                <Plus className="h-4 w-4" />
+                Add Another
+              </button>
+              <Separator className="bg-[#E5E7EB]" />
+              <button
+                type="button"
+                className="w-full inline-flex items-center justify-center gap-2 h-10 rounded-2xl text-sm font-medium text-[#6B7280] hover:text-[#1F2937] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+                onClick={() => router.push('/librarian/books')}
+              >
+                <BookCheck className="h-4 w-4" />
+                Go to Books List
+              </button>
+            </div>
           </div>
         </div>
       </form>
