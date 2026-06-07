@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   BookOpen,
@@ -15,7 +15,27 @@ import {
   RotateCcw,
   BookPlus,
   Clock,
+  TrendingUp,
+  BarChart3,
+  PieChart as PieChartIcon,
+  AreaChart as AreaChartIcon,
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -32,6 +52,47 @@ import EmptyState from '@/components/shared/EmptyState';
 import apiFetch from '@/lib/fetcher';
 import { toast } from 'sonner';
 
+// ── Chart configs using EduShelf design system ──────────────────────────
+const borrowTrendConfig = {
+  borrows: { label: 'Borrows', color: '#7C9AA5' },
+};
+
+const categoryConfig = {
+  value: { label: 'Books' },
+  category0: { label: 'Fiction', color: '#7C9AA5' },
+  category1: { label: 'Science', color: '#7CCB7A' },
+  category2: { label: 'Technology', color: '#F3C47A' },
+  category3: { label: 'History', color: '#84C7E8' },
+  category4: { label: 'Philosophy', color: '#A7C2B0' },
+  category5: { label: 'Arts', color: '#C4952A' },
+  category6: { label: 'Other', color: '#F28B82' },
+};
+
+const overdueConfig = {
+  onTime: { label: 'On-Time', color: '#7CCB7A' },
+  overdue: { label: 'Overdue', color: '#F28B82' },
+};
+
+const fineConfig = {
+  collected: { label: 'Collected', color: '#7CCB7A' },
+  pending: { label: 'Pending', color: '#F3C47A' },
+  waived: { label: 'Waived', color: '#A7C2B0' },
+};
+
+const PIE_COLORS = ['#7C9AA5', '#7CCB7A', '#F3C47A', '#84C7E8', '#A7C2B0', '#C4952A', '#F28B82'];
+
+// ── Shared card class ───────────────────────────────────────────────────
+const glassCard = 'rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]';
+
+// ── Month name helper ───────────────────────────────────────────────────
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function periodToLabel(period) {
+  if (!period) return '';
+  const [y, m] = period.split('-');
+  return MONTH_NAMES[parseInt(m, 10) - 1] || period;
+}
+
 export default function LibrarianDashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -46,6 +107,12 @@ export default function LibrarianDashboardPage() {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [overdueBooks, setOverdueBooks] = useState([]);
   const [actionDialog, setActionDialog] = useState({ open: false, type: '', item: null });
+
+  // Chart data state
+  const [borrowTrend, setBorrowTrend] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [overdueChartData, setOverdueChartData] = useState([]);
+  const [fineTrend, setFineTrend] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -62,6 +129,10 @@ export default function LibrarianDashboardPage() {
         reservationsRes,
         finesRes,
         pendingRes,
+        borrowReportRes,
+        financialReportRes,
+        booksForCatRes,
+        categoriesRes,
       ] = await Promise.all([
         apiFetch('/books?limit=1').catch(() => ({ data: { pagination: { total: 0 } } })),
         apiFetch('/users?role=student&limit=1').catch(() => ({ data: { pagination: { total: 0 } } })),
@@ -70,6 +141,10 @@ export default function LibrarianDashboardPage() {
         apiFetch('/reservations?status=active&limit=1').catch(() => ({ data: { pagination: { total: 0 } } })),
         apiFetch('/fines?status=paid&limit=100').catch(() => ({ data: { items: [] } })),
         apiFetch('/borrow?status=requested&limit=10').catch(() => ({ data: { items: [] } })),
+        apiFetch('/reports/borrow').catch(() => ({ data: {} })),
+        apiFetch('/reports/financial').catch(() => ({ data: {} })),
+        apiFetch('/books?limit=200').catch(() => ({ data: { items: [] } })),
+        apiFetch('/books/categories').catch(() => ({ data: [] })),
       ]);
 
       const today = new Date();
@@ -96,6 +171,97 @@ export default function LibrarianDashboardPage() {
 
       setPendingRequests(pendingRes.data?.items || []);
       setOverdueBooks(overdueRes.data?.items || []);
+
+      // ── Borrow Trend (LineChart) ─────────────────────────────────
+      const monthlyBorrows = borrowReportRes.data?.borrowsByMonth || [];
+      if (monthlyBorrows.length > 0) {
+        setBorrowTrend(
+          monthlyBorrows.map((m) => ({
+            period: periodToLabel(m.period),
+            borrows: m.count,
+          }))
+        );
+      } else {
+        // Generate placeholder last-7-days from issued items
+        const issued = issuedRes.data?.items || [];
+        const dayMap = {};
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const key = d.toLocaleDateString('en-US', { weekday: 'short' });
+          dayMap[key] = 0;
+        }
+        issued.forEach((b) => {
+          if (b.issueDate) {
+            const key = new Date(b.issueDate).toLocaleDateString('en-US', { weekday: 'short' });
+            if (key in dayMap) dayMap[key]++;
+          }
+        });
+        setBorrowTrend(
+          Object.entries(dayMap).map(([period, borrows]) => ({ period, borrows }))
+        );
+      }
+
+      // ── Category Distribution (PieChart) ─────────────────────────
+      const booksList = booksForCatRes.data?.items || [];
+      const catList = categoriesRes.data || [];
+      if (booksList.length > 0) {
+        const catMap = {};
+        booksList.forEach((b) => {
+          const name = b.category?.name || 'Uncategorized';
+          catMap[name] = (catMap[name] || 0) + 1;
+        });
+        const pieData = Object.entries(catMap).map(([name, value], idx) => ({
+          name,
+          value,
+          fill: PIE_COLORS[idx % PIE_COLORS.length],
+        }));
+        setCategoryData(pieData);
+      } else if (catList.length > 0) {
+        setCategoryData(
+          catList.map((c, idx) => ({
+            name: c.name,
+            value: 0,
+            fill: PIE_COLORS[idx % PIE_COLORS.length],
+          }))
+        );
+      }
+
+      // ── Overdue vs On-Time (Stacked BarChart) ────────────────────
+      const statusBreakdown = borrowReportRes.data?.summary?.statusBreakdown || {};
+      const returned = statusBreakdown.returned || 0;
+      const closed = statusBreakdown.closed || 0;
+      const overdue = statusBreakdown.overdue || 0;
+      const onTimeTotal = returned + closed;
+      if (onTimeTotal > 0 || overdue > 0) {
+        setOverdueChartData([{ name: 'Returns', onTime: onTimeTotal, overdue }]);
+      } else {
+        setOverdueChartData([{ name: 'Returns', onTime: 0, overdue: 0 }]);
+      }
+
+      // ── Fine Collection Trend (AreaChart) ────────────────────────
+      const monthlyFines = financialReportRes.data?.monthlyBreakdown || [];
+      if (monthlyFines.length > 0) {
+        setFineTrend(
+          monthlyFines.map((m) => ({
+            period: periodToLabel(m.period),
+            collected: m.paidAmount || 0,
+            pending: m.pendingAmount || 0,
+            waived: m.waivedAmount || 0,
+          }))
+        );
+      } else {
+        // Single data point from the summary
+        const finSummary = financialReportRes.data?.summary || {};
+        setFineTrend([
+          {
+            period: 'Now',
+            collected: finSummary.totalCollected || 0,
+            pending: finSummary.totalPending || 0,
+            waived: finSummary.totalWaived || 0,
+          },
+        ]);
+      }
     } catch (error) {
       toast.error('Failed to load dashboard data');
     } finally {
@@ -155,12 +321,21 @@ export default function LibrarianDashboardPage() {
     return `${diffDays}d ago`;
   }
 
+  // ── Dynamic category config for chart ──────────────────────────────────
+  const dynamicCategoryConfig = useMemo(() => {
+    const cfg = { value: { label: 'Books' } };
+    categoryData.forEach((item, idx) => {
+      cfg[`cat_${idx}`] = { label: item.name, color: item.fill };
+    });
+    return cfg;
+  }, [categoryData]);
+
   if (loading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Page Header */}
       <div>
         <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Dashboard</h1>
@@ -207,10 +382,223 @@ export default function LibrarianDashboardPage() {
         />
       </div>
 
-      {/* Main Content Grid */}
+      {/* ── Charts Section ────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* Borrow Trends — LineChart */}
+        <div className={glassCard}>
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#DDE7EA]">
+                <TrendingUp className="h-4 w-4 text-[#5D7480]" />
+              </div>
+              <h2 className="text-lg font-semibold text-[#1F2937]">Borrow Trends</h2>
+            </div>
+            <p className="text-xs text-[#6B7280] mt-1">Monthly borrowing activity</p>
+          </div>
+          <div className="px-4 pb-4">
+            {borrowTrend.length > 0 && borrowTrend.some((d) => d.borrows > 0) ? (
+              <ChartContainer config={borrowTrendConfig} className="h-[260px] w-full">
+                <LineChart data={borrowTrend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis
+                    dataKey="period"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                    allowDecimals={false}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Line
+                    type="monotone"
+                    dataKey="borrows"
+                    stroke="var(--color-borrows)"
+                    strokeWidth={2.5}
+                    dot={{ r: 4, fill: 'var(--color-borrows)', strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[260px] text-[#6B7280]">
+                <TrendingUp className="h-10 w-10 mb-2 opacity-30" />
+                <p className="text-sm">No borrow trend data yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Category Distribution — PieChart (Donut) */}
+        <div className={glassCard}>
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E8F0EC]">
+                <PieChartIcon className="h-4 w-4 text-[#6B8F83]" />
+              </div>
+              <h2 className="text-lg font-semibold text-[#1F2937]">Category Distribution</h2>
+            </div>
+            <p className="text-xs text-[#6B7280] mt-1">Books by category</p>
+          </div>
+          <div className="px-4 pb-4">
+            {categoryData.length > 0 && categoryData.some((d) => d.value > 0) ? (
+              <ChartContainer config={dynamicCategoryConfig} className="h-[260px] w-full">
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={95}
+                    paddingAngle={2}
+                    dataKey="value"
+                    nameKey="name"
+                    stroke="none"
+                  >
+                    {categoryData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+                </PieChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[260px] text-[#6B7280]">
+                <PieChartIcon className="h-10 w-10 mb-2 opacity-30" />
+                <p className="text-sm">No category data yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Overdue vs On-Time — Stacked BarChart */}
+        <div className={glassCard}>
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FDE8E6]">
+                <BarChart3 className="h-4 w-4 text-[#C25B4F]" />
+              </div>
+              <h2 className="text-lg font-semibold text-[#1F2937]">Overdue vs On-Time</h2>
+            </div>
+            <p className="text-xs text-[#6B7280] mt-1">Return performance comparison</p>
+          </div>
+          <div className="px-4 pb-4">
+            {overdueChartData.some((d) => d.onTime > 0 || d.overdue > 0) ? (
+              <ChartContainer config={overdueConfig} className="h-[260px] w-full">
+                <BarChart data={overdueChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                    allowDecimals={false}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Bar
+                    dataKey="onTime"
+                    stackId="returns"
+                    fill="var(--color-onTime)"
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="overdue"
+                    stackId="returns"
+                    fill="var(--color-overdue)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[260px] text-[#6B7280]">
+                <BarChart3 className="h-10 w-10 mb-2 opacity-30" />
+                <p className="text-sm">No return data yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Fine Collection Trend — AreaChart */}
+        <div className={glassCard}>
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FEF3E2]">
+                <AreaChartIcon className="h-4 w-4 text-[#C4952A]" />
+              </div>
+              <h2 className="text-lg font-semibold text-[#1F2937]">Fine Collection Trend</h2>
+            </div>
+            <p className="text-xs text-[#6B7280] mt-1">Monthly fine amounts</p>
+          </div>
+          <div className="px-4 pb-4">
+            {fineTrend.length > 0 && fineTrend.some((d) => d.collected > 0 || d.pending > 0 || d.waived > 0) ? (
+              <ChartContainer config={fineConfig} className="h-[260px] w-full">
+                <AreaChart data={fineTrend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                  <XAxis
+                    dataKey="period"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 12, fill: '#6B7280' }}
+                    tickFormatter={(v) => `$${v}`}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Area
+                    type="monotone"
+                    dataKey="collected"
+                    stackId="fines"
+                    stroke="var(--color-collected)"
+                    fill="var(--color-collected)"
+                    fillOpacity={0.4}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="pending"
+                    stackId="fines"
+                    stroke="var(--color-pending)"
+                    fill="var(--color-pending)"
+                    fillOpacity={0.4}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="waived"
+                    stackId="fines"
+                    stroke="var(--color-waived)"
+                    fill="var(--color-waived)"
+                    fillOpacity={0.4}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-[260px] text-[#6B7280]">
+                <AreaChartIcon className="h-10 w-10 mb-2 opacity-30" />
+                <p className="text-sm">No fine data yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Grid — Pending Requests & Overdue Books */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Pending Borrow Requests - Glass Card */}
-        <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className={glassCard}>
           <div className="p-6 pb-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#1F2937]">Pending Borrow Requests</h2>
@@ -293,7 +681,7 @@ export default function LibrarianDashboardPage() {
         </div>
 
         {/* Overdue Books Alert - Glass Card */}
-        <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className={glassCard}>
           <div className="p-6 pb-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#1F2937] flex items-center gap-2">
@@ -365,7 +753,7 @@ export default function LibrarianDashboardPage() {
       </div>
 
       {/* Quick Actions - Glass Card */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+      <div className={glassCard}>
         <div className="p-6 pb-3">
           <h2 className="text-lg font-semibold text-[#1F2937]">Quick Actions</h2>
         </div>

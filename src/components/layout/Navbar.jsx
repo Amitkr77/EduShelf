@@ -1,15 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search,
   Bell,
   User,
-  Settings,
   LogOut,
   X,
-  MessageSquare,
+  Menu,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,11 +24,43 @@ import {
 } from '@/components/ui/dropdown-menu';
 import apiFetch from '@/lib/fetcher';
 
-export default function Navbar({ user, onMobileMenuToggle }) {
+const pageTitles = {
+  '/student/dashboard': 'Dashboard',
+  '/student/books': 'Browse Books',
+  '/student/my-books': 'My Books',
+  '/student/reservations': 'Reservations',
+  '/student/wishlist': 'Wishlist',
+  '/student/notifications': 'Notifications',
+  '/student/profile': 'Profile',
+  '/librarian/dashboard': 'Librarian Dashboard',
+  '/librarian/books': 'Manage Books',
+  '/librarian/issues': 'Issue Books',
+  '/librarian/returns': 'Returns',
+  '/librarian/students': 'Students',
+  '/librarian/fines': 'Fines',
+  '/librarian/reports': 'Reports',
+  '/librarian/profile': 'Profile',
+};
+
+export default function Navbar({ user, activePath }) {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Dynamic page title
+  const pageTitle = useMemo(() => {
+    if (!activePath) return 'Dashboard';
+    if (pageTitles[activePath]) return pageTitles[activePath];
+    // Handle dynamic routes like /student/books/123
+    const base = '/' + activePath.split('/').slice(1, 3).join('/');
+    return pageTitles[base] || 'Dashboard';
+  }, [activePath]);
+
+  // Update document title when page changes
+  useEffect(() => {
+    document.title = `${pageTitle} | EduShelf`;
+  }, [pageTitle]);
 
   useEffect(() => {
     async function fetchNotifications() {
@@ -63,73 +94,68 @@ export default function Navbar({ user, onMobileMenuToggle }) {
       const basePath = user?.role === 'librarian' || user?.role === 'admin' ? '/librarian' : '/student';
       router.push(`${basePath}/books?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchOpen(false);
+      setSearchQuery('');
     }
   };
 
   return (
     <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]/60">
-      <div className="flex h-16 items-center gap-4 px-4 lg:px-8">
-        {/* Mobile menu spacer */}
+      <div className="flex h-14 sm:h-16 items-center gap-3 sm:gap-4 px-3 sm:px-4 lg:px-8">
+        {/* Mobile menu spacer for sheet trigger */}
         <div className="w-10 lg:hidden" />
 
-        {/* Page Title - visible on desktop */}
-        <div className="hidden lg:block">
-          <h2 className="text-lg font-semibold text-[#1F2937]">Dashboard</h2>
+        {/* Page Title */}
+        <div className="hidden lg:block min-w-0">
+          <h2 className="text-lg font-semibold text-[#1F2937] truncate">{pageTitle}</h2>
+        </div>
+
+        {/* Mobile page title */}
+        <div className="lg:hidden flex-1 min-w-0">
+          <h2 className="text-sm font-semibold text-[#1F2937] truncate">{pageTitle}</h2>
         </div>
 
         {/* Search */}
-        <div className="flex-1 flex items-center justify-center lg:justify-end">
-          {/* Desktop search */}
-          <form onSubmit={handleSearch} className="hidden sm:flex relative w-full max-w-[360px]">
+        <div className="hidden sm:flex items-center flex-1 justify-end">
+          <form onSubmit={handleSearch} className="relative w-full max-w-[360px]">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <Input
               type="search"
-              placeholder="Search..."
+              placeholder="Search books..."
               aria-label="Search books and records"
-              className="pl-11 h-12 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480] focus-visible:ring-offset-0 focus-visible:border-[#5D7480] placeholder:text-[#6B7280]/60"
+              className="pl-11 h-11 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480] focus-visible:ring-offset-0 focus-visible:border-[#5D7480] placeholder:text-[#6B7280]/60"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
+        </div>
 
+        {/* Right side actions */}
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Mobile search toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="sm:hidden h-10 w-10 rounded-xl text-[#6B7280]"
+            className="sm:hidden h-9 w-9 rounded-xl text-[#6B7280]"
             onClick={() => setSearchOpen(!searchOpen)}
             aria-label="Toggle search"
           >
-            {searchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
-          </Button>
-        </div>
-
-        {/* Right side actions */}
-        <div className="flex items-center gap-2">
-          {/* Messages Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-11 w-11 rounded-full text-[#6B7280] hover:bg-[#F4F8F9] hover:text-[#5D7480] transition-colors duration-200 focus-ring"
-            aria-label="Messages"
-          >
-            <MessageSquare className="h-5 w-5" />
+            {searchOpen ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
           </Button>
 
           {/* Notification Bell */}
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-11 w-11 rounded-full text-[#6B7280] hover:bg-[#F4F8F9] hover:text-[#5D7480] transition-colors duration-200 focus-ring"
+            className="relative h-9 w-9 sm:h-11 sm:w-11 rounded-full text-[#6B7280] hover:bg-[#F4F8F9] hover:text-[#5D7480] transition-colors duration-200 focus-ring"
             onClick={() => {
               const basePath = user?.role === 'librarian' || user?.role === 'admin' ? '/librarian' : '/student';
               router.push(`${basePath}/notifications`);
             }}
             aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           >
-            <Bell className="h-5 w-5" />
+            <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#F28B82] text-[10px] font-bold text-white">
+              <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#F28B82] text-[9px] sm:text-[10px] font-bold text-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
@@ -138,8 +164,8 @@ export default function Navbar({ user, onMobileMenuToggle }) {
           {/* User Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-11 w-11 rounded-full hover:bg-[#F4F8F9] focus-ring" aria-label="User menu">
-                <Avatar className="h-9 w-9">
+              <Button variant="ghost" className="relative h-9 w-9 sm:h-11 sm:w-11 rounded-full hover:bg-[#F4F8F9] focus-ring" aria-label="User menu">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                   <AvatarFallback className="bg-[#7C9AA5] text-white text-xs font-semibold">
                     {initials}
                   </AvatarFallback>
@@ -167,10 +193,6 @@ export default function Navbar({ user, onMobileMenuToggle }) {
                   <User className="mr-2 h-4 w-4 text-[#6B7280]" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem className="rounded-lg focus-ring">
-                  <Settings className="mr-2 h-4 w-4 text-[#6B7280]" />
-                  Settings
-                </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="text-[#F28B82] rounded-lg focus-ring">
@@ -184,14 +206,14 @@ export default function Navbar({ user, onMobileMenuToggle }) {
 
       {/* Mobile search bar (expandable) */}
       {searchOpen && (
-        <div className="sm:hidden border-t border-[#E5E7EB]/60 px-4 py-3">
+        <div className="sm:hidden border-t border-[#E5E7EB]/60 px-3 py-3">
           <form onSubmit={handleSearch} className="relative">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
             <Input
               type="search"
-              placeholder="Search..."
+              placeholder="Search books..."
               aria-label="Search"
-              className="pl-11 h-12 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+              className="pl-11 h-11 bg-[#F9FAFB] border-[#E5E7EB] rounded-xl text-sm focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus

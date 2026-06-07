@@ -44,7 +44,7 @@ function StarRatingInput({ rating, onChange }) {
           className="focus:outline-none transition-transform hover:scale-110"
         >
           <Star
-            className={`h-6 w-6 cursor-pointer ${
+            className={`h-5 w-5 sm:h-6 sm:w-6 cursor-pointer ${
               star <= rating
                 ? 'fill-[#F3C47A] text-[#F3C47A]'
                 : 'text-[#E5E7EB] hover:text-[#F3C47A]/60'
@@ -62,7 +62,7 @@ function StarRatingDisplay({ rating }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
-          className={`h-4 w-4 ${
+          className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${
             star <= Math.round(rating)
               ? 'fill-[#F3C47A] text-[#F3C47A]'
               : 'text-[#E5E7EB]'
@@ -245,11 +245,11 @@ export default function BookDetailPage() {
     (typeof book.category === 'string' ? '' : 'Uncategorized');
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-4 sm:space-y-6">
       {/* Back Button */}
       <Button
         variant="ghost"
-        className="text-[#6B7280] hover:text-[#1F2937] hover:bg-transparent"
+        className="text-[#6B7280] hover:text-[#1F2937] hover:bg-transparent transition-all duration-200"
         onClick={() => router.back()}
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
@@ -257,11 +257,11 @@ export default function BookDetailPage() {
       </Button>
 
       {/* Book Header Card */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-6">
-        <div className="flex flex-col md:flex-row gap-6">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6">
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
           {/* Book Cover */}
-          <div className="shrink-0">
-            <div className="w-48 h-64 rounded-2xl bg-gradient-to-br from-[#7C9AA5]/30 to-[#5D7480]/40 flex items-center justify-center overflow-hidden shadow-lg">
+          <div className="shrink-0 mx-auto md:mx-0">
+            <div className="w-36 h-48 sm:w-48 sm:h-64 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#7C9AA5]/30 to-[#5D7480]/30 flex items-center justify-center overflow-hidden shadow-lg">
               {book.coverImage ? (
                 <img
                   src={book.coverImage}
@@ -269,31 +269,31 @@ export default function BookDetailPage() {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <BookOpen className="h-16 w-16 text-[#7C9AA5]/40" />
+                <BookOpen className="h-12 w-12 sm:h-16 sm:w-16 text-[#7C9AA5]/40" />
               )}
             </div>
           </div>
 
           {/* Book Info */}
-          <div className="flex-1 min-w-0 space-y-3">
-            <div className="flex items-start gap-3 flex-wrap">
-              <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937] leading-tight">
+          <div className="flex-1 min-w-0 space-y-3 text-center md:text-left">
+            <div className="flex items-start gap-3 flex-wrap justify-center md:justify-start">
+              <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937] leading-tight">
                 {book.title}
               </h1>
               {isAvailable ? (
-                <span className="inline-block mt-2 rounded-xl px-3 py-1 text-xs font-medium bg-[#E8F0EC] text-[#6B8F83]">
+                <span className="inline-block mt-1 sm:mt-2 rounded-xl px-3 py-1 text-xs font-medium bg-[#E8F0EC] text-[#6B8F83]">
                   Available
                 </span>
               ) : (
-                <span className="inline-block mt-2 rounded-xl px-3 py-1 text-xs font-medium bg-[#FDE8E6] text-[#C25B4F]">
+                <span className="inline-block mt-1 sm:mt-2 rounded-xl px-3 py-1 text-xs font-medium bg-[#FDE8E6] text-[#C25B4F]">
                   Unavailable
                 </span>
               )}
             </div>
-            <p className="text-[#6B7280] text-lg">{book.author}</p>
+            <p className="text-[#6B7280] text-base sm:text-lg">{book.author}</p>
 
             {/* Rating */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center md:justify-start">
               <StarRatingDisplay rating={book.rating || 0} />
               <span className="text-sm text-[#6B7280]">
                 {book.rating?.toFixed(1) || '0.0'} ({book.ratingCount || 0}{' '}
@@ -309,7 +309,7 @@ export default function BookDetailPage() {
             )}
 
             {/* Available copies */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center md:justify-start">
               <div
                 className={`h-2.5 w-2.5 rounded-full ${
                   isAvailable ? 'bg-[#7CCB7A]' : 'bg-[#F28B82]'
@@ -323,10 +323,10 @@ export default function BookDetailPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-wrap gap-2 sm:gap-3 pt-2 justify-center md:justify-start">
               {isAvailable ? (
                 <Button
-                  className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
+                  className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
                   onClick={handleBorrow}
                   disabled={actionLoading}
                 >
@@ -335,7 +335,7 @@ export default function BookDetailPage() {
                 </Button>
               ) : (
                 <Button
-                  className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
+                  className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
                   onClick={handleReserve}
                   disabled={actionLoading}
                 >
@@ -348,10 +348,10 @@ export default function BookDetailPage() {
                 variant="outline"
                 onClick={handleWishlistToggle}
                 disabled={actionLoading}
-                className={`rounded-2xl transition-all duration-200 ${
+                className={`rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5 ${
                   isWishlisted
-                    ? 'border-[#F28B82]/40 text-[#C25B4F] hover:bg-[#FDE8E6]/30'
-                    : 'border-[#E5E7EB] text-[#5D7480] hover:bg-[#DDE7EA]/30'
+                    ? 'border-2 border-[#F28B82]/40 text-[#C25B4F] hover:bg-[#FDE8E6]/30'
+                    : 'border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10'
                 }`}
               >
                 <Heart
@@ -367,13 +367,13 @@ export default function BookDetailPage() {
       </div>
 
       {/* Book Details + Description Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Description */}
-        <div className="lg:col-span-2 rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-          <div className="p-6 pb-2">
-            <h2 className="text-lg font-semibold text-[#1F2937]">Description</h2>
+        <div className="lg:col-span-2 rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+          <div className="p-3 sm:p-4 md:p-6 pb-2">
+            <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Description</h2>
           </div>
-          <div className="px-6 pb-6">
+          <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6">
             <p className="text-sm text-[#6B7280] leading-relaxed">
               {book.description || 'No description available for this book.'}
             </p>
@@ -381,11 +381,11 @@ export default function BookDetailPage() {
         </div>
 
         {/* Book Metadata */}
-        <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-          <div className="p-6 pb-2">
-            <h2 className="text-lg font-semibold text-[#1F2937]">Book Details</h2>
+        <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+          <div className="p-3 sm:p-4 md:p-6 pb-2">
+            <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Book Details</h2>
           </div>
-          <div className="px-6 pb-6 space-y-3">
+          <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 space-y-3">
             {metadataItems.map(({ key, icon: Icon, label }) => {
               const value = book[key];
               if (!value && value !== 0) return null;
@@ -402,10 +402,10 @@ export default function BookDetailPage() {
       </div>
 
       {/* Reviews Section */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <div className="flex items-center justify-between p-6 pb-2">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 md:p-6 pb-2 gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-[#1F2937] flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-semibold text-[#1F2937] flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-[#5D7480]" />
               Reviews
             </h2>
@@ -418,37 +418,37 @@ export default function BookDetailPage() {
           <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
             <DialogTrigger asChild>
               <Button
-                className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
+                className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
                 size="sm"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Write a Review
               </Button>
             </DialogTrigger>
-            <DialogContent className="rounded-3xl">
+            <DialogContent className="rounded-2xl sm:rounded-3xl">
               <DialogHeader>
                 <DialogTitle>Write a Review</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-2">
                 <div>
-                  <p className="text-sm font-medium mb-2 text-[#1F2937]">Your Rating</p>
+                  <p className="text-xs sm:text-sm font-medium mb-2 text-[#6B7280]">Your Rating</p>
                   <StarRatingInput
                     rating={reviewRating}
                     onChange={setReviewRating}
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium mb-2 text-[#1F2937]">Your Review</p>
+                  <p className="text-xs sm:text-sm font-medium mb-2 text-[#6B7280]">Your Review</p>
                   <Textarea
                     placeholder="Share your thoughts about this book..."
                     value={reviewComment}
                     onChange={(e) => setReviewComment(e.target.value)}
                     rows={4}
-                    className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+                    className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
                   />
                 </div>
                 <Button
-                  className="w-full bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-2xl transition-all duration-200"
+                  className="w-full bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
                   onClick={handleReviewSubmit}
                   disabled={reviewSubmitting || reviewRating === 0}
                 >
@@ -458,7 +458,7 @@ export default function BookDetailPage() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="px-6 pb-6">
+        <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6">
           {reviews.length === 0 ? (
             <EmptyState
               icon={MessageSquare}
@@ -466,7 +466,7 @@ export default function BookDetailPage() {
               description="Be the first to share your thoughts about this book!"
             />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4 max-h-96 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#7C9AA5]/30 [&::-webkit-scrollbar-thumb]:rounded-full">
               {reviews.map((review) => {
                 const user = review.userId || {};
                 const initials = user.name
@@ -481,20 +481,20 @@ export default function BookDetailPage() {
                 return (
                   <div
                     key={review._id}
-                    className="border border-[#E5E7EB] rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7C9AA5]/30"
+                    className="border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#7C9AA5]/30"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                        <Avatar className="h-8 w-8 sm:h-9 sm:w-9 shrink-0">
                           <AvatarFallback className="bg-[#DDE7EA] text-[#5D7480] text-xs font-semibold border-0">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
-                        <div>
-                          <p className="text-sm font-medium text-[#1F2937]">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-[#1F2937] truncate">
                             {user.name || 'Anonymous'}
                           </p>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <StarRatingDisplay rating={review.rating} />
                             <span className="text-xs text-[#6B7280]">
                               {new Date(review.createdAt).toLocaleDateString(
@@ -511,7 +511,7 @@ export default function BookDetailPage() {
                       </div>
                     </div>
                     {review.comment && (
-                      <p className="text-sm text-[#6B7280] mt-3 leading-relaxed">
+                      <p className="text-sm text-[#6B7280] mt-2 sm:mt-3 leading-relaxed">
                         {review.comment}
                       </p>
                     )}

@@ -227,19 +227,19 @@ export default function FinesPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Fine Management</h1>
-          <p className="text-[#6B7280] mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Fine Management</h1>
+          <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Track and manage overdue fines.
           </p>
         </div>
         <button
           onClick={handleCalculateOverdue}
           disabled={calculating}
-          className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480] disabled:opacity-50"
+          className="inline-flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480] disabled:opacity-50"
         >
           <Calculator className="h-4 w-4" />
           {calculating ? 'Calculating...' : 'Calculate Overdue Fines'}
@@ -247,7 +247,7 @@ export default function FinesPage() {
       </div>
 
       {/* Summary Stat Cards */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-5 grid-cols-2 xl:grid-cols-4">
         <StatsCard
           title="Total Fines"
           value={`$${summary.total.toFixed(2)}`}
@@ -275,7 +275,7 @@ export default function FinesPage() {
       </div>
 
       {/* Search/Filter - Glass Card */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
@@ -283,7 +283,7 @@ export default function FinesPage() {
               placeholder="Search by student name or book title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+              className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
             />
           </div>
           <Select
@@ -293,7 +293,7 @@ export default function FinesPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
               <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -307,12 +307,12 @@ export default function FinesPage() {
         </div>
       </div>
 
-      {/* Fines Table */}
-      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+      {/* Fines Table / Cards */}
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
         {loading ? (
           <LoadingSpinner message="Loading fines..." />
         ) : filteredFines.length === 0 ? (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <EmptyState
               icon={Receipt}
               title="No fines found"
@@ -325,8 +325,69 @@ export default function FinesPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <Table>
+            {/* Mobile: Card Layout */}
+            <div className="sm:hidden p-3 space-y-3 max-h-[70vh] overflow-y-auto">
+              {filteredFines.map((fine) => (
+                <div
+                  key={fine._id}
+                  className="rounded-xl border border-[#E5E7EB] p-3 bg-white transition-all duration-200 hover:shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm text-[#1F2937] truncate">
+                        {fine.userId?.name || 'Unknown'}
+                      </p>
+                      <p className="text-xs text-[#6B7280] truncate">
+                        {fine.bookId?.title || 'Unknown Book'}
+                      </p>
+                    </div>
+                    {getStatusBadge(fine.status)}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-[#1F2937]">
+                      ${fine.amount?.toFixed(2)}
+                    </span>
+                    <span className="text-xs text-[#6B7280]">
+                      {fine.daysOverdue}d overdue
+                    </span>
+                  </div>
+                  {fine.status === 'pending' && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                        onClick={() =>
+                          setActionDialog({
+                            open: true,
+                            type: 'pay',
+                            fine,
+                          })
+                        }
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        Paid
+                      </button>
+                      <button
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 rounded-xl text-xs font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
+                        onClick={() =>
+                          setActionDialog({
+                            open: true,
+                            type: 'waive',
+                            fine,
+                          })
+                        }
+                      >
+                        <Ban className="h-3.5 w-3.5" />
+                        Waive
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: Table Layout */}
+            <div className="hidden sm:block overflow-x-auto table-responsive">
+              <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
                     <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
@@ -414,13 +475,13 @@ export default function FinesPage() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3">
+              <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] px-3 sm:px-4 py-3 gap-2">
                 <p className="text-sm text-[#6B7280]">
                   Page {pagination.page} of {pagination.pages}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                   >
@@ -428,7 +489,7 @@ export default function FinesPage() {
                     Previous
                   </button>
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page >= pagination.pages}
                     onClick={() => setPage((p) => p + 1)}
                   >
@@ -462,9 +523,9 @@ export default function FinesPage() {
                 : `Are you sure you want to waive the fine of $${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name})? The student will no longer be required to pay this fine.`}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 w-full sm:w-auto"
               onClick={() =>
                 setActionDialog({ open: false, type: '', fine: null })
               }
@@ -473,7 +534,7 @@ export default function FinesPage() {
             </button>
             {actionDialog.type === 'pay' ? (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
                 onClick={() => handleMarkPaid(actionDialog.fine?._id)}
                 disabled={processing}
               >
@@ -482,7 +543,7 @@ export default function FinesPage() {
               </button>
             ) : (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
                 onClick={() => handleWaiveFine(actionDialog.fine?._id)}
                 disabled={processing}
               >

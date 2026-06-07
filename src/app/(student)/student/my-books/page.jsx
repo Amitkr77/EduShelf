@@ -32,7 +32,7 @@ import { toast } from 'sonner';
 const statusBadgeMap = {
   requested: 'bg-[#E3F2FA] text-[#4A8DB7]',
   approved: 'bg-[#E8F0EC] text-[#6B8F83]',
-  issued: 'bg-[#DDE7EA] text-[#5D7480]',
+  issued: 'bg-[#E8F0EC] text-[#6B8F83]',
   overdue: 'bg-[#FDE8E6] text-[#C25B4F]',
   returned: 'bg-[#E8F0EC] text-[#6B8F83]',
   closed: 'bg-[#F9FAFB] text-[#6B7280]',
@@ -52,7 +52,7 @@ const statusIcons = {
 const statusIconColors = {
   requested: 'bg-[#E3F2FA] text-[#4A8DB7]',
   approved: 'bg-[#E8F0EC] text-[#6B8F83]',
-  issued: 'bg-[#DDE7EA] text-[#5D7480]',
+  issued: 'bg-[#E8F0EC] text-[#6B8F83]',
   overdue: 'bg-[#FDE8E6] text-[#C25B4F]',
   returned: 'bg-[#E8F0EC] text-[#6B8F83]',
   closed: 'bg-[#F9FAFB] text-[#6B7280]',
@@ -141,26 +141,26 @@ export default function MyBooksPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">My Books</h1>
-        <p className="text-[#6B7280] mt-1">
+        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Books</h1>
+        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
           Manage your borrowed books and view your borrowing history.
         </p>
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-1">
+        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-1 w-full sm:w-auto">
           <TabsTrigger
             value="active"
-            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-xl px-4 transition-all duration-200"
+            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-lg sm:rounded-xl px-3 sm:px-4 transition-all duration-200 flex-1 sm:flex-initial text-sm"
           >
             Active ({activeBorrows.length})
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-xl px-4 transition-all duration-200"
+            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-lg sm:rounded-xl px-3 sm:px-4 transition-all duration-200 flex-1 sm:flex-initial text-sm"
           >
             History ({historyBorrows.length})
           </TabsTrigger>
@@ -177,7 +177,7 @@ export default function MyBooksPage() {
               onAction={() => (window.location.href = '/student/books')}
             />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 sm:space-y-4">
               {activeBorrows.map((borrow) => {
                 const book = borrow.bookId || {};
                 const overdue = borrow.status === 'overdue' || isOverdue(borrow.dueDate);
@@ -190,7 +190,7 @@ export default function MyBooksPage() {
                 return (
                   <div
                     key={borrow._id}
-                    className={`rounded-3xl bg-white/90 backdrop-blur-[20px] border shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 sm:p-6 transition-all duration-200 hover:-translate-y-0.5 ${
+                    className={`rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6 transition-all duration-200 hover:-translate-y-0.5 ${
                       overdue
                         ? 'border-[#F28B82]/40'
                         : borrow.status === 'requested' || borrow.status === 'approved'
@@ -198,26 +198,26 @@ export default function MyBooksPage() {
                         : 'border-white/40'
                     }`}
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                         <div
-                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconColor}`}
+                          className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl ${iconColor}`}
                         >
-                          <StatusIcon className="h-6 w-6" />
+                          <StatusIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
                         <div className="min-w-0">
                           <Link
                             href={`/student/books/${book._id}`}
-                            className="font-semibold hover:text-[#5D7480] transition-colors truncate block text-[#1F2937]"
+                            className="font-semibold hover:text-[#5D7480] transition-colors truncate block text-sm sm:text-base text-[#1F2937]"
                           >
                             {book.title || 'Unknown Book'}
                           </Link>
-                          <p className="text-sm text-[#6B7280]">
+                          <p className="text-xs sm:text-sm text-[#6B7280]">
                             {book.author || 'Unknown Author'}
                           </p>
-                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
                             <span
-                              className={`text-xs font-medium rounded-xl px-2.5 py-0.5 ${
+                              className={`text-xs font-medium rounded-lg sm:rounded-xl px-2 py-0.5 ${
                                 statusBadgeMap[borrow.status] || 'bg-[#F9FAFB] text-[#6B7280]'
                               }`}
                             >
@@ -225,13 +225,13 @@ export default function MyBooksPage() {
                             </span>
                             {borrow.status === 'issued' && (
                               <>
-                                <span className="text-xs text-[#6B7280] flex items-center gap-1">
+                                <span className="text-[10px] sm:text-xs text-[#6B7280] flex items-center gap-1 hidden sm:flex">
                                   <Calendar className="h-3 w-3" />
                                   Issued: {formatDate(borrow.issueDate)}
                                 </span>
-                                <span className="text-xs text-[#E5E7EB]">|</span>
+                                <span className="text-[#E5E7EB] hidden sm:inline">|</span>
                                 <span
-                                  className={`text-xs flex items-center gap-1 ${
+                                  className={`text-[10px] sm:text-xs flex items-center gap-1 ${
                                     overdue
                                       ? 'text-[#C25B4F] font-medium'
                                       : daysLeft <= 3
@@ -240,24 +240,24 @@ export default function MyBooksPage() {
                                   }`}
                                 >
                                   <Clock className="h-3 w-3" />
-                                  Due: {formatDate(borrow.dueDate)}
+                                  <span className="hidden sm:inline">Due: </span>{formatDate(borrow.dueDate)}
                                   {overdue && ' (Overdue!)'}
                                   {!overdue && daysLeft <= 3 && ` (${daysLeft}d left)`}
                                 </span>
                               </>
                             )}
                             {borrow.status === 'requested' && (
-                              <span className="text-xs text-[#4A8DB7]">
+                              <span className="text-[10px] sm:text-xs text-[#4A8DB7]">
                                 Waiting for approval
                               </span>
                             )}
                             {borrow.status === 'approved' && (
-                              <span className="text-xs text-[#6B8F83]">
+                              <span className="text-[10px] sm:text-xs text-[#6B8F83]">
                                 Approved — awaiting pickup
                               </span>
                             )}
                             {overdue && borrow.dueDate && (
-                              <span className="text-xs text-[#C25B4F] font-medium">
+                              <span className="text-[10px] sm:text-xs text-[#C25B4F] font-medium">
                                 Overdue by {Math.abs(daysLeft)} day
                                 {Math.abs(daysLeft) !== 1 ? 's' : ''}
                               </span>
@@ -269,7 +269,7 @@ export default function MyBooksPage() {
                       {canReturn && (
                         <Button
                           size="sm"
-                          className="shrink-0 bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl transition-all duration-200"
+                          className="shrink-0 bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
                           onClick={() => {
                             setReturningBorrow(borrow);
                             setReturnDialogOpen(true);
@@ -296,9 +296,9 @@ export default function MyBooksPage() {
               description="Your returned books will appear here."
             />
           ) : (
-            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
               {/* Desktop table */}
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="hidden sm:block table-responsive overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]/80">
@@ -359,11 +359,11 @@ export default function MyBooksPage() {
                 {historyBorrows.map((borrow) => {
                   const book = borrow.bookId || {};
                   return (
-                    <div key={borrow._id} className="p-4 space-y-2">
+                    <div key={borrow._id} className="p-3 sm:p-4 space-y-2">
                       <div>
                         <Link
                           href={`/student/books/${book._id}`}
-                          className="font-medium hover:text-[#5D7480] text-[#1F2937]"
+                          className="font-medium hover:text-[#5D7480] text-sm text-[#1F2937]"
                         >
                           {book.title || 'Unknown Book'}
                         </Link>
@@ -372,12 +372,12 @@ export default function MyBooksPage() {
                         </p>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-[#6B7280]">
+                        <span className="text-[#6B7280] text-xs">
                           {formatDate(borrow.issueDate || borrow.requestDate)} —{' '}
                           {formatDate(borrow.returnDate)}
                         </span>
                         <span
-                          className={`text-xs font-medium rounded-xl px-2.5 py-0.5 ${
+                          className={`text-xs font-medium rounded-lg px-2 py-0.5 ${
                             statusBadgeMap[borrow.status] || 'bg-[#F9FAFB] text-[#6B7280]'
                           }`}
                         >
@@ -395,7 +395,7 @@ export default function MyBooksPage() {
 
       {/* Return Confirmation Dialog */}
       <Dialog open={returnDialogOpen} onOpenChange={setReturnDialogOpen}>
-        <DialogContent className="rounded-3xl">
+        <DialogContent className="rounded-2xl sm:rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-[#1F2937]">Return Book</DialogTitle>
             <DialogDescription className="text-[#6B7280]">
@@ -404,19 +404,19 @@ export default function MyBooksPage() {
             </DialogDescription>
           </DialogHeader>
           {returningBorrow?.status === 'overdue' && (
-            <div className="rounded-2xl bg-[#FDE8E6]/60 border border-[#F28B82]/30 p-3 text-sm text-[#C25B4F]">
+            <div className="rounded-xl sm:rounded-2xl bg-[#FDE8E6]/60 border border-[#F28B82]/30 p-3 text-sm text-[#C25B4F]">
               <AlertTriangle className="h-4 w-4 inline mr-2" />
               This book is overdue. A fine may be applied upon return.
             </div>
           )}
           <DialogFooter className="gap-2">
             <DialogClose asChild>
-              <Button variant="outline" className="rounded-2xl border-[#E5E7EB] text-[#6B7280]">
+              <Button variant="outline" className="rounded-xl sm:rounded-2xl border-[#E5E7EB] text-[#6B7280] transition-all duration-200">
                 Cancel
               </Button>
             </DialogClose>
             <Button
-              className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-2xl transition-all duration-200"
+              className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
               onClick={handleReturn}
               disabled={returning}
             >

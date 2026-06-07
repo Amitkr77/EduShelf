@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   BarChart3,
   BookOpen,
@@ -13,6 +13,22 @@ import {
   Users,
   Receipt,
 } from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend as RechartsLegend,
+} from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,38 +40,99 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from '@/components/ui/chart';
 import StatsCard from '@/components/shared/StatsCard';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import EmptyState from '@/components/shared/EmptyState';
 import apiFetch from '@/lib/fetcher';
 import { toast } from 'sonner';
 
-function SimpleBarChart({ data, valueKey, labelKey, maxValue, color = 'bg-[#7C9AA5]' }) {
-  if (!data || data.length === 0) return null;
-  const max = maxValue || Math.max(...data.map((d) => d[valueKey] || 0), 1);
+// Chart color palette
+const CHART_COLORS = {
+  primary: '#7C9AA5',
+  green: '#7CCB7A',
+  amber: '#F3C47A',
+  blue: '#84C7E8',
+  sage: '#A7C2B0',
+  destructive: '#F28B82',
+};
+
+// Chart configs for shadcn ChartContainer
+const borrowMonthlyConfig = {
+  count: { label: 'Borrows', color: CHART_COLORS.primary },
+};
+
+const popularBooksConfig = {
+  borrowCount: { label: 'Borrow Count', color: CHART_COLORS.green },
+};
+
+const statusBreakdownConfig = {
+  issued: { label: 'Issued', color: CHART_COLORS.blue },
+  returned: { label: 'Returned', color: CHART_COLORS.green },
+  overdue: { label: 'Overdue', color: CHART_COLORS.destructive },
+  approved: { label: 'Approved', color: CHART_COLORS.amber },
+  requested: { label: 'Requested', color: CHART_COLORS.sage },
+  rejected: { label: 'Rejected', color: CHART_COLORS.primary },
+};
+
+const overdueTrendConfig = {
+  count: { label: 'Overdue Count', color: CHART_COLORS.destructive },
+};
+
+const daysDistributionConfig = {
+  count: { label: 'Books', color: CHART_COLORS.primary },
+};
+
+const revenueConfig = {
+  totalAmount: { label: 'Total Revenue', color: CHART_COLORS.primary },
+  paidAmount: { label: 'Collected', color: CHART_COLORS.green },
+  pendingAmount: { label: 'Pending', color: CHART_COLORS.amber },
+};
+
+const paymentStatusConfig = {
+  paid: { label: 'Paid', color: CHART_COLORS.green },
+  pending: { label: 'Pending', color: CHART_COLORS.amber },
+  waived: { label: 'Waived', color: CHART_COLORS.sage },
+};
+
+const activityTimelineConfig = {
+  count: { label: 'Activities', color: CHART_COLORS.blue },
+};
+
+const PIE_COLORS = [
+  CHART_COLORS.blue,
+  CHART_COLORS.green,
+  CHART_COLORS.destructive,
+  CHART_COLORS.amber,
+  CHART_COLORS.sage,
+  CHART_COLORS.primary,
+];
+
+function CustomPieLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) {
+  const RADIAN = Math.PI / 180;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  if (percent < 0.05) return null;
 
   return (
-    <div className="space-y-2">
-      {data.map((item, i) => (
-        <div key={i} className="flex items-center gap-3">
-          <span className="text-xs text-[#6B7280] w-20 text-right shrink-0">
-            {item[labelKey]}
-          </span>
-          <div className="flex-1 bg-[#F4F8F9] rounded-full h-6 overflow-hidden">
-            <div
-              className={`h-full ${color} rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
-              style={{
-                width: `${Math.max(((item[valueKey] || 0) / max) * 100, 2)}%`,
-              }}
-            >
-              <span className="text-xs font-medium text-white">
-                {item[valueKey]}
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+    <text
+      x={x}
+      y={y}
+      fill="white"
+      textAnchor="middle"
+      dominantBaseline="central"
+      className="text-[11px] font-semibold"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
   );
 }
 
@@ -194,8 +271,119 @@ export default function ReportsPage() {
     );
   }
 
+  // Derived data for charts
+  const borrowMonthlyData = useMemo(() => {
+    if (!borrowReport?.borrowsByMonth) return [];
+    return borrowReport.borrowsByMonth.slice(-12).map((item) => ({
+      ...item,
+      period: item.period || 'N/A',
+      count: item.count || 0,
+    }));
+  }, [borrowReport]);
+
+  const popularBooksData = useMemo(() => {
+    if (!borrowReport?.popularBooks) return [];
+    return borrowReport.popularBooks.slice(0, 8).map((book) => ({
+      name: book.title?.length > 20 ? book.title.substring(0, 20) + '...' : book.title || 'Unknown',
+      borrowCount: book.borrowCount || 0,
+    }));
+  }, [borrowReport]);
+
+  const statusBreakdownData = useMemo(() => {
+    if (!borrowReport?.summary?.statusBreakdown) return [];
+    return Object.entries(borrowReport.summary.statusBreakdown).map(
+      ([status, count], index) => ({
+        name: status.charAt(0).toUpperCase() + status.slice(1),
+        value: count,
+        fill: PIE_COLORS[index % PIE_COLORS.length],
+      })
+    );
+  }, [borrowReport]);
+
+  const overdueTrendData = useMemo(() => {
+    if (!overdueReport?.items || overdueReport.items.length === 0) return [];
+    // Group by due date month
+    const monthMap = {};
+    overdueReport.items.forEach((item) => {
+      if (item.dueDate) {
+        const date = new Date(item.dueDate);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        monthMap[key] = (monthMap[key] || 0) + 1;
+      }
+    });
+    return Object.entries(monthMap)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([period, count]) => ({ period, count }));
+  }, [overdueReport]);
+
+  const daysDistributionData = useMemo(() => {
+    if (!overdueReport?.items || overdueReport.items.length === 0) return [];
+    // Create buckets for days overdue
+    const buckets = {
+      '1-7': 0,
+      '8-14': 0,
+      '15-30': 0,
+      '31-60': 0,
+      '60+': 0,
+    };
+    overdueReport.items.forEach((item) => {
+      const days = item.daysOverdue || 0;
+      if (days <= 7) buckets['1-7']++;
+      else if (days <= 14) buckets['8-14']++;
+      else if (days <= 30) buckets['15-30']++;
+      else if (days <= 60) buckets['31-60']++;
+      else buckets['60+']++;
+    });
+    return Object.entries(buckets)
+      .filter(([, count]) => count > 0)
+      .map(([range, count]) => ({ range, count }));
+  }, [overdueReport]);
+
+  const revenueMonthlyData = useMemo(() => {
+    if (!financialReport?.monthlyBreakdown) return [];
+    return financialReport.monthlyBreakdown.slice(-12).map((item) => ({
+      ...item,
+      period: item.period || 'N/A',
+      totalAmount: Number((item.totalAmount || 0).toFixed(2)),
+      paidAmount: Number((item.paidAmount || 0).toFixed(2)),
+      pendingAmount: Number((item.pendingAmount || 0).toFixed(2)),
+    }));
+  }, [financialReport]);
+
+  const paymentStatusData = useMemo(() => {
+    if (!financialReport?.summary) return [];
+    const data = [];
+    const s = financialReport.summary;
+    if (s.totalCollected > 0) {
+      data.push({ name: 'Paid', value: Number(s.totalCollected.toFixed(2)), fill: CHART_COLORS.green });
+    }
+    if (s.totalPending > 0) {
+      data.push({ name: 'Pending', value: Number(s.totalPending.toFixed(2)), fill: CHART_COLORS.amber });
+    }
+    if (s.totalWaived > 0) {
+      data.push({ name: 'Waived', value: Number(s.totalWaived.toFixed(2)), fill: CHART_COLORS.sage });
+    }
+    return data;
+  }, [financialReport]);
+
+  const activityTimelineData = useMemo(() => {
+    if (!activityLogs || activityLogs.length === 0) return [];
+    // Group by day
+    const dayMap = {};
+    activityLogs.forEach((log) => {
+      if (log.createdAt) {
+        const date = new Date(log.createdAt);
+        const key = `${date.getMonth() + 1}/${date.getDate()}`;
+        dayMap[key] = (dayMap[key] || 0) + 1;
+      }
+    });
+    return Object.entries(dayMap)
+      .slice(-14)
+      .map(([day, count]) => ({ day, count }));
+  }, [activityLogs]);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -216,7 +404,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Date Range Filter - Glass Card */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
         <div className="flex flex-col sm:flex-row items-end gap-3">
           <div className="space-y-1.5 flex-1">
             <Label className="text-xs font-medium text-[#6B7280]">Start Date</Label>
@@ -291,7 +479,9 @@ export default function ReportsPage() {
           </TabsTrigger>
         </TabsList>
 
+        {/* ============================================= */}
         {/* Borrow Reports Tab */}
+        {/* ============================================= */}
         <TabsContent value="borrow" className="space-y-6">
           {loading ? (
             <LoadingSpinner message="Loading borrow report..." />
@@ -326,19 +516,54 @@ export default function ReportsPage() {
               </div>
 
               <div className="grid gap-6 lg:grid-cols-2">
-                {/* Monthly Borrow Chart - Glass Card */}
-                <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <div className="p-6 pb-4">
+                {/* Monthly Borrow Chart - AreaChart */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                     <h2 className="text-lg font-semibold text-[#1F2937]">Borrows by Month</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Monthly borrowing trends</p>
                   </div>
-                  <div className="px-6 pb-6">
-                    {borrowReport?.borrowsByMonth?.length > 0 ? (
-                      <SimpleBarChart
-                        data={borrowReport.borrowsByMonth.slice(-12)}
-                        valueKey="count"
-                        labelKey="period"
-                        color="bg-[#7C9AA5]"
-                      />
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {borrowMonthlyData.length > 0 ? (
+                      <ChartContainer config={borrowMonthlyConfig} className="h-[200px] sm:h-[280px] w-full">
+                        <AreaChart data={borrowMonthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3} />
+                              <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0.02} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                          <XAxis
+                            dataKey="period"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            tickFormatter={(v) => {
+                              const parts = v.split('-');
+                              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                              return months[parseInt(parts[1]) - 1] + " '" + parts[0].slice(2);
+                            }}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            allowDecimals={false}
+                          />
+                          <ChartTooltip
+                            content={<ChartTooltipContent />}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="count"
+                            stroke={CHART_COLORS.primary}
+                            strokeWidth={2.5}
+                            fill="url(#borrowGradient)"
+                            dot={{ r: 3, fill: CHART_COLORS.primary, strokeWidth: 0 }}
+                            activeDot={{ r: 5, fill: CHART_COLORS.primary, stroke: '#fff', strokeWidth: 2 }}
+                          />
+                        </AreaChart>
+                      </ChartContainer>
                     ) : (
                       <EmptyState
                         icon={BarChart3}
@@ -349,49 +574,91 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                {/* Popular Books - Glass Card */}
-                <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <div className="p-6 pb-4">
+                {/* Popular Books - Horizontal BarChart + Table */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                     <h2 className="text-lg font-semibold text-[#1F2937]">Most Popular Books</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Top borrowed books</p>
                   </div>
-                  <div className="px-6 pb-6">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
                     {borrowReport?.popularBooks?.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
-                              <TableHead className="text-[#6B7280] font-semibold">#</TableHead>
-                              <TableHead className="text-[#6B7280] font-semibold">Title</TableHead>
-                              <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">
-                                Author
-                              </TableHead>
-                              <TableHead className="text-right text-[#6B7280] font-semibold">Borrows</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {borrowReport.popularBooks.map((book, i) => (
-                              <TableRow key={book.bookId || i} className="hover:bg-[#F4F8F9] border-[#E5E7EB]">
-                                <TableCell className="font-medium text-sm text-[#1F2937]">
-                                  {i + 1}
-                                </TableCell>
-                                <TableCell className="text-sm text-[#1F2937] truncate max-w-[150px]">
-                                  {book.title}
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell text-sm text-[#6B7280]">
-                                  {book.author}
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  <Badge
-                                    className="bg-[#E8F0EC] text-[#6B8F83] hover:bg-[#E8F0EC] border-0"
-                                  >
-                                    {book.borrowCount}
-                                  </Badge>
-                                </TableCell>
+                      <>
+                        {/* Horizontal Bar Chart */}
+                        {popularBooksData.length > 0 && (
+                          <div className="mb-4">
+                            <ChartContainer config={popularBooksConfig} className="h-[180px] sm:h-[220px] w-full">
+                              <BarChart
+                                data={popularBooksData}
+                                layout="vertical"
+                                margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" horizontal={false} />
+                                <XAxis
+                                  type="number"
+                                  tickLine={false}
+                                  axisLine={false}
+                                  tick={{ fontSize: 11, fill: '#6B7280' }}
+                                  allowDecimals={false}
+                                />
+                                <YAxis
+                                  type="category"
+                                  dataKey="name"
+                                  tickLine={false}
+                                  axisLine={false}
+                                  tick={{ fontSize: 10, fill: '#6B7280' }}
+                                  width={90}
+                                />
+                                <ChartTooltip
+                                  content={<ChartTooltipContent />}
+                                />
+                                <Bar
+                                  dataKey="borrowCount"
+                                  fill={CHART_COLORS.green}
+                                  radius={[0, 6, 6, 0]}
+                                  barSize={16}
+                                />
+                              </BarChart>
+                            </ChartContainer>
+                          </div>
+                        )}
+                        {/* Table */}
+                        <div className="overflow-x-auto table-responsive">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
+                                <TableHead className="text-[#6B7280] font-semibold">#</TableHead>
+                                <TableHead className="text-[#6B7280] font-semibold">Title</TableHead>
+                                <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">
+                                  Author
+                                </TableHead>
+                                <TableHead className="text-right text-[#6B7280] font-semibold">Borrows</TableHead>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
+                            </TableHeader>
+                            <TableBody>
+                              {borrowReport.popularBooks.map((book, i) => (
+                                <TableRow key={book.bookId || i} className="hover:bg-[#F4F8F9] border-[#E5E7EB]">
+                                  <TableCell className="font-medium text-sm text-[#1F2937]">
+                                    {i + 1}
+                                  </TableCell>
+                                  <TableCell className="text-sm text-[#1F2937] truncate max-w-[150px]">
+                                    {book.title}
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-sm text-[#6B7280]">
+                                    {book.author}
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <Badge
+                                      className="bg-[#E8F0EC] text-[#6B8F83] hover:bg-[#E8F0EC] border-0"
+                                    >
+                                      {book.borrowCount}
+                                    </Badge>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </>
                     ) : (
                       <EmptyState
                         icon={BookOpen}
@@ -403,28 +670,80 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              {/* Status Breakdown - Glass Card */}
+              {/* Status Breakdown - DonutChart */}
               {borrowReport?.summary?.statusBreakdown && (
-                <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <div className="p-6 pb-4">
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                     <h2 className="text-lg font-semibold text-[#1F2937]">Borrow Status Breakdown</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Distribution of borrow statuses</p>
                   </div>
-                  <div className="px-6 pb-6">
-                    <div className="flex flex-wrap gap-3">
-                      {Object.entries(borrowReport.summary.statusBreakdown).map(
-                        ([status, count]) => (
-                          <div
-                            key={status}
-                            className="flex items-center gap-2 rounded-2xl border border-[#E5E7EB] px-4 py-2 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
-                          >
-                            <span className="text-sm font-medium capitalize text-[#1F2937]">
-                              {status}
-                            </span>
-                            <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0">{count}</Badge>
-                          </div>
-                        )
-                      )}
-                    </div>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {statusBreakdownData.length > 0 ? (
+                      <div className="flex flex-col sm:flex-row items-center gap-6">
+                        <div className="w-full sm:w-1/2">
+                          <ChartContainer config={statusBreakdownConfig} className="h-[200px] sm:h-[260px] w-full">
+                            <PieChart>
+                              <ChartTooltip
+                                content={<ChartTooltipContent nameKey="name" hideLabel />}
+                              />
+                              <Pie
+                                data={statusBreakdownData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={55}
+                                outerRadius={90}
+                                paddingAngle={3}
+                                dataKey="value"
+                                labelLine={false}
+                                label={CustomPieLabel}
+                                strokeWidth={0}
+                              >
+                                {statusBreakdownData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ChartContainer>
+                        </div>
+                        <div className="w-full sm:w-1/2 space-y-3">
+                          {statusBreakdownData.map((item, index) => (
+                            <div
+                              key={item.name}
+                              className="flex items-center justify-between rounded-xl border border-[#E5E7EB] px-4 py-2.5 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className="h-3 w-3 rounded-full shrink-0"
+                                  style={{ backgroundColor: item.fill }}
+                                />
+                                <span className="text-sm font-medium text-[#1F2937]">
+                                  {item.name}
+                                </span>
+                              </div>
+                              <Badge className="bg-[#F4F8F9] text-[#1F2937] hover:bg-[#F4F8F9] border-0 font-semibold">
+                                {item.value}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap gap-3">
+                        {Object.entries(borrowReport.summary.statusBreakdown).map(
+                          ([status, count]) => (
+                            <div
+                              key={status}
+                              className="flex items-center gap-2 rounded-2xl border border-[#E5E7EB] px-4 py-2 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                            >
+                              <span className="text-sm font-medium capitalize text-[#1F2937]">
+                                {status}
+                              </span>
+                              <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0">{count}</Badge>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -432,7 +751,9 @@ export default function ReportsPage() {
           )}
         </TabsContent>
 
+        {/* ============================================= */}
         {/* Overdue Reports Tab */}
+        {/* ============================================= */}
         <TabsContent value="overdue" className="space-y-6">
           {loading ? (
             <LoadingSpinner message="Loading overdue report..." />
@@ -466,13 +787,111 @@ export default function ReportsPage() {
                 />
               </div>
 
-              {/* Overdue Books Table - Glass Card */}
-              <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
-                <div className="p-6 pb-4">
+              <div className="grid gap-6 lg:grid-cols-2">
+                {/* Overdue Trend - LineChart */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
+                    <h2 className="text-lg font-semibold text-[#1F2937]">Overdue Trend</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Overdue count by due date month</p>
+                  </div>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {overdueTrendData.length > 0 ? (
+                      <ChartContainer config={overdueTrendConfig} className="h-[200px] sm:h-[280px] w-full">
+                        <LineChart data={overdueTrendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                          <XAxis
+                            dataKey="period"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            tickFormatter={(v) => {
+                              const parts = v.split('-');
+                              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                              return months[parseInt(parts[1]) - 1] + " '" + parts[0].slice(2);
+                            }}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            allowDecimals={false}
+                          />
+                          <ChartTooltip
+                            content={<ChartTooltipContent />}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="count"
+                            stroke={CHART_COLORS.destructive}
+                            strokeWidth={2.5}
+                            dot={{ r: 4, fill: CHART_COLORS.destructive, strokeWidth: 0 }}
+                            activeDot={{ r: 6, fill: CHART_COLORS.destructive, stroke: '#fff', strokeWidth: 2 }}
+                          />
+                        </LineChart>
+                      </ChartContainer>
+                    ) : (
+                      <EmptyState
+                        icon={TrendingUp}
+                        title="No overdue trend data"
+                        description="Overdue trend data will appear when there are overdue books."
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Days Overdue Distribution - BarChart */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
+                    <h2 className="text-lg font-semibold text-[#1F2937]">Days Overdue Distribution</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">How long books are overdue</p>
+                  </div>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {daysDistributionData.length > 0 ? (
+                      <ChartContainer config={daysDistributionConfig} className="h-[200px] sm:h-[280px] w-full">
+                        <BarChart data={daysDistributionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                          <XAxis
+                            dataKey="range"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            tickFormatter={(v) => v + ' days'}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            allowDecimals={false}
+                          />
+                          <ChartTooltip
+                            content={<ChartTooltipContent />}
+                          />
+                          <Bar
+                            dataKey="count"
+                            fill={CHART_COLORS.primary}
+                            radius={[6, 6, 0, 0]}
+                            barSize={40}
+                          />
+                        </BarChart>
+                      </ChartContainer>
+                    ) : (
+                      <EmptyState
+                        icon={BarChart3}
+                        title="No distribution data"
+                        description="Days overdue distribution will appear when there are overdue books."
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Overdue Books Table */}
+              <div className="rounded-2xl sm:rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+                <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                   <h2 className="text-lg font-semibold text-[#1F2937]">Overdue Books</h2>
                 </div>
                 {overdueReport?.items?.length > 0 ? (
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto table-responsive">
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
@@ -533,7 +952,9 @@ export default function ReportsPage() {
           )}
         </TabsContent>
 
+        {/* ============================================= */}
         {/* Financial Reports Tab */}
+        {/* ============================================= */}
         <TabsContent value="financial" className="space-y-6">
           {loading ? (
             <LoadingSpinner message="Loading financial report..." />
@@ -568,19 +989,68 @@ export default function ReportsPage() {
               </div>
 
               <div className="grid gap-6 lg:grid-cols-2">
-                {/* Monthly Revenue Chart - Glass Card */}
-                <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <div className="p-6 pb-4">
+                {/* Monthly Revenue - AreaChart with gradient */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                     <h2 className="text-lg font-semibold text-[#1F2937]">Monthly Revenue</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Revenue breakdown by month</p>
                   </div>
-                  <div className="px-6 pb-6">
-                    {financialReport?.monthlyBreakdown?.length > 0 ? (
-                      <SimpleBarChart
-                        data={financialReport.monthlyBreakdown.slice(-12)}
-                        valueKey="totalAmount"
-                        labelKey="period"
-                        color="bg-[#7C9AA5]"
-                      />
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {revenueMonthlyData.length > 0 ? (
+                      <ChartContainer config={revenueConfig} className="h-[200px] sm:h-[280px] w-full">
+                        <AreaChart data={revenueMonthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="revenueGradientTotal" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3} />
+                              <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0.02} />
+                            </linearGradient>
+                            <linearGradient id="revenueGradientPaid" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor={CHART_COLORS.green} stopOpacity={0.2} />
+                              <stop offset="95%" stopColor={CHART_COLORS.green} stopOpacity={0.02} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                          <XAxis
+                            dataKey="period"
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            tickFormatter={(v) => {
+                              const parts = v.split('-');
+                              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                              return months[parseInt(parts[1]) - 1] + " '" + parts[0].slice(2);
+                            }}
+                          />
+                          <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tick={{ fontSize: 11, fill: '#6B7280' }}
+                            tickFormatter={(v) => '$' + v}
+                          />
+                          <ChartTooltip
+                            content={<ChartTooltipContent />}
+                          />
+                          <ChartLegend content={<ChartLegendContent />} />
+                          <Area
+                            type="monotone"
+                            dataKey="totalAmount"
+                            stroke={CHART_COLORS.primary}
+                            strokeWidth={2}
+                            fill="url(#revenueGradientTotal)"
+                            dot={{ r: 3, fill: CHART_COLORS.primary, strokeWidth: 0 }}
+                            activeDot={{ r: 5, fill: CHART_COLORS.primary, stroke: '#fff', strokeWidth: 2 }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="paidAmount"
+                            stroke={CHART_COLORS.green}
+                            strokeWidth={2}
+                            fill="url(#revenueGradientPaid)"
+                            dot={{ r: 3, fill: CHART_COLORS.green, strokeWidth: 0 }}
+                            activeDot={{ r: 5, fill: CHART_COLORS.green, stroke: '#fff', strokeWidth: 2 }}
+                          />
+                        </AreaChart>
+                      </ChartContainer>
                     ) : (
                       <EmptyState
                         icon={BarChart3}
@@ -591,71 +1061,178 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                {/* Monthly Breakdown Table - Glass Card */}
-                <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-                  <div className="p-6 pb-4">
-                    <h2 className="text-lg font-semibold text-[#1F2937]">Monthly Breakdown</h2>
+                {/* Payment Status Breakdown - DonutChart */}
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
+                    <h2 className="text-lg font-semibold text-[#1F2937]">Payment Status Breakdown</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Fine payment distribution</p>
                   </div>
-                  <div className="px-6 pb-6">
-                    {financialReport?.monthlyBreakdown?.length > 0 ? (
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
-                              <TableHead className="text-[#6B7280] font-semibold">Month</TableHead>
-                              <TableHead className="text-right text-[#6B7280] font-semibold">Total</TableHead>
-                              <TableHead className="text-right hidden sm:table-cell text-[#6B7280] font-semibold">
-                                Paid
-                              </TableHead>
-                              <TableHead className="text-right hidden md:table-cell text-[#6B7280] font-semibold">
-                                Pending
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {financialReport.monthlyBreakdown
-                              .slice(-12)
-                              .map((item, i) => (
-                                <TableRow key={i} className="hover:bg-[#F4F8F9] border-[#E5E7EB]">
-                                  <TableCell className="text-sm font-medium text-[#1F2937]">
-                                    {item.period}
-                                  </TableCell>
-                                  <TableCell className="text-right text-sm text-[#1F2937]">
-                                    ${item.totalAmount?.toFixed(2)}
-                                  </TableCell>
-                                  <TableCell className="text-right text-sm text-[#6B8F83] hidden sm:table-cell">
-                                    ${item.paidAmount?.toFixed(2)}
-                                  </TableCell>
-                                  <TableCell className="text-right text-sm text-[#C4952A] hidden md:table-cell">
-                                    ${item.pendingAmount?.toFixed(2)}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                          </TableBody>
-                        </Table>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    {paymentStatusData.length > 0 ? (
+                      <div className="flex flex-col sm:flex-row items-center gap-6">
+                        <div className="w-full sm:w-1/2">
+                          <ChartContainer config={paymentStatusConfig} className="h-[200px] sm:h-[260px] w-full">
+                            <PieChart>
+                              <ChartTooltip
+                                content={<ChartTooltipContent nameKey="name" hideLabel formatter={(value) => `$${Number(value).toFixed(2)}`} />}
+                              />
+                              <Pie
+                                data={paymentStatusData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={55}
+                                outerRadius={90}
+                                paddingAngle={3}
+                                dataKey="value"
+                                labelLine={false}
+                                label={CustomPieLabel}
+                                strokeWidth={0}
+                              >
+                                {paymentStatusData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ChartContainer>
+                        </div>
+                        <div className="w-full sm:w-1/2 space-y-3">
+                          {paymentStatusData.map((item, index) => (
+                            <div
+                              key={item.name}
+                              className="flex items-center justify-between rounded-xl border border-[#E5E7EB] px-4 py-2.5 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className="h-3 w-3 rounded-full shrink-0"
+                                  style={{ backgroundColor: item.fill }}
+                                />
+                                <span className="text-sm font-medium text-[#1F2937]">
+                                  {item.name}
+                                </span>
+                              </div>
+                              <span className="text-sm font-semibold text-[#1F2937]">
+                                ${item.value.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ) : (
                       <EmptyState
                         icon={DollarSign}
-                        title="No monthly data"
-                        description="Financial data will be available as fines are generated."
+                        title="No payment data"
+                        description="Payment status data will appear as fines are generated."
                       />
                     )}
                   </div>
+                </div>
+              </div>
+
+              {/* Monthly Breakdown Table */}
+              <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                <div className="p-4 sm:p-6 pb-2 sm:pb-4">
+                  <h2 className="text-lg font-semibold text-[#1F2937]">Monthly Breakdown</h2>
+                </div>
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                  {financialReport?.monthlyBreakdown?.length > 0 ? (
+                    <div className="overflow-x-auto table-responsive">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
+                            <TableHead className="text-[#6B7280] font-semibold">Month</TableHead>
+                            <TableHead className="text-right text-[#6B7280] font-semibold">Total</TableHead>
+                            <TableHead className="text-right hidden sm:table-cell text-[#6B7280] font-semibold">
+                              Paid
+                            </TableHead>
+                            <TableHead className="text-right hidden md:table-cell text-[#6B7280] font-semibold">
+                              Pending
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {financialReport.monthlyBreakdown
+                            .slice(-12)
+                            .map((item, i) => (
+                              <TableRow key={i} className="hover:bg-[#F4F8F9] border-[#E5E7EB]">
+                                <TableCell className="text-sm font-medium text-[#1F2937]">
+                                  {item.period}
+                                </TableCell>
+                                <TableCell className="text-right text-sm text-[#1F2937]">
+                                  ${item.totalAmount?.toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right text-sm text-[#6B8F83] hidden sm:table-cell">
+                                  ${item.paidAmount?.toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right text-sm text-[#C4952A] hidden md:table-cell">
+                                  ${item.pendingAmount?.toFixed(2)}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <EmptyState
+                      icon={DollarSign}
+                      title="No monthly data"
+                      description="Financial data will be available as fines are generated."
+                    />
+                  )}
                 </div>
               </div>
             </>
           )}
         </TabsContent>
 
+        {/* ============================================= */}
         {/* Activity Logs Tab */}
+        {/* ============================================= */}
         <TabsContent value="activity" className="space-y-6">
           {loading ? (
             <LoadingSpinner message="Loading activity logs..." />
           ) : (
             <>
-              <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
-                <div className="p-6 pb-4">
+              {/* Activity Timeline Mini Chart */}
+              {activityTimelineData.length > 0 && (
+                <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+                  <div className="p-4 sm:p-6 pb-2 sm:pb-4">
+                    <h2 className="text-lg font-semibold text-[#1F2937]">Activity Timeline</h2>
+                    <p className="text-xs text-[#6B7280] mt-0.5">Daily activity counts</p>
+                  </div>
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+                    <ChartContainer config={activityTimelineConfig} className="h-[160px] sm:h-[220px] w-full">
+                      <BarChart data={activityTimelineData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
+                        <XAxis
+                          dataKey="day"
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fontSize: 11, fill: '#6B7280' }}
+                        />
+                        <YAxis
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fontSize: 11, fill: '#6B7280' }}
+                          allowDecimals={false}
+                        />
+                        <ChartTooltip
+                          content={<ChartTooltipContent />}
+                        />
+                        <Bar
+                          dataKey="count"
+                          fill={CHART_COLORS.blue}
+                          radius={[4, 4, 0, 0]}
+                          barSize={24}
+                        />
+                      </BarChart>
+                    </ChartContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* Activity Log Table */}
+              <div className="rounded-2xl sm:rounded-3xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+                <div className="p-4 sm:p-6 pb-2 sm:pb-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-[#1F2937]">Activity Log</h2>
                     <Badge className="bg-[#E3F2FA] text-[#4A8DB7] hover:bg-[#E3F2FA] border-0 rounded-full px-3">
@@ -673,7 +1250,7 @@ export default function ReportsPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto table-responsive">
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">

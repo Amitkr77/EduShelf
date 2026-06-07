@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  MoreVertical,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -138,18 +139,18 @@ export default function BooksPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Manage Books</h1>
-          <p className="text-[#6B7280] mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Manage Books</h1>
+          <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             {pagination.total} book{pagination.total !== 1 ? 's' : ''} in the library
           </p>
         </div>
         <button
           onClick={() => router.push('/librarian/books/add')}
-          className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+          className="inline-flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
         >
           <Plus className="h-4 w-4" />
           Add Book
@@ -157,7 +158,7 @@ export default function BooksPage() {
       </div>
 
       {/* Search + Filters - Glass Card Header */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <form onSubmit={handleSearchSubmit} className="flex-1">
             <div className="relative">
@@ -166,7 +167,7 @@ export default function BooksPage() {
                 placeholder="Search by title, author, or ISBN..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
               />
             </div>
           </form>
@@ -177,7 +178,7 @@ export default function BooksPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-[180px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+            <SelectTrigger className="w-full sm:w-[180px] rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
               <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -191,7 +192,7 @@ export default function BooksPage() {
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={(val) => { setSortBy(val); setPage(1); }}>
-            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -204,11 +205,11 @@ export default function BooksPage() {
       </div>
 
       {/* Books Table */}
-      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
         {loading ? (
           <LoadingSpinner message="Loading books..." />
         ) : books.length === 0 ? (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <EmptyState
               icon={BookOpen}
               title="No books found"
@@ -223,8 +224,8 @@ export default function BooksPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <Table>
+            <div className="overflow-x-auto table-responsive">
+              <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
                     <TableHead className="w-[60px]">Cover</TableHead>
@@ -289,31 +290,50 @@ export default function BooksPage() {
                         {getAvailabilityBadge(book.availableCopies, book.totalCopies)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-[#6B7280] hover:text-[#1F2937]">
-                              Actions
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="rounded-xl">
-                            <DropdownMenuItem
-                              onClick={() =>
-                                router.push(`/librarian/books/edit/${book._id}`)
-                              }
-                              className="text-[#7C9AA5] focus:text-[#5D7480] rounded-lg"
-                            >
-                              <Pencil className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-[#F28B82] focus:text-[#C25B4F] rounded-lg"
-                              onClick={() => setDeleteDialog({ open: true, book })}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {/* Desktop: Dropdown, Mobile: Icon buttons */}
+                        <div className="hidden sm:block">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-[#6B7280] hover:text-[#1F2937]">
+                                Actions
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="rounded-xl">
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  router.push(`/librarian/books/edit/${book._id}`)
+                                }
+                                className="text-[#7C9AA5] focus:text-[#5D7480] rounded-lg"
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-[#F28B82] focus:text-[#C25B4F] rounded-lg"
+                                onClick={() => setDeleteDialog({ open: true, book })}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        <div className="flex items-center justify-end gap-1 sm:hidden">
+                          <button
+                            onClick={() => router.push(`/librarian/books/edit/${book._id}`)}
+                            className="inline-flex items-center justify-center h-9 w-9 rounded-xl text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+                            aria-label="Edit book"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteDialog({ open: true, book })}
+                            className="inline-flex items-center justify-center h-9 w-9 rounded-xl text-[#F28B82] hover:bg-[#FDE8E6] transition-all duration-200"
+                            aria-label="Delete book"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -323,13 +343,13 @@ export default function BooksPage() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3">
+              <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] px-3 sm:px-4 py-3 gap-2">
                 <p className="text-sm text-[#6B7280]">
                   Page {pagination.page} of {pagination.pages}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                   >
@@ -337,7 +357,7 @@ export default function BooksPage() {
                     Previous
                   </button>
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page >= pagination.pages}
                     onClick={() => setPage((p) => p + 1)}
                   >
@@ -366,13 +386,13 @@ export default function BooksPage() {
           </DialogHeader>
           <DialogFooter>
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
               onClick={() => setDeleteDialog({ open: false, book: null })}
             >
               Cancel
             </button>
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200"
               onClick={handleDelete}
               disabled={deleting}
             >

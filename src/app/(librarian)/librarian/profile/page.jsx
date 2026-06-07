@@ -6,7 +6,7 @@ import {
   Mail,
   Phone,
   Building2,
-  GraduationCap,
+  Shield,
   Save,
   Camera,
   Lock,
@@ -25,7 +25,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import apiFetch from '@/lib/fetcher';
 import { toast } from 'sonner';
 
-export default function ProfilePage() {
+export default function LibrarianProfilePage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -148,39 +148,39 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="page-enter space-y-4 sm:space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl">
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Profile</h1>
-        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
+        <p className="text-[#6B7280] mt-1">
           Manage your personal information and account settings.
         </p>
       </div>
 
       {/* Profile Overview Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6">
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-center gap-6">
           <div className="relative group">
-            <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-[#DDE7EA]">
+            <Avatar className="h-24 w-24 border-4 border-[#DDE7EA]">
               {avatar ? (
                 <AvatarImage src={avatar} alt={name} />
               ) : null}
-              <AvatarFallback className="bg-[#DDE7EA] text-[#5D7480] text-xl sm:text-2xl font-bold border-0">
+              <AvatarFallback className="bg-[#DDE7EA] text-[#5D7480] text-2xl font-bold border-0">
                 {getInitials(name)}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="text-center sm:text-left">
-            <h2 className="text-lg sm:text-xl font-bold text-[#1F2937]">{user.name}</h2>
-            <p className="text-sm sm:text-base text-[#6B7280]">{user.email}</p>
+            <h2 className="text-xl font-bold text-[#1F2937]">{user.name}</h2>
+            <p className="text-[#6B7280]">{user.email}</p>
             <div className="flex items-center gap-2 mt-2 justify-center sm:justify-start flex-wrap">
-              <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium bg-[#DDE7EA] text-[#5D7480]">
-                <GraduationCap className="h-3 w-3" />
-                Student
+              <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium bg-[#7C9AA5]/15 text-[#5D7480]">
+                <Shield className="h-3 w-3" />
+                Librarian
               </span>
-              {user.studentId && (
+              {user.employeeId && (
                 <span className="inline-flex items-center rounded-xl px-2.5 py-1 text-xs font-medium bg-[#F9FAFB] text-[#6B7280] border border-[#E5E7EB]">
-                  ID: {user.studentId}
+                  ID: {user.employeeId}
                 </span>
               )}
               <span
@@ -199,18 +199,18 @@ export default function ProfilePage() {
 
       {/* Edit Profile Form */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <div className="p-3 sm:p-4 md:p-6 pb-2">
+        <div className="p-4 sm:p-6 pb-2">
           <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Edit Profile</h2>
-          <p className="text-xs sm:text-sm text-[#6B7280] mt-1">
+          <p className="text-sm text-[#6B7280] mt-1">
             Update your personal information.
           </p>
         </div>
-        <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 space-y-4">
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-                <User className="h-4 w-4" />
+              <Label htmlFor="name" className="flex items-center gap-2 text-[#1F2937]">
+                <User className="h-4 w-4 text-[#6B7280]" />
                 Full Name
               </Label>
               <Input
@@ -218,21 +218,21 @@ export default function ProfilePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your full name"
-                className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-                <Mail className="h-4 w-4" />
+              <Label htmlFor="email" className="flex items-center gap-2 text-[#1F2937]">
+                <Mail className="h-4 w-4 text-[#6B7280]" />
                 Email
               </Label>
               <Input
                 id="email"
                 value={user.email}
                 disabled
-                className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] text-[#6B7280]"
+                className="rounded-xl border-[#E5E7EB] bg-[#F9FAFB]/60 text-[#6B7280]"
               />
               <p className="text-xs text-[#6B7280]">
                 Email cannot be changed.
@@ -241,8 +241,8 @@ export default function ProfilePage() {
 
             {/* Phone */}
             <div className="space-y-2">
-              <Label htmlFor="phone" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-                <Phone className="h-4 w-4" />
+              <Label htmlFor="phone" className="flex items-center gap-2 text-[#1F2937]">
+                <Phone className="h-4 w-4 text-[#6B7280]" />
                 Phone Number
               </Label>
               <Input
@@ -250,14 +250,14 @@ export default function ProfilePage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Enter your phone number"
-                className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
 
             {/* Department */}
             <div className="space-y-2">
-              <Label htmlFor="department" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-                <Building2 className="h-4 w-4" />
+              <Label htmlFor="department" className="flex items-center gap-2 text-[#1F2937]">
+                <Building2 className="h-4 w-4 text-[#6B7280]" />
                 Department
               </Label>
               <Input
@@ -265,15 +265,15 @@ export default function ProfilePage() {
                 value={department}
                 onChange={(e) => setDepartment(e.target.value)}
                 placeholder="Enter your department"
-                className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
             </div>
           </div>
 
           {/* Avatar URL */}
           <div className="space-y-2">
-            <Label htmlFor="avatar" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-              <Camera className="h-4 w-4" />
+            <Label htmlFor="avatar" className="flex items-center gap-2 text-[#1F2937]">
+              <Camera className="h-4 w-4 text-[#6B7280]" />
               Avatar URL
             </Label>
             <Input
@@ -281,27 +281,13 @@ export default function ProfilePage() {
               value={avatar}
               onChange={(e) => setAvatar(e.target.value)}
               placeholder="Enter avatar image URL"
-              className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
-            />
-          </div>
-
-          {/* Student ID (read-only) */}
-          <div className="space-y-2">
-            <Label htmlFor="studentId" className="flex items-center gap-2 text-xs sm:text-sm font-medium text-[#6B7280]">
-              <GraduationCap className="h-4 w-4" />
-              Student ID
-            </Label>
-            <Input
-              id="studentId"
-              value={user.studentId || 'Not assigned'}
-              disabled
-              className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] text-[#6B7280]"
+              className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
             />
           </div>
 
           <div className="flex justify-end pt-2">
             <Button
-              className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
+              className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200"
               onClick={handleSaveProfile}
               disabled={saving}
             >
@@ -312,10 +298,10 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Change Password - Separate Card */}
+      {/* Change Password */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
         <div
-          className="p-3 sm:p-4 md:p-6 pb-2 cursor-pointer flex items-center justify-between"
+          className="p-4 sm:p-6 pb-2 cursor-pointer flex items-center justify-between"
           onClick={() => setShowPasswordSection(!showPasswordSection)}
         >
           <div>
@@ -323,7 +309,7 @@ export default function ProfilePage() {
               <Lock className="h-5 w-5 text-[#5D7480]" />
               Change Password
             </h2>
-            <p className="text-xs sm:text-sm text-[#6B7280] mt-1">
+            <p className="text-sm text-[#6B7280] mt-1">
               Update your account password for security.
             </p>
           </div>
@@ -337,77 +323,75 @@ export default function ProfilePage() {
         </div>
 
         {showPasswordSection && (
-          <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6 space-y-4">
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
             <Separator className="bg-[#E5E7EB]" />
 
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-              {/* Current Password */}
-              <div className="space-y-2">
-                <Label htmlFor="currentPassword" className="text-xs sm:text-sm font-medium text-[#6B7280]">Current Password</Label>
-                <div className="relative">
-                  <Input
-                    id="currentPassword"
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Enter current password"
-                    className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className="h-4 w-4 text-[#6B7280]" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-[#6B7280]" />
-                    )}
-                  </Button>
-                </div>
+            {/* Current Password */}
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword" className="text-[#1F2937]">Current Password</Label>
+              <div className="relative">
+                <Input
+                  id="currentPassword"
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                  className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? (
+                    <EyeOff className="h-4 w-4 text-[#6B7280]" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-[#6B7280]" />
+                  )}
+                </Button>
               </div>
+            </div>
 
-              {/* New Password */}
-              <div className="space-y-2">
-                <Label htmlFor="newPassword" className="text-xs sm:text-sm font-medium text-[#6B7280]">New Password</Label>
-                <div className="relative">
-                  <Input
-                    id="newPassword"
-                    type={showNewPassword ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Min. 6 characters"
-                    className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                  >
-                    {showNewPassword ? (
-                      <EyeOff className="h-4 w-4 text-[#6B7280]" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-[#6B7280]" />
-                    )}
-                  </Button>
-                </div>
+            {/* New Password */}
+            <div className="space-y-2">
+              <Label htmlFor="newPassword" className="text-[#1F2937]">New Password</Label>
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min. 6 characters)"
+                  className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? (
+                    <EyeOff className="h-4 w-4 text-[#6B7280]" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-[#6B7280]" />
+                  )}
+                </Button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-[#6B7280]">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword" className="text-[#1F2937]">Confirm New Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
-                className="h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+                className="rounded-xl border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
               />
               {confirmPassword && newPassword !== confirmPassword && (
                 <p className="text-xs text-[#C25B4F]">Passwords do not match</p>
@@ -416,7 +400,7 @@ export default function ProfilePage() {
 
             <div className="flex justify-end pt-2">
               <Button
-                className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
+                className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200"
                 onClick={handleChangePassword}
                 disabled={
                   changingPassword ||
@@ -436,11 +420,11 @@ export default function ProfilePage() {
 
       {/* Account Info */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <div className="p-3 sm:p-4 md:p-6 pb-2">
+        <div className="p-4 sm:p-6 pb-2">
           <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Account Information</h2>
         </div>
-        <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6">
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div className="flex items-center gap-2 text-sm">
               <span className="text-[#6B7280]">Account Created:</span>
               <span className="font-medium text-[#1F2937]">
@@ -463,6 +447,13 @@ export default function ProfilePage() {
                       year: 'numeric',
                     })
                   : '—'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-[#6B7280]">Role:</span>
+              <span className="inline-flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-medium bg-[#7C9AA5]/15 text-[#5D7480]">
+                <Shield className="h-3 w-3" />
+                {user.role === 'admin' ? 'Administrator' : 'Librarian'}
               </span>
             </div>
           </div>

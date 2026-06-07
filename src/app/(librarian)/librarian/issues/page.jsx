@@ -202,18 +202,18 @@ export default function IssuesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Issue Books</h1>
-          <p className="text-[#6B7280] mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Issue Books</h1>
+          <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Approve borrow requests and issue books to students.
           </p>
         </div>
         <button
           onClick={() => setManualDialog(true)}
-          className="inline-flex items-center gap-2 h-12 px-6 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+          className="inline-flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
         >
           <BookPlus className="h-4 w-4" />
           Manual Issue
@@ -222,10 +222,10 @@ export default function IssuesPage() {
 
       {/* Tabs */}
       <Tabs defaultValue="pending" className="space-y-4">
-        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-1">
+        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-1">
           <TabsTrigger
             value="pending"
-            className="gap-2 rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-4 py-2 text-sm font-medium text-[#6B7280] transition-all"
+            className="gap-1 sm:gap-2 rounded-lg sm:rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-[#6B7280] transition-all"
           >
             Pending Requests
             {pendingRequests.length > 0 && (
@@ -236,7 +236,7 @@ export default function IssuesPage() {
           </TabsTrigger>
           <TabsTrigger
             value="issued"
-            className="gap-2 rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-4 py-2 text-sm font-medium text-[#6B7280] transition-all"
+            className="gap-1 sm:gap-2 rounded-lg sm:rounded-xl data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white data-[state=active]:shadow-sm px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-[#6B7280] transition-all"
           >
             Recently Issued
           </TabsTrigger>
@@ -244,11 +244,11 @@ export default function IssuesPage() {
 
         {/* Pending Requests */}
         <TabsContent value="pending">
-          <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-            <div className="p-6 pb-4">
-              <h2 className="text-lg font-semibold text-[#1F2937]">Pending Borrow Requests</h2>
+          <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
+              <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Pending Borrow Requests</h2>
             </div>
-            <div className="px-6 pb-6">
+            <div className="p-3 sm:p-4 md:p-6 pt-0 sm:pt-0">
               {pendingRequests.length === 0 ? (
                 <EmptyState
                   icon={Clock}
@@ -261,10 +261,10 @@ export default function IssuesPage() {
                     {pendingRequests.map((request) => (
                       <div
                         key={request._id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl sm:rounded-2xl border border-[#E5E7EB] p-3 sm:p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FEF3E2] shrink-0">
+                          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-[#FEF3E2] shrink-0">
                             <BookOpen className="h-5 w-5 text-[#C4952A]" />
                           </div>
                           <div className="min-w-0">
@@ -292,7 +292,7 @@ export default function IssuesPage() {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <button
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                            className="inline-flex items-center gap-1.5 min-h-[44px] px-4 py-2 rounded-xl sm:rounded-2xl text-xs font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
                             onClick={() =>
                               setActionDialog({
                                 open: true,
@@ -302,10 +302,11 @@ export default function IssuesPage() {
                             }
                           >
                             <CheckCircle className="h-3.5 w-3.5" />
-                            Approve & Issue
+                            <span className="sm:inline">Approve & Issue</span>
+                            <span className="hidden sm:inline">&nbsp;Issue</span>
                           </button>
                           <button
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-medium bg-[#FDE8E6] text-[#C25B4F] hover:opacity-90 transition-all duration-200"
+                            className="inline-flex items-center gap-1.5 min-h-[44px] px-4 py-2 rounded-xl sm:rounded-2xl text-xs font-medium bg-[#FDE8E6] text-[#C25B4F] hover:opacity-90 transition-all duration-200"
                             onClick={() =>
                               setActionDialog({
                                 open: true,
@@ -329,11 +330,11 @@ export default function IssuesPage() {
 
         {/* Recently Issued */}
         <TabsContent value="issued">
-          <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-            <div className="p-6 pb-4">
-              <h2 className="text-lg font-semibold text-[#1F2937]">Recently Issued Books</h2>
+          <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
+              <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Recently Issued Books</h2>
             </div>
-            <div className="px-6 pb-6">
+            <div className="p-3 sm:p-4 md:p-6 pt-0 sm:pt-0">
               {recentlyIssued.length === 0 ? (
                 <EmptyState
                   icon={BookOpen}
@@ -346,10 +347,10 @@ export default function IssuesPage() {
                     {recentlyIssued.map((borrow) => (
                       <div
                         key={borrow._id}
-                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-[#E5E7EB] p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl sm:rounded-2xl border border-[#E5E7EB] p-3 sm:p-4 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#E8F0EC] shrink-0">
+                          <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-[#E8F0EC] shrink-0">
                             <BookOpen className="h-5 w-5 text-[#6B8F83]" />
                           </div>
                           <div className="min-w-0">
@@ -365,7 +366,7 @@ export default function IssuesPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-4 shrink-0">
-                          <div className="text-right">
+                          <div className="text-right sm:text-right">
                             <p className="text-xs text-[#6B7280]">
                               Issued: {formatDate(borrow.issueDate)}
                             </p>
@@ -407,9 +408,9 @@ export default function IssuesPage() {
                 : `Are you sure you want to reject the borrow request for "${actionDialog.item?.bookId?.title}" by ${actionDialog.item?.userId?.name}?`}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 w-full sm:w-auto"
               onClick={() =>
                 setActionDialog({ open: false, type: '', item: null })
               }
@@ -418,7 +419,7 @@ export default function IssuesPage() {
             </button>
             {actionDialog.type === 'approve' ? (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 w-full sm:w-auto"
                 onClick={() => handleApprove(actionDialog.item?._id)}
                 disabled={processing}
               >
@@ -427,7 +428,7 @@ export default function IssuesPage() {
               </button>
             ) : (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#F28B82] hover:opacity-90 text-white transition-all duration-200 w-full sm:w-auto"
                 onClick={() => handleReject(actionDialog.item?._id)}
                 disabled={processing}
               >
@@ -451,7 +452,7 @@ export default function IssuesPage() {
           <div className="space-y-4">
             {/* Student Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#1F2937]">Student</label>
+              <label className="text-xs sm:text-sm font-medium text-[#6B7280]">Student</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
@@ -461,7 +462,7 @@ export default function IssuesPage() {
                     setStudentSearch(e.target.value);
                     searchStudents(e.target.value);
                   }}
-                  className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                  className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                 />
               </div>
               {students.length > 0 && (
@@ -503,7 +504,7 @@ export default function IssuesPage() {
 
             {/* Book Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#1F2937]">Book</label>
+              <label className="text-xs sm:text-sm font-medium text-[#6B7280]">Book</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
@@ -513,7 +514,7 @@ export default function IssuesPage() {
                     setBookSearch(e.target.value);
                     searchBooks(e.target.value);
                   }}
-                  className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                  className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
                 />
               </div>
               {books.length > 0 && (
@@ -550,15 +551,15 @@ export default function IssuesPage() {
               )}
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 w-full sm:w-auto"
               onClick={() => setManualDialog(false)}
             >
               Cancel
             </button>
             <button
-              className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 disabled:opacity-50 w-full sm:w-auto"
               onClick={handleManualIssue}
               disabled={
                 issuing || !manualIssue.studentId || !manualIssue.bookId

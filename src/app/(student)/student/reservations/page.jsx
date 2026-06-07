@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 
 const statusBadgeMap = {
   active: 'bg-[#E8F0EC] text-[#6B8F83]',
-  fulfilled: 'bg-[#DDE7EA] text-[#5D7480]',
+  fulfilled: 'bg-[#E8F0EC] text-[#6B8F83]',
   expired: 'bg-[#FEF3E2] text-[#C4952A]',
   cancelled: 'bg-[#F9FAFB] text-[#6B7280]',
 };
@@ -45,7 +45,7 @@ const statusIcons = {
 
 const statusIconColors = {
   active: 'bg-[#E8F0EC] text-[#6B8F83]',
-  fulfilled: 'bg-[#DDE7EA] text-[#5D7480]',
+  fulfilled: 'bg-[#E8F0EC] text-[#6B8F83]',
   expired: 'bg-[#FEF3E2] text-[#C4952A]',
   cancelled: 'bg-[#F9FAFB] text-[#6B7280]',
 };
@@ -129,26 +129,26 @@ export default function ReservationsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Reservations</h1>
-        <p className="text-[#6B7280] mt-1">
+        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Reservations</h1>
+        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
           Track your book reservations and queue positions.
         </p>
       </div>
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-2xl p-1">
+        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-1 w-full sm:w-auto">
           <TabsTrigger
             value="active"
-            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-xl px-4 transition-all duration-200"
+            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-lg sm:rounded-xl px-3 sm:px-4 transition-all duration-200 flex-1 sm:flex-initial text-sm"
           >
             Active ({activeReservations.length})
           </TabsTrigger>
           <TabsTrigger
             value="past"
-            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-xl px-4 transition-all duration-200"
+            className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-lg sm:rounded-xl px-3 sm:px-4 transition-all duration-200 flex-1 sm:flex-initial text-sm"
           >
             Past ({pastReservations.length})
           </TabsTrigger>
@@ -165,7 +165,7 @@ export default function ReservationsPage() {
               onAction={() => (window.location.href = '/student/books')}
             />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 sm:space-y-4">
               {activeReservations.map((reservation) => {
                 const book = reservation.bookId || {};
                 const StatusIcon = statusIcons[reservation.status] || Clock;
@@ -177,41 +177,41 @@ export default function ReservationsPage() {
                 return (
                   <div
                     key={reservation._id}
-                    className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 sm:p-6 transition-all duration-200 hover:-translate-y-0.5"
+                    className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6 transition-all duration-200 hover:-translate-y-0.5"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconColor}`}>
-                          <StatusIcon className="h-6 w-6" />
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl ${iconColor}`}>
+                          <StatusIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
                         <div className="min-w-0">
                           <Link
                             href={`/student/books/${book._id}`}
-                            className="font-semibold hover:text-[#5D7480] transition-colors text-[#1F2937]"
+                            className="font-semibold hover:text-[#5D7480] transition-colors text-sm sm:text-base text-[#1F2937]"
                           >
                             {book.title || 'Unknown Book'}
                           </Link>
-                          <p className="text-sm text-[#6B7280]">
+                          <p className="text-xs sm:text-sm text-[#6B7280]">
                             {book.author || 'Unknown Author'}
                           </p>
-                          <div className="flex flex-wrap items-center gap-3 mt-2">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5 sm:mt-2">
                             {/* Queue Position */}
                             <div className="flex items-center gap-1.5">
                               <Users className="h-3.5 w-3.5 text-[#5D7480]" />
-                              <span className="text-sm font-medium text-[#5D7480]">
-                                Queue Position: #{reservation.queuePosition}
+                              <span className="text-xs sm:text-sm font-medium text-[#5D7480]">
+                                Queue: #{reservation.queuePosition}
                               </span>
                             </div>
 
-                            {/* Reserved Date */}
-                            <span className="text-xs text-[#6B7280] flex items-center gap-1">
+                            {/* Reserved Date - hidden on small mobile */}
+                            <span className="text-[10px] sm:text-xs text-[#6B7280] flex items-center gap-1 hidden sm:flex">
                               <Calendar className="h-3 w-3" />
                               Reserved: {formatDate(reservation.reservedDate)}
                             </span>
 
                             {/* Expiry Date (if notified) */}
                             {hasExpiry && (
-                              <span className="text-xs text-[#C4952A] font-medium flex items-center gap-1">
+                              <span className="text-[10px] sm:text-xs text-[#C4952A] font-medium flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" />
                                 Expires: {formatDateTime(reservation.expiryDate)}
                               </span>
@@ -222,7 +222,7 @@ export default function ReservationsPage() {
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span
-                          className={`text-xs font-medium rounded-xl px-2.5 py-0.5 ${
+                          className={`text-xs font-medium rounded-lg sm:rounded-xl px-2 py-0.5 ${
                             statusBadgeMap[reservation.status] || 'bg-[#F9FAFB] text-[#6B7280]'
                           }`}
                         >
@@ -230,7 +230,7 @@ export default function ReservationsPage() {
                         </span>
                         <Button
                           size="sm"
-                          className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl transition-all duration-200"
+                          className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl transition-all duration-200 hover:-translate-y-0.5"
                           onClick={() => {
                             setCancellingReservation(reservation);
                             setCancelDialogOpen(true);
@@ -257,19 +257,19 @@ export default function ReservationsPage() {
               description="Your fulfilled, expired, or cancelled reservations will appear here."
             />
           ) : (
-            <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
               {/* Desktop table */}
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="hidden md:block table-responsive overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-[#E5E7EB] bg-[#F9FAFB]/80">
                       <th className="text-left text-sm font-medium text-[#6B7280] p-4">
                         Book
                       </th>
-                      <th className="text-left text-sm font-medium text-[#6B7280] p-4">
+                      <th className="text-left text-sm font-medium text-[#6B7280] p-4 hidden lg:table-cell">
                         Queue Position
                       </th>
-                      <th className="text-left text-sm font-medium text-[#6B7280] p-4">
+                      <th className="text-left text-sm font-medium text-[#6B7280] p-4 hidden sm:table-cell">
                         Reserved Date
                       </th>
                       <th className="text-left text-sm font-medium text-[#6B7280] p-4">
@@ -293,10 +293,10 @@ export default function ReservationsPage() {
                               {book.author || 'Unknown Author'}
                             </p>
                           </td>
-                          <td className="p-4 text-sm text-[#6B7280]">
+                          <td className="p-4 text-sm text-[#6B7280] hidden lg:table-cell">
                             #{reservation.queuePosition}
                           </td>
-                          <td className="p-4 text-sm text-[#6B7280]">
+                          <td className="p-4 text-sm text-[#6B7280] hidden sm:table-cell">
                             {formatDate(reservation.reservedDate)}
                           </td>
                           <td className="p-4">
@@ -315,18 +315,18 @@ export default function ReservationsPage() {
                 </table>
               </div>
 
-              {/* Mobile cards */}
-              <div className="sm:hidden divide-y divide-[#E5E7EB]">
+              {/* Mobile/tablet cards */}
+              <div className="md:hidden divide-y divide-[#E5E7EB]">
                 {pastReservations.map((reservation) => {
                   const book = reservation.bookId || {};
 
                   return (
-                    <div key={reservation._id} className="p-4 space-y-2">
+                    <div key={reservation._id} className="p-3 sm:p-4 space-y-2">
                       <div className="flex items-start justify-between">
-                        <div>
+                        <div className="min-w-0">
                           <Link
                             href={`/student/books/${book._id}`}
-                            className="font-medium hover:text-[#5D7480] text-[#1F2937]"
+                            className="font-medium hover:text-[#5D7480] text-sm text-[#1F2937]"
                           >
                             {book.title || 'Unknown Book'}
                           </Link>
@@ -335,7 +335,7 @@ export default function ReservationsPage() {
                           </p>
                         </div>
                         <span
-                          className={`text-xs font-medium rounded-xl px-2.5 py-0.5 ${
+                          className={`text-xs font-medium rounded-lg px-2 py-0.5 shrink-0 ml-2 ${
                             statusBadgeMap[reservation.status] || 'bg-[#F9FAFB] text-[#6B7280]'
                           }`}
                         >
@@ -344,7 +344,7 @@ export default function ReservationsPage() {
                       </div>
                       <div className="flex items-center gap-3 text-xs text-[#6B7280]">
                         <span>Queue: #{reservation.queuePosition}</span>
-                        <span>Reserved: {formatDate(reservation.reservedDate)}</span>
+                        <span className="hidden sm:inline">Reserved: {formatDate(reservation.reservedDate)}</span>
                       </div>
                     </div>
                   );
@@ -357,7 +357,7 @@ export default function ReservationsPage() {
 
       {/* Cancel Confirmation Dialog */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent className="rounded-3xl">
+        <DialogContent className="rounded-2xl sm:rounded-3xl">
           <DialogHeader>
             <DialogTitle className="text-[#1F2937]">Cancel Reservation</DialogTitle>
             <DialogDescription className="text-[#6B7280]">
@@ -368,12 +368,12 @@ export default function ReservationsPage() {
           </DialogHeader>
           <DialogFooter className="gap-2">
             <DialogClose asChild>
-              <Button variant="outline" className="rounded-2xl border-[#E5E7EB] text-[#6B7280]">
+              <Button variant="outline" className="rounded-xl sm:rounded-2xl border-[#E5E7EB] text-[#6B7280] transition-all duration-200">
                 Keep Reservation
               </Button>
             </DialogClose>
             <Button
-              className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-2xl transition-all duration-200"
+              className="bg-[#F28B82] hover:bg-[#C25B4F] text-white rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
               onClick={handleCancel}
               disabled={cancelling}
             >

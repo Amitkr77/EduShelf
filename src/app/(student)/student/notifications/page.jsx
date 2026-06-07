@@ -181,12 +181,12 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Notifications</h1>
-          <p className="text-[#6B7280] mt-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Notifications</h1>
+          <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Stay updated with your library activity.
             {unreadCount > 0 && (
               <span className="ml-1 text-[#5D7480] font-medium">
@@ -195,13 +195,13 @@ export default function NotificationsPage() {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Filter */}
           <Select
             value={filterType}
             onValueChange={setFilterType}
           >
-            <SelectTrigger className="w-44 rounded-xl border-[#E5E7EB] bg-white/80 backdrop-blur-sm focus-visible:ring-2 focus-visible:ring-[#5D7480]">
+            <SelectTrigger className="w-full sm:w-44 h-11 sm:h-10 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]">
               <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
@@ -223,7 +223,7 @@ export default function NotificationsPage() {
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={markingAll}
-              className="text-[#5D7480] border-[#E5E7EB] hover:bg-[#DDE7EA]/30 rounded-2xl transition-all duration-200"
+              className="border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 rounded-xl sm:rounded-2xl transition-all duration-200 hover:-translate-y-0.5 w-full sm:w-auto"
             >
               <CheckCheck className="h-4 w-4 mr-1" />
               {markingAll ? 'Marking...' : 'Mark All Read'}
@@ -250,21 +250,21 @@ export default function NotificationsPage() {
           }
         />
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {['today', 'yesterday', 'earlier'].map((group) => {
             const items = grouped[group];
             if (items.length === 0) return null;
 
             return (
               <div key={group}>
-                <h3 className="text-sm font-semibold text-[#6B7280] mb-3 uppercase tracking-wider">
+                <h3 className="text-xs sm:text-sm font-semibold text-[#6B7280] mb-2 sm:mb-3 uppercase tracking-wider">
                   {group === 'today'
                     ? 'Today'
                     : group === 'yesterday'
                     ? 'Yesterday'
                     : 'Earlier'}
                 </h3>
-                <div className="space-y-2">
+                <div className="space-y-2 sm:space-y-3">
                   {items.map((notification) => {
                     const Icon = typeIcons[notification.type] || Info;
                     const color =
@@ -275,29 +275,29 @@ export default function NotificationsPage() {
                     return (
                       <div
                         key={notification._id}
-                        className={`rounded-2xl bg-white/90 backdrop-blur-[20px] border cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+                        className={`rounded-xl sm:rounded-2xl lg:rounded-3xl bg-white/90 backdrop-blur-[20px] border cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md min-h-[44px] ${
                           !notification.isRead
                             ? 'border-[#7C9AA5]/30 shadow-[0_2px_8px_rgba(124,154,165,0.1)]'
                             : 'border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]'
                         }`}
                         onClick={() => handleMarkAsRead(notification._id)}
                       >
-                        <div className="p-4">
-                          <div className="flex items-start gap-3">
+                        <div className="p-3 sm:p-4">
+                          <div className="flex items-start gap-2.5 sm:gap-3">
                             {/* Icon */}
                             <div
-                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${color}`}
+                              className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${color}`}
                             >
-                              <Icon className="h-4 w-4" />
+                              <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
 
                             {/* Content */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
-                                  <div className="flex items-center gap-2 mb-0.5">
+                                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                                     <span
-                                      className={`text-xs font-medium rounded-xl px-2 py-0.5 ${badgeColor}`}
+                                      className={`text-[10px] sm:text-xs font-medium rounded-lg sm:rounded-xl px-1.5 sm:px-2 py-0.5 ${badgeColor}`}
                                     >
                                       {typeLabels[notification.type] || 'General'}
                                     </span>
@@ -306,7 +306,7 @@ export default function NotificationsPage() {
                                     )}
                                   </div>
                                   <p
-                                    className={`text-sm leading-relaxed ${
+                                    className={`text-xs sm:text-sm leading-relaxed ${
                                       !notification.isRead
                                         ? 'font-medium text-[#1F2937]'
                                         : 'text-[#6B7280]'
@@ -315,7 +315,7 @@ export default function NotificationsPage() {
                                     {notification.message}
                                   </p>
                                 </div>
-                                <span className="text-xs text-[#6B7280] shrink-0 whitespace-nowrap">
+                                <span className="text-[10px] sm:text-xs text-[#6B7280] shrink-0 whitespace-nowrap">
                                   {formatTime(notification.createdAt)}
                                 </span>
                               </div>

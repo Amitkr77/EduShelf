@@ -47,20 +47,20 @@ export default function StatsCard({
   const colors = colorMap[color] || colorMap.emerald;
 
   return (
-    <div className="rounded-3xl p-6 bg-white/8 backdrop-blur-[20px] border border-white/12 hover-lift cursor-default">
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-2 flex-1">
-          <p className="text-xs font-medium text-[#6B7280] uppercase tracking-wide">{title}</p>
-          <p className="text-[28px] font-bold tracking-tight text-[#1F2937]">{value}</p>
+    <div className="rounded-2xl sm:rounded-3xl p-4 sm:p-6 bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover-lift cursor-default transition-all duration-200">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+          <p className="text-[10px] sm:text-xs font-medium text-[#6B7280] uppercase tracking-wide truncate">{title}</p>
+          <p className="text-xl sm:text-[28px] font-bold tracking-tight text-[#1F2937]">{value}</p>
           {trend && trendValue && (
             <div className="flex items-center gap-1.5">
               {trend === 'up' ? (
-                <TrendingUp className="h-4 w-4 text-[#7CCB7A]" />
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-[#7CCB7A]" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-[#F28B82]" />
+                <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-[#F28B82]" />
               )}
               <span
-                className={`text-xs font-semibold ${
+                className={`text-[10px] sm:text-xs font-semibold ${
                   trend === 'up' ? 'text-[#7CCB7A]' : 'text-[#F28B82]'
                 }`}
               >
@@ -69,14 +69,14 @@ export default function StatsCard({
             </div>
           )}
           {comparison && (
-            <p className="text-[11px] text-[#6B7280]/70">{comparison}</p>
+            <p className="text-[10px] sm:text-[11px] text-[#6B7280]/70 truncate">{comparison}</p>
           )}
         </div>
         {Icon && (
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${colors.bg}`}
+            className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl ${colors.bg} shrink-0`}
           >
-            <Icon className={`h-6 w-6 ${colors.icon}`} />
+            <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${colors.icon}`} />
           </div>
         )}
       </div>

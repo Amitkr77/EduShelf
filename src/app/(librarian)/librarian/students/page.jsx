@@ -12,6 +12,7 @@ import {
   BookOpen,
   DollarSign,
   Filter,
+  MoreVertical,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -176,17 +177,17 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
       <div>
-        <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Student Management</h1>
-        <p className="text-[#6B7280] mt-1">
+        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Student Management</h1>
+        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
           {pagination.total} registered student{pagination.total !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Search/Filter - Glass Card */}
-      <div className="rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <form onSubmit={handleSearchSubmit} className="flex-1">
             <div className="relative">
@@ -195,7 +196,7 @@ export default function StudentsPage() {
                 placeholder="Search by name, email, or student ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
+                className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
               />
             </div>
           </form>
@@ -206,7 +207,7 @@ export default function StudentsPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
+            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
               <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -220,12 +221,12 @@ export default function StudentsPage() {
         </div>
       </div>
 
-      {/* Students Table */}
-      <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+      {/* Students Table / Cards */}
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
         {loading ? (
           <LoadingSpinner message="Loading students..." />
         ) : students.length === 0 ? (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <EmptyState
               icon={Users}
               title="No students found"
@@ -238,8 +239,82 @@ export default function StudentsPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <Table>
+            {/* Mobile: Card Layout */}
+            <div className="sm:hidden p-3 space-y-3 max-h-[70vh] overflow-y-auto">
+              {students.map((student) => {
+                const stats = studentStats[student._id] || { borrowed: 0, fines: 0 };
+                return (
+                  <div
+                    key={student._id}
+                    className="rounded-xl border border-[#E5E7EB] p-3 bg-white transition-all duration-200 hover:shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-[#E3F2FA] text-[#4A8DB7] text-xs">
+                            {getInitials(student.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="font-medium text-sm text-[#1F2937] truncate">
+                            {student.name}
+                          </p>
+                          <p className="text-xs text-[#6B7280] flex items-center gap-1">
+                            <Mail className="h-3 w-3" />
+                            {student.email}
+                          </p>
+                        </div>
+                      </div>
+                      {getStatusBadge(student.status)}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[#6B7280] flex items-center gap-1">
+                          <BookOpen className="h-3 w-3" />
+                          {stats.borrowed} borrowed
+                        </span>
+                        {stats.fines > 0 && (
+                          <span className="text-[#C25B4F] flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            ${stats.fines.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <button
+                        className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-xl text-xs font-medium transition-all duration-200 ${
+                          student.status === 'active'
+                            ? 'border border-[#C4952A] text-[#C4952A] hover:bg-[#FEF3E2]'
+                            : 'border border-[#6B8F83] text-[#6B8F83] hover:bg-[#E8F0EC]'
+                        }`}
+                        onClick={() =>
+                          setActionDialog({
+                            open: true,
+                            type: student.status === 'active' ? 'suspend' : 'activate',
+                            student,
+                          })
+                        }
+                      >
+                        {student.status === 'active' ? (
+                          <>
+                            <ShieldBan className="h-3.5 w-3.5 mr-1" />
+                            Suspend
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                            Activate
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop: Table Layout */}
+            <div className="hidden sm:block overflow-x-auto table-responsive">
+              <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
                     <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
@@ -363,13 +438,13 @@ export default function StudentsPage() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#E5E7EB] px-4 py-3">
+              <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] px-3 sm:px-4 py-3 gap-2">
                 <p className="text-sm text-[#6B7280]">
                   Page {pagination.page} of {pagination.pages}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                   >
@@ -377,7 +452,7 @@ export default function StudentsPage() {
                     Previous
                   </button>
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={pagination.page >= pagination.pages}
                     onClick={() => setPage((p) => p + 1)}
                   >
@@ -411,9 +486,9 @@ export default function StudentsPage() {
                 : `Are you sure you want to reactivate ${actionDialog.student?.name}? They will regain full access to the library.`}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <button
-              className="inline-flex items-center justify-center h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200"
+              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 w-full sm:w-auto"
               onClick={() =>
                 setActionDialog({ open: false, type: '', student: null })
               }
@@ -422,7 +497,7 @@ export default function StudentsPage() {
             </button>
             {actionDialog.type === 'suspend' ? (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
                 onClick={() =>
                   handleStatusChange(
                     actionDialog.student?._id,
@@ -436,7 +511,7 @@ export default function StudentsPage() {
               </button>
             ) : (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200"
+                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
                 onClick={() =>
                   handleStatusChange(actionDialog.student?._id, 'active')
                 }
