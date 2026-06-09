@@ -83,7 +83,7 @@ export default function WishlistPage() {
   return (
     <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Wishlist</h1>
           <p className="text-sm sm:text-base text-[#6B7280] mt-1">
@@ -96,7 +96,7 @@ export default function WishlistPage() {
             {wishlistItems.length} book{wishlistItems.length !== 1 ? 's' : ''}
           </span>
         )}
-      </div>
+      </div> */}
 
       {wishlistItems.length === 0 ? (
         <EmptyState

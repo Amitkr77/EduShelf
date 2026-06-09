@@ -205,7 +205,7 @@ export default function Sidebar({ items, currentPath, role, user }) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0 bg-[#688997] z-30">
+      <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:fixed lg:inset-y-0  z-30">
         <SidebarContent
           items={sidebarItems}
           currentPath={currentPath}

@@ -155,15 +155,15 @@ export default function ReturnsPage() {
   return (
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div>
+      {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Process Returns</h1>
         <p className="text-sm sm:text-base text-[#6B7280] mt-1">
           Manage book returns and renewals.
         </p>
-      </div>
+      </div> */}
 
       {/* Search - Glass Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
+      <div className="rounded-2xl sm:rounded-3xl  backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
           <input
@@ -278,7 +278,7 @@ export default function ReturnsPage() {
             </div>
 
             {/* Desktop: Table Layout */}
-            <div className="hidden sm:block overflow-x-auto table-responsive">
+            <div className="hidden sm:block overflow-x-auto table-responsive p-6">
               <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">

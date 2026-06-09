@@ -337,10 +337,10 @@ export default function LibrarianDashboardPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Page Header */}
-      <div>
+      {/* <div>
         <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Dashboard</h1>
         <p className="text-[#6B7280] mt-1">Manage your library operations at a glance.</p>
-      </div>
+      </div> */}
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-5">

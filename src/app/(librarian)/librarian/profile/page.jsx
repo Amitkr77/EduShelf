@@ -150,12 +150,12 @@ export default function LibrarianProfilePage() {
   return (
     <div className="space-y-6 max-w-3xl">
       {/* Header */}
-      <div>
+      {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Profile</h1>
         <p className="text-[#6B7280] mt-1">
           Manage your personal information and account settings.
         </p>
-      </div>
+      </div> */}
 
       {/* Profile Overview Card */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 sm:p-6">

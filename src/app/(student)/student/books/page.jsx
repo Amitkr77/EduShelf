@@ -222,13 +222,6 @@ export default function BooksBrowsePage() {
 
   return (
     <div className="page-enter space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Browse Books</h1>
-        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
-          Explore our library collection and find your next great read.
-        </p>
-      </div>
 
       {/* Search Bar + Filter Toggle */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -304,7 +297,7 @@ export default function BooksBrowsePage() {
           ) : (
             <>
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-[#6B7280]">
+                <p className="text-sm text-white">
                   Showing {books.length} of {pagination.total} books
                 </p>
               </div>

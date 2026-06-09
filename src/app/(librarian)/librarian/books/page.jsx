@@ -142,12 +142,12 @@ export default function BooksPage() {
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
+        {/* <div>
           <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Manage Books</h1>
           <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             {pagination.total} book{pagination.total !== 1 ? 's' : ''} in the library
           </p>
-        </div>
+        </div> */}
         <button
           onClick={() => router.push('/librarian/books/add')}
           className="inline-flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
@@ -158,7 +158,7 @@ export default function BooksPage() {
       </div>
 
       {/* Search + Filters - Glass Card Header */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
+      <div className="rounded-2xl sm:rounded-3xl  backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <form onSubmit={handleSearchSubmit} className="flex-1">
             <div className="relative">
@@ -224,7 +224,7 @@ export default function BooksPage() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto table-responsive">
+            <div className="overflow-x-auto table-responsive p-6">
               <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">

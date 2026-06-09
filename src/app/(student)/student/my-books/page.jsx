@@ -143,15 +143,10 @@ export default function MyBooksPage() {
   return (
     <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Books</h1>
-        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
-          Manage your borrowed books and view your borrowing history.
-        </p>
-      </div>
+     
 
       <Tabs defaultValue="active" className="space-y-4">
-        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-1 w-full sm:w-auto">
+        <TabsList className="bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl sm:rounded-2xl p-1  ">
           <TabsTrigger
             value="active"
             className="data-[state=active]:bg-[#7C9AA5] data-[state=active]:text-white rounded-lg sm:rounded-xl px-3 sm:px-4 transition-all duration-200 flex-1 sm:flex-initial text-sm"

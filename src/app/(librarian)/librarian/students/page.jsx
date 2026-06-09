@@ -179,15 +179,15 @@ export default function StudentsPage() {
   return (
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div>
+      {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Student Management</h1>
         <p className="text-sm sm:text-base text-[#6B7280] mt-1">
           {pagination.total} registered student{pagination.total !== 1 ? 's' : ''}
         </p>
-      </div>
+      </div> */}
 
       {/* Search/Filter - Glass Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
+      <div className="rounded-2xl sm:rounded-3xl  backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <form onSubmit={handleSearchSubmit} className="flex-1">
             <div className="relative">
@@ -313,7 +313,7 @@ export default function StudentsPage() {
             </div>
 
             {/* Desktop: Table Layout */}
-            <div className="hidden sm:block overflow-x-auto table-responsive">
+            <div className="hidden sm:block overflow-x-auto table-responsive p-6">
               <Table className="min-w-[600px] sm:min-w-0">
                 <TableHeader>
                   <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">

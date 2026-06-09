@@ -230,12 +230,12 @@ export default function FinesPage() {
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
+        {/* <div>
           <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Fine Management</h1>
           <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Track and manage overdue fines.
           </p>
-        </div>
+        </div> */}
         <button
           onClick={handleCalculateOverdue}
           disabled={calculating}
@@ -275,8 +275,8 @@ export default function FinesPage() {
       </div>
 
       {/* Search/Filter - Glass Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="rounded-2xl sm:rounded-3xl  backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row gap-3 ">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
             <input

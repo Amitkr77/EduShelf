@@ -386,12 +386,12 @@ export default function ReportsPage() {
     <div className="space-y-6 page-enter">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+        {/* <div>
           <h1 className="text-[42px] font-bold tracking-tight text-[#1F2937]">Reports</h1>
           <p className="text-[#6B7280] mt-1">
             Library analytics and activity reports.
           </p>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2">
           <button
             className="inline-flex items-center gap-2 h-10 px-5 rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"

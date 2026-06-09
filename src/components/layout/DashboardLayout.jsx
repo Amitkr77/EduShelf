@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import Sidebar from '@/components/layout/Sidebar';
-import Navbar from '@/components/layout/Navbar';
-import MobileDock from '@/components/layout/MobileDock';
+import Sidebar from "@/components/layout/Sidebar";
+import Navbar from "@/components/layout/Navbar";
+import MobileDock from "@/components/layout/MobileDock";
 
 export default function DashboardLayout({ children, user, activePath }) {
-  const role = user?.role || 'student';
+  const role = user?.role || "student";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#688997] via-[#8CA5AF] to-[#C7BEB2]">
+    <div className="min-h-screen bg-gradient-to-br from-[#688997] via-[#8CA5AF] to-[#C7BEB2] ">
       {/* Desktop Sidebar */}
       <Sidebar currentPath={activePath} role={role} user={user} />
 

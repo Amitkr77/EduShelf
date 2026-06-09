@@ -184,7 +184,7 @@ export default function NotificationsPage() {
     <div className="page-enter space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-        <div>
+        {/* <div>
           <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Notifications</h1>
           <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Stay updated with your library activity.
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
               </span>
             )}
           </p>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Filter */}
           <Select
@@ -257,7 +257,7 @@ export default function NotificationsPage() {
 
             return (
               <div key={group}>
-                <h3 className="text-xs sm:text-sm font-semibold text-[#6B7280] mb-2 sm:mb-3 uppercase tracking-wider">
+                <h3 className="text-xs sm:text-sm font-semibold text-white mb-2 sm:mb-3 uppercase tracking-wider">
                   {group === 'today'
                     ? 'Today'
                     : group === 'yesterday'

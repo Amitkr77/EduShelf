@@ -222,14 +222,14 @@ export default function StudentDashboardPage() {
   return (
     <div className="space-y-6 page-enter">
       {/* Header */}
-      <div>
+      {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">
           Dashboard
         </h1>
         <p className="text-[#6B7280] mt-1">
           Welcome back! Here&apos;s your library overview.
         </p>
-      </div>
+      </div> */}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">

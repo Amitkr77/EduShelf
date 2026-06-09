@@ -205,12 +205,12 @@ export default function IssuesPage() {
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
+        {/* <div>
           <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Issue Books</h1>
           <p className="text-sm sm:text-base text-[#6B7280] mt-1">
             Approve borrow requests and issue books to students.
           </p>
-        </div>
+        </div> */}
         <button
           onClick={() => setManualDialog(true)}
           className="inline-flex items-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7C9AA5] hover:bg-[#5D7480] text-white transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#5D7480]"
