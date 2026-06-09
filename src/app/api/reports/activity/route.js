@@ -9,6 +9,7 @@ import {
   paginateResponse,
 } from '@/lib/helpers.js';
 import { withRole } from '@/lib/middleware.js';
+import User from '@/models/User.js';
 
 // GET /api/reports/activity — Activity log (librarian/admin only)
 export async function GET(request) {

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import {
   Receipt,
-  DollarSign,
+  IndianRupee as RupeeSign,
   Search,
   CheckCircle,
   Ban,
@@ -257,7 +257,7 @@ export default function FinesPage() {
         <StatsCard
           title="Collected"
           value={`₹${summary.collected.toFixed(2)}`}
-          icon={DollarSign}
+          icon={RupeeSign}
           color="teal"
         />
         <StatsCard

@@ -36,6 +36,7 @@ const librarianItems = [
   { icon: Users, label: 'Students', href: '/librarian/students' },
   { icon: Receipt, label: 'Fines', href: '/librarian/fines' },
   { icon: BarChart3, label: 'Reports', href: '/librarian/reports' },
+   { icon: Bell, label: 'Alerts', href: '/librarian/notifications' },
 ];
 
 function mod(n, m) {

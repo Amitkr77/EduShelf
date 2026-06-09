@@ -32,6 +32,7 @@ const pageTitles = {
   "/librarian/students": "Students",
   "/librarian/fines": "Fines",
   "/librarian/reports": "Reports",
+  "/librarian/notifications": "Notifications",
   "/librarian/profile": "Profile",
 };
 

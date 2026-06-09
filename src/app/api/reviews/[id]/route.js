@@ -1,6 +1,7 @@
 import { connectDB } from '@/lib/db.js';
 import Review from '@/models/Review.js';
 import Book from '@/models/Book.js';
+import User from '@/models/User.js';
 import ActivityLog from '@/models/ActivityLog.js';
 import { apiResponse, apiError, handleApiError } from '@/lib/helpers.js';
 import { withAuth } from '@/lib/middleware.js';

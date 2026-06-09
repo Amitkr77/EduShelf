@@ -5,6 +5,7 @@ import Borrow from '@/models/Borrow.js';
 import Book from '@/models/Book.js';
 import Notification from '@/models/Notification.js';
 import ActivityLog from '@/models/ActivityLog.js';
+import User from '@/models/User.js';
 
 // POST /api/borrow/issue - Approve and issue a book (librarian/admin only)
 export async function POST(request) {

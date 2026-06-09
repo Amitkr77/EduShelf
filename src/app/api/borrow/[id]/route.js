@@ -2,6 +2,10 @@ import { connectDB } from '@/lib/db.js';
 import { apiResponse, apiError, handleApiError } from '@/lib/helpers.js';
 import { withAuth } from '@/lib/middleware.js';
 import Borrow from '@/models/Borrow.js';
+import Book from '@/models/Book.js';
+import User from '@/models/User.js';
+import Notification from '@/models/Notification.js';
+import ActivityLog from '@/models/ActivityLog.js';
 
 // GET /api/borrow/[id] - Get single borrow details
 export async function GET(request, { params }) {

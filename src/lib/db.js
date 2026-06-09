@@ -2,19 +2,39 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 let mongoServer = null;
-let isConnected = false;
-let cachedUri = null;
+let connectionPromise = null;
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 export async function connectDB() {
-  if (isConnected && mongoose.connection.readyState === 1) {
+  // If already connected, return immediately
+  if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
   }
 
+  // If a connection is already in progress, wait for it
+  // This prevents the race condition where multiple requests
+  // try to connect/disconnect simultaneously
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
+  connectionPromise = _connect();
+
+  try {
+    const conn = await connectionPromise;
+    return conn;
+  } catch (error) {
+    connectionPromise = null;
+    throw error;
+  }
+}
+
+async function _connect() {
   try {
     let uri = MONGODB_URI;
 
+    // Fallback to in-memory MongoDB for development
     if (!uri) {
       if (!mongoServer) {
         mongoServer = await MongoMemoryServer.create();
@@ -22,41 +42,48 @@ export async function connectDB() {
       uri = mongoServer.getUri();
     }
 
-    // If we already have a connection to the same URI, just reuse it
-    if (cachedUri === uri && mongoose.connection.readyState === 1) {
-      isConnected = true;
+    // Only connect if not already connected or connecting
+    if (mongoose.connection.readyState === 1) {
       return mongoose.connection;
     }
 
-    // If there's an existing connection, disconnect first
-    if (mongoose.connection.readyState !== 0) {
-      await mongoose.disconnect();
-      isConnected = false;
+    if (mongoose.connection.readyState === 2) {
+      // Already connecting — wait for it
+      await new Promise((resolve) => {
+        mongoose.connection.once('open', resolve);
+      });
+      return mongoose.connection;
     }
 
     const conn = await mongoose.connect(uri, {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      connectTimeoutMS: 10000,
     });
 
-    cachedUri = uri;
-    isConnected = true;
     console.log('MongoDB connected:', conn.connection.host);
     return conn;
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error;
+  } finally {
+    connectionPromise = null;
   }
 }
 
 export async function disconnectDB() {
-  if (mongoServer) {
-    await mongoose.disconnect();
-    await mongoServer.stop();
-    mongoServer = null;
-    cachedUri = null;
-    isConnected = false;
+  try {
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
+    }
+    if (mongoServer) {
+      await mongoServer.stop();
+      mongoServer = null;
+    }
+    connectionPromise = null;
+  } catch (error) {
+    console.error('MongoDB disconnect error:', error);
   }
 }
 

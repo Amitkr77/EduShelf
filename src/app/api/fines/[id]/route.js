@@ -4,6 +4,9 @@ import { withRole } from '@/lib/middleware.js';
 import Fine from '@/models/Fine.js';
 import Notification from '@/models/Notification.js';
 import ActivityLog from '@/models/ActivityLog.js';
+import User from '@/models/User.js';
+import Book from '@/models/Book.js';
+import Borrow from '@/models/Borrow.js';
 
 // PUT /api/fines/[id] - Update fine status (mark as paid or waived)
 export async function PUT(request, { params }) {

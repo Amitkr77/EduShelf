@@ -11,6 +11,8 @@ import {
   DAILY_FINE_RATE,
 } from '@/lib/helpers.js';
 import { withRole } from '@/lib/middleware.js';
+import User from '@/models/User.js';
+import Book from '@/models/Book.js';
 
 // GET /api/reports/overdue — Overdue report (librarian/admin only)
 export async function GET(request) {

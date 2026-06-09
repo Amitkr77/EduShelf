@@ -1,5 +1,6 @@
 import { connectDB } from '@/lib/db.js';
 import Book from '@/models/Book.js';
+import Category from '@/models/Category.js';
 import { apiResponse, apiError, handleApiError } from '@/lib/helpers.js';
 import { withRole } from '@/lib/middleware.js';
 

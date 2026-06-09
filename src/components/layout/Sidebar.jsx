@@ -64,6 +64,7 @@ const librarianItems = [
   { name: 'Students', href: '/librarian/students', icon: Users },
   { name: 'Fines', href: '/librarian/fines', icon: Receipt },
   { name: 'Reports', href: '/librarian/reports', icon: BarChart3 },
+   { name: 'Notifications', href: '/librarian/notifications', icon: Bell },
   { name: 'Profile', href: '/librarian/profile', icon: UserCircle },
 ];
 

@@ -2,6 +2,8 @@ import { connectDB } from '@/lib/db.js';
 import Wishlist from '@/models/Wishlist.js';
 import Book from '@/models/Book.js';
 import ActivityLog from '@/models/ActivityLog.js';
+import User from '@/models/User.js';
+import Category from '@/models/Category.js';
 import {
   apiResponse,
   apiError,

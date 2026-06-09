@@ -5,6 +5,7 @@ import Reservation from '@/models/Reservation.js';
 import Book from '@/models/Book.js';
 import Notification from '@/models/Notification.js';
 import ActivityLog from '@/models/ActivityLog.js';
+import User from '@/models/User.js';
 
 // GET /api/reservations - List reservations (librarian sees all, student sees own)
 export async function GET(request) {

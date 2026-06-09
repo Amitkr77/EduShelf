@@ -177,114 +177,100 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 page-enter">
-      {/* Page Header */}
-      {/* <div>
-        <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Student Management</h1>
-        <p className="text-sm sm:text-base text-[#6B7280] mt-1">
-          {pagination.total} registered student{pagination.total !== 1 ? 's' : ''}
-        </p>
+    <div className="space-y-5 animate-in fade-in-0 duration-500">
+      {/* Header */}
+      {/* <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Students</h1>
+          <p className="text-sm text-neutral-500 mt-0.5">
+            {pagination.total} registered student{pagination.total !== 1 ? 's' : ''}
+          </p>
+        </div>
       </div> */}
 
-      {/* Search/Filter - Glass Card */}
-      <div className="rounded-2xl sm:rounded-3xl  backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <form onSubmit={handleSearchSubmit} className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
-              <input
-                placeholder="Search by name, email, or student ID..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border border-[#E5E7EB] pl-10 pr-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors"
-              />
-            </div>
-          </form>
-          <Select
-            value={statusFilter}
-            onValueChange={(val) => {
-              setStatusFilter(val);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-full sm:w-[160px] rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB]">
-              <Filter className="h-4 w-4 mr-2 text-[#6B7280]" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="suspended">Suspended</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleSearchSubmit} className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400 pointer-events-none" />
+            <input
+              placeholder="Search by name, email, or ID…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-11 rounded-xl bg-white border border-neutral-200 pl-10 pr-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900/5 focus:border-neutral-300 transition-shadow"
+            />
+          </div>
+        </form>
+        <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setPage(1); }}>
+          <SelectTrigger className="w-full sm:w-[150px] h-11 rounded-xl bg-white border-neutral-200 text-sm">
+            <Filter className="h-3.5 w-3.5 mr-2 text-neutral-400" />
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="suspended">Suspended</SelectItem>
+            <SelectItem value="inactive">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Students Table / Cards */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden">
+      {/* Content */}
+      <div className="rounded-2xl border border-neutral-200/80 bg-white overflow-hidden">
         {loading ? (
           <LoadingSpinner message="Loading students..." />
         ) : students.length === 0 ? (
-          <div className="p-4 sm:p-6">
+          <div className="py-16 px-6">
             <EmptyState
               icon={Users}
               title="No students found"
-              description={
-                search || statusFilter !== 'all'
-                  ? 'Try adjusting your search or filters.'
-                  : 'No students have registered yet.'
-              }
+              description={search || statusFilter !== 'all' ? 'Try adjusting your search or filters.' : 'No students have registered yet.'}
             />
           </div>
         ) : (
           <>
-            {/* Mobile: Card Layout */}
-            <div className="sm:hidden p-3 space-y-3 max-h-[70vh] overflow-y-auto">
+            {/* Mobile Cards */}
+            <div className="sm:hidden divide-y divide-neutral-100">
               {students.map((student) => {
                 const stats = studentStats[student._id] || { borrowed: 0, fines: 0 };
                 return (
-                  <div
-                    key={student._id}
-                    className="rounded-xl border border-[#E5E7EB] p-3 bg-white transition-all duration-200 hover:shadow-sm"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-[#E3F2FA] text-[#4A8DB7] text-xs">
+                  <div key={student._id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="h-9 w-9 shrink-0">
+                          <AvatarFallback className="bg-neutral-100 text-neutral-500 text-xs font-medium">
                             {getInitials(student.name)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0">
-                          <p className="font-medium text-sm text-[#1F2937] truncate">
-                            {student.name}
-                          </p>
-                          <p className="text-xs text-[#6B7280] flex items-center gap-1">
-                            <Mail className="h-3 w-3" />
+                          <p className="text-sm font-medium text-neutral-900 truncate">{student.name}</p>
+                          <p className="text-xs text-neutral-400 truncate flex items-center gap-1 mt-0.5">
+                            <Mail className="h-3 w-3 shrink-0" />
                             {student.email}
                           </p>
                         </div>
                       </div>
                       {getStatusBadge(student.status)}
                     </div>
-                    <div className="mt-3 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[#6B7280] flex items-center gap-1">
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-xs text-neutral-500">
+                        <span className="flex items-center gap-1">
                           <BookOpen className="h-3 w-3" />
-                          {stats.borrowed} borrowed
+                          {stats.borrowed}
                         </span>
                         {stats.fines > 0 && (
-                          <span className="text-[#C25B4F] flex items-center gap-1">
+                          <span className="flex items-center gap-1 text-red-500">
                             <DollarSign className="h-3 w-3" />
                             ₹{stats.fines.toFixed(2)}
                           </span>
                         )}
                       </div>
                       <button
-                        className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-xl text-xs font-medium transition-all duration-200 ${
+                        className={`h-8 px-3 rounded-lg text-xs font-medium transition-colors ${
                           student.status === 'active'
-                            ? 'border border-[#C4952A] text-[#C4952A] hover:bg-[#FEF3E2]'
-                            : 'border border-[#6B8F83] text-[#6B8F83] hover:bg-[#E8F0EC]'
+                            ? 'border border-amber-300 text-amber-700 hover:bg-amber-50'
+                            : 'border border-emerald-300 text-emerald-700 hover:bg-emerald-50'
                         }`}
                         onClick={() =>
                           setActionDialog({
@@ -295,15 +281,9 @@ export default function StudentsPage() {
                         }
                       >
                         {student.status === 'active' ? (
-                          <>
-                            <ShieldBan className="h-3.5 w-3.5 mr-1" />
-                            Suspend
-                          </>
+                          <span className="flex items-center gap-1"><ShieldBan className="h-3 w-3" />Suspend</span>
                         ) : (
-                          <>
-                            <ShieldCheck className="h-3.5 w-3.5 mr-1" />
-                            Activate
-                          </>
+                          <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" />Activate</span>
                         )}
                       </button>
                     </div>
@@ -312,115 +292,71 @@ export default function StudentsPage() {
               })}
             </div>
 
-            {/* Desktop: Table Layout */}
-            <div className="hidden sm:block overflow-x-auto table-responsive p-6">
-              <Table className="min-w-[600px] sm:min-w-0">
+            {/* Desktop Table */}
+            <div className="hidden sm:block overflow-x-auto">
+              <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#F4F8F9] hover:bg-[#F4F8F9]">
-                    <TableHead className="text-[#6B7280] font-semibold">Student</TableHead>
-                    <TableHead className="hidden md:table-cell text-[#6B7280] font-semibold">
-                      Student ID
-                    </TableHead>
-                    <TableHead className="hidden lg:table-cell text-[#6B7280] font-semibold">
-                      Department
-                    </TableHead>
-                    <TableHead className="text-[#6B7280] font-semibold">Status</TableHead>
-                    <TableHead className="text-center text-[#6B7280] font-semibold">Borrowed</TableHead>
-                    <TableHead className="text-center hidden sm:table-cell text-[#6B7280] font-semibold">
-                      Pending Fines
-                    </TableHead>
-                    <TableHead className="text-right text-[#6B7280] font-semibold">Actions</TableHead>
+                  <TableRow className="hover:bg-transparent border-neutral-100">
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider">Student</TableHead>
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider hidden md:table-cell">ID</TableHead>
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider hidden lg:table-cell">Department</TableHead>
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider text-center">Borrowed</TableHead>
+                    <TableHead className="text-[11px] font-medium text-neutral-400 uppercase tracking-wider text-right hidden sm:table-cell">Fines</TableHead>
+                    <TableHead className="w-[80px]"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {students.map((student) => {
-                    const stats = studentStats[student._id] || {
-                      borrowed: 0,
-                      fines: 0,
-                    };
+                    const stats = studentStats[student._id] || { borrowed: 0, fines: 0 };
                     return (
-                      <TableRow key={student._id} className="hover:bg-[#F4F8F9] transition-colors border-[#E5E7EB]">
+                      <TableRow key={student._id} className="border-neutral-100">
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-9 w-9">
-                              <AvatarFallback className="bg-[#E3F2FA] text-[#4A8DB7] text-xs">
+                            <Avatar className="h-8 w-8 shrink-0">
+                              <AvatarFallback className="bg-neutral-100 text-neutral-500 text-xs font-medium">
                                 {getInitials(student.name)}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <p className="font-medium text-sm text-[#1F2937] truncate">
-                                {student.name}
-                              </p>
-                              <p className="text-xs text-[#6B7280] flex items-center gap-1">
-                                <Mail className="h-3 w-3" />
-                                {student.email}
-                              </p>
+                              <p className="text-sm font-medium text-neutral-900 truncate">{student.name}</p>
+                              <p className="text-xs text-neutral-400 truncate">{student.email}</p>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
-                          <Badge variant="outline" className="font-mono text-xs border-[#E5E7EB] text-[#6B7280]">
-                            {student.studentId || 'N/A'}
-                          </Badge>
+                          <code className="text-xs text-neutral-500 bg-neutral-50 px-1.5 py-0.5 rounded">{student.studentId || '—'}</code>
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-sm text-[#6B7280]">
-                          {student.department || 'N/A'}
-                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-sm text-neutral-500">{student.department || '—'}</TableCell>
                         <TableCell>{getStatusBadge(student.status)}</TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex items-center justify-center gap-1">
-                            <BookOpen className="h-3 w-3 text-[#6B7280]" />
-                            <span className="text-sm font-medium text-[#1F2937]">
-                              {stats.borrowed}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center hidden sm:table-cell">
+                        <TableCell className="text-center text-sm tabular-nums text-neutral-700">{stats.borrowed}</TableCell>
+                        <TableCell className="text-right hidden sm:table-cell">
                           {stats.fines > 0 ? (
-                            <div className="flex items-center justify-center gap-1 text-[#C25B4F]">
-                              <DollarSign className="h-3 w-3" />
-                              <span className="text-sm font-medium">
-                                {stats.fines.toFixed(2)}
-                              </span>
-                            </div>
+                            <span className="text-sm font-medium text-red-600 tabular-nums">₹{stats.fines.toFixed(2)}</span>
                           ) : (
-                            <span className="text-sm text-[#6B7280]">
-                              —
-                            </span>
+                            <span className="text-sm text-neutral-300">—</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="text-[#6B7280] hover:text-[#1F2937]">
-                                Actions
-                              </Button>
+                              <button className="h-8 w-8 rounded-lg inline-flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors">
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="rounded-xl">
+                            <DropdownMenuContent align="end" className="w-40 rounded-xl">
                               {student.status === 'active' ? (
                                 <DropdownMenuItem
-                                  className="text-[#C4952A] focus:text-[#C4952A] rounded-lg"
-                                  onClick={() =>
-                                    setActionDialog({
-                                      open: true,
-                                      type: 'suspend',
-                                      student,
-                                    })
-                                  }
+                                  className="text-amber-700 focus:text-amber-700 rounded-lg"
+                                  onClick={() => setActionDialog({ open: true, type: 'suspend', student })}
                                 >
                                   <ShieldBan className="h-4 w-4 mr-2" />
                                   Suspend
                                 </DropdownMenuItem>
                               ) : (
                                 <DropdownMenuItem
-                                  className="text-[#6B8F83] focus:text-[#6B8F83] rounded-lg"
-                                  onClick={() =>
-                                    setActionDialog({
-                                      open: true,
-                                      type: 'activate',
-                                      student,
-                                    })
-                                  }
+                                  className="text-emerald-700 focus:text-emerald-700 rounded-lg"
+                                  onClick={() => setActionDialog({ open: true, type: 'activate', student })}
                                 >
                                   <ShieldCheck className="h-4 w-4 mr-2" />
                                   Activate
@@ -438,26 +374,22 @@ export default function StudentsPage() {
 
             {/* Pagination */}
             {pagination.pages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] px-3 sm:px-4 py-3 gap-2">
-                <p className="text-sm text-[#6B7280]">
-                  Page {pagination.page} of {pagination.pages}
-                </p>
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between border-t border-neutral-100 px-4 py-3">
+                <span className="text-xs text-neutral-400 tabular-nums">Page {pagination.page} of {pagination.pages}</span>
+                <div className="flex gap-2">
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-8 px-3 rounded-lg text-xs font-medium border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-40"
                     disabled={pagination.page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                    Previous
+                    <span className="flex items-center gap-1"><ChevronLeft className="h-3.5 w-3.5" />Prev</span>
                   </button>
                   <button
-                    className="inline-flex items-center gap-1 h-9 px-4 rounded-xl sm:rounded-2xl text-sm font-medium border border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-8 px-3 rounded-lg text-xs font-medium border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-40"
                     disabled={pagination.page >= pagination.pages}
                     onClick={() => setPage((p) => p + 1)}
                   >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
+                    <span className="flex items-center gap-1">Next<ChevronRight className="h-3.5 w-3.5" /></span>
                   </button>
                 </div>
               </div>
@@ -466,59 +398,44 @@ export default function StudentsPage() {
         )}
       </div>
 
-      {/* Status Change Confirmation Dialog */}
+      {/* Dialog */}
       <Dialog
         open={actionDialog.open}
-        onOpenChange={(open) =>
-          !open && setActionDialog({ open: false, type: '', student: null })
-        }
+        onOpenChange={(open) => !open && setActionDialog({ open: false, type: '', student: null })}
       >
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-[#1F2937]">
-              {actionDialog.type === 'suspend'
-                ? 'Suspend Student'
-                : 'Activate Student'}
+        <DialogContent className="sm:max-w-[400px] rounded-2xl p-6 gap-0">
+          <DialogHeader className="space-y-2 pb-4">
+            <DialogTitle className="text-lg font-semibold text-neutral-900">
+              {actionDialog.type === 'suspend' ? 'Suspend Student' : 'Activate Student'}
             </DialogTitle>
-            <DialogDescription className="text-[#6B7280]">
+            <DialogDescription className="text-sm text-neutral-500 leading-relaxed">
               {actionDialog.type === 'suspend'
-                ? `Are you sure you want to suspend ${actionDialog.student?.name}? They will not be able to borrow books or access the library until reactivated.`
-                : `Are you sure you want to reactivate ${actionDialog.student?.name}? They will regain full access to the library.`}
+                ? `Suspend ${actionDialog.student?.name}? They won't be able to borrow books until reactivated.`
+                : `Reactivate ${actionDialog.student?.name}? They will regain full library access.`}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex-row gap-2 pt-2">
             <button
-              className="inline-flex items-center justify-center h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium border-2 border-[#7C9AA5] text-[#7C9AA5] hover:bg-[#7C9AA5]/10 transition-all duration-200 w-full sm:w-auto"
-              onClick={() =>
-                setActionDialog({ open: false, type: '', student: null })
-              }
+              className="flex-1 h-10 rounded-xl text-sm font-medium border border-neutral-200 text-neutral-600 hover:bg-neutral-50 transition-colors"
+              onClick={() => setActionDialog({ open: false, type: '', student: null })}
             >
               Cancel
             </button>
             {actionDialog.type === 'suspend' ? (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#F3C47A] text-[#1F2937] hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
-                onClick={() =>
-                  handleStatusChange(
-                    actionDialog.student?._id,
-                    'suspended'
-                  )
-                }
+                className="flex-1 h-10 rounded-xl text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors disabled:opacity-50"
+                onClick={() => handleStatusChange(actionDialog.student?._id, 'suspended')}
                 disabled={processing}
               >
-                <ShieldBan className="h-4 w-4" />
-                {processing ? 'Suspending...' : 'Suspend Student'}
+                {processing ? 'Suspending…' : 'Suspend'}
               </button>
             ) : (
               <button
-                className="inline-flex items-center justify-center gap-2 h-10 sm:h-12 px-4 sm:px-6 rounded-xl sm:rounded-2xl text-sm font-medium bg-[#7CCB7A] text-white hover:opacity-90 transition-all duration-200 w-full sm:w-auto"
-                onClick={() =>
-                  handleStatusChange(actionDialog.student?._id, 'active')
-                }
+                className="flex-1 h-10 rounded-xl text-sm font-medium bg-neutral-900 text-white hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                onClick={() => handleStatusChange(actionDialog.student?._id, 'active')}
                 disabled={processing}
               >
-                <ShieldCheck className="h-4 w-4" />
-                {processing ? 'Activating...' : 'Activate Student'}
+                {processing ? 'Activating…' : 'Activate'}
               </button>
             )}
           </DialogFooter>

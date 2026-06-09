@@ -1,27 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  BookOpen,
-  ArrowLeft,
-  Save,
-  Plus,
-  BookCheck,
-} from 'lucide-react';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { BookOpen, ArrowLeft, Save, Plus, BookCheck } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import apiFetch from '@/lib/fetcher';
-import { toast } from 'sonner';
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import apiFetch from "@/lib/fetcher";
+import { toast } from "sonner";
 
 export default function AddBookPage() {
   const router = useRouter();
@@ -29,20 +23,20 @@ export default function AddBookPage() {
   const [submitting, setSubmitting] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [form, setForm] = useState({
-    title: '',
-    author: '',
-    ISBN: '',
-    category: '',
-    description: '',
-    publisher: '',
-    publishedYear: '',
-    language: 'English',
-    pages: '',
-    totalCopies: '1',
-    availableCopies: '1',
-    shelfLocation: '',
-    coverImage: '',
-    tags: '',
+    title: "",
+    author: "",
+    ISBN: "",
+    category: "",
+    description: "",
+    publisher: "",
+    publishedYear: "",
+    language: "English",
+    pages: "",
+    totalCopies: "1",
+    availableCopies: "1",
+    shelfLocation: "",
+    coverImage: "",
+    tags: "",
   });
   const [errors, setErrors] = useState({});
 
@@ -53,10 +47,10 @@ export default function AddBookPage() {
   async function fetchCategories() {
     try {
       setLoadingCategories(true);
-      const res = await apiFetch('/books/categories');
+      const res = await apiFetch("/books/categories");
       setCategories(res.data || []);
     } catch (error) {
-      toast.error('Failed to load categories');
+      toast.error("Failed to load categories");
     } finally {
       setLoadingCategories(false);
     }
@@ -65,26 +59,30 @@ export default function AddBookPage() {
   function handleChange(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   }
 
   function validate() {
     const newErrors = {};
-    if (!form.title.trim()) newErrors.title = 'Title is required';
-    if (!form.author.trim()) newErrors.author = 'Author is required';
-    if (!form.ISBN.trim()) newErrors.ISBN = 'ISBN is required';
+    if (!form.title.trim()) newErrors.title = "Title is required";
+    if (!form.author.trim()) newErrors.author = "Author is required";
+    if (!form.ISBN.trim()) newErrors.ISBN = "ISBN is required";
     if (!form.totalCopies || parseInt(form.totalCopies) < 1)
-      newErrors.totalCopies = 'At least 1 copy is required';
+      newErrors.totalCopies = "At least 1 copy is required";
     if (
       form.availableCopies &&
       parseInt(form.availableCopies) > parseInt(form.totalCopies || 0)
     )
-      newErrors.availableCopies = 'Cannot exceed total copies';
-    if (form.publishedYear && (parseInt(form.publishedYear) < 1000 || parseInt(form.publishedYear) > new Date().getFullYear()))
-      newErrors.publishedYear = 'Invalid year';
+      newErrors.availableCopies = "Cannot exceed total copies";
+    if (
+      form.publishedYear &&
+      (parseInt(form.publishedYear) < 1000 ||
+        parseInt(form.publishedYear) > new Date().getFullYear())
+    )
+      newErrors.publishedYear = "Invalid year";
     if (form.pages && parseInt(form.pages) < 0)
-      newErrors.pages = 'Pages cannot be negative';
+      newErrors.pages = "Pages cannot be negative";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -93,7 +91,7 @@ export default function AddBookPage() {
   async function handleSubmit(e, addAnother = false) {
     e.preventDefault();
     if (!validate()) {
-      toast.error('Please fix the form errors');
+      toast.error("Please fix the form errors");
       return;
     }
 
@@ -107,7 +105,7 @@ export default function AddBookPage() {
         description: form.description.trim(),
         publisher: form.publisher.trim(),
         publishedYear: form.publishedYear ? parseInt(form.publishedYear) : null,
-        language: form.language || 'English',
+        language: form.language || "English",
         pages: form.pages ? parseInt(form.pages) : 0,
         totalCopies: parseInt(form.totalCopies),
         availableCopies: parseInt(form.availableCopies),
@@ -115,42 +113,42 @@ export default function AddBookPage() {
         coverImage: form.coverImage.trim(),
         tags: form.tags
           ? form.tags
-              .split(',')
+              .split(",")
               .map((t) => t.trim())
               .filter(Boolean)
           : [],
       };
 
-      await apiFetch('/books', {
-        method: 'POST',
+      await apiFetch("/books", {
+        method: "POST",
         body: payload,
       });
 
-      toast.success('Book added successfully!');
+      toast.success("Book added successfully!");
 
       if (addAnother) {
         setForm({
-          title: '',
-          author: '',
-          ISBN: '',
-          category: '',
-          description: '',
-          publisher: '',
-          publishedYear: '',
-          language: 'English',
-          pages: '',
-          totalCopies: '1',
-          availableCopies: '1',
-          shelfLocation: '',
-          coverImage: '',
-          tags: '',
+          title: "",
+          author: "",
+          ISBN: "",
+          category: "",
+          description: "",
+          publisher: "",
+          publishedYear: "",
+          language: "English",
+          pages: "",
+          totalCopies: "1",
+          availableCopies: "1",
+          shelfLocation: "",
+          coverImage: "",
+          tags: "",
         });
         setErrors({});
       } else {
-        router.push('/librarian/books');
+        router.push("/librarian/books");
       }
     } catch (error) {
-      toast.error(error.message || 'Failed to add book');
+      toast.error(error.message || "Failed to add book");
     } finally {
       setSubmitting(false);
     }
@@ -161,34 +159,49 @@ export default function AddBookPage() {
   }
 
   const inputClass = (hasError) =>
-    `w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border ${hasError ? 'border-[#F28B82]' : 'border-[#E5E7EB]'} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`;
+    `w-full h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border ${hasError ? "border-[#F28B82]" : "border-[#E5E7EB]"} px-4 text-sm text-[#1F2937] placeholder:text-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D7480] transition-colors`;
 
-  const labelClass = 'text-xs sm:text-sm font-medium text-[#6B7280]';
+  const labelClass = "text-xs sm:text-sm font-medium text-[#6B7280]";
 
   return (
     <div className="space-y-4 sm:space-y-6 page-enter">
       {/* Page Header */}
-      <div className="flex items-center gap-3 sm:gap-4">
-        <button
-          onClick={() => router.push('/librarian/books')}
-          className="inline-flex items-center justify-center h-10 w-10 rounded-xl text-[#6B7280] hover:text-[#1F2937] hover:bg-[#7C9AA5]/10 transition-all duration-200"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div>
-          <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">Add New Book</h1>
-          <p className="text-sm sm:text-base text-[#6B7280] mt-1">
-            Fill in the details to add a new book to the library.
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <button
+            onClick={() => router.push("/librarian/books")}
+            className="
+        flex h-10 w-10 sm:h-11 sm:w-11
+        items-center justify-center
+        rounded-xl
+        bg-white/10
+        text-white
+        hover:bg-white/20
+        transition-all duration-200
+        shrink-0
+      "
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+
+          <div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white">
+              Add New Book
+            </h1>
+
+            <p className="text-sm sm:text-base text-white/80 mt-1 max-w-2xl">
+              Fill in the details to add a new book to your library collection.
+            </p>
+          </div>
         </div>
       </div>
 
       <form onSubmit={(e) => handleSubmit(e, false)}>
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {/* Main Form */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6 ">
             {/* Basic Information - Glass Card */}
-            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3">
               <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
                 <h2 className="text-base sm:text-lg font-semibold text-[#1F2937] flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-[#7C9AA5]" />
@@ -205,7 +218,7 @@ export default function AddBookPage() {
                       id="title"
                       placeholder="Enter book title"
                       value={form.title}
-                      onChange={(e) => handleChange('title', e.target.value)}
+                      onChange={(e) => handleChange("title", e.target.value)}
                       className={inputClass(errors.title)}
                     />
                     {errors.title && (
@@ -220,7 +233,7 @@ export default function AddBookPage() {
                       id="author"
                       placeholder="Enter author name"
                       value={form.author}
-                      onChange={(e) => handleChange('author', e.target.value)}
+                      onChange={(e) => handleChange("author", e.target.value)}
                       className={inputClass(errors.author)}
                     />
                     {errors.author && (
@@ -238,7 +251,7 @@ export default function AddBookPage() {
                       id="ISBN"
                       placeholder="e.g., 978-3-16-148410-0"
                       value={form.ISBN}
-                      onChange={(e) => handleChange('ISBN', e.target.value)}
+                      onChange={(e) => handleChange("ISBN", e.target.value)}
                       className={inputClass(errors.ISBN)}
                     />
                     {errors.ISBN && (
@@ -246,10 +259,12 @@ export default function AddBookPage() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="category" className={labelClass}>Category</Label>
+                    <Label htmlFor="category" className={labelClass}>
+                      Category
+                    </Label>
                     <Select
                       value={form.category}
-                      onValueChange={(val) => handleChange('category', val)}
+                      onValueChange={(val) => handleChange("category", val)}
                     >
                       <SelectTrigger className="rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB] text-[#1F2937]">
                         <SelectValue placeholder="Select a category" />
@@ -266,24 +281,30 @@ export default function AddBookPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description" className={labelClass}>Description</Label>
+                  <Label htmlFor="description" className={labelClass}>
+                    Description
+                  </Label>
                   <Textarea
                     id="description"
                     placeholder="Enter book description..."
                     value={form.description}
-                    onChange={(e) => handleChange('description', e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description", e.target.value)
+                    }
                     rows={4}
                     className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] text-[#1F2937] placeholder:text-[#6B7280] focus-visible:ring-2 focus-visible:ring-[#5D7480] min-h-[120px]"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="tags" className={labelClass}>Tags (comma-separated)</Label>
+                  <Label htmlFor="tags" className={labelClass}>
+                    Tags (comma-separated)
+                  </Label>
                   <input
                     id="tags"
                     placeholder="e.g., fiction, adventure, classic"
                     value={form.tags}
-                    onChange={(e) => handleChange('tags', e.target.value)}
+                    onChange={(e) => handleChange("tags", e.target.value)}
                     className={inputClass(false)}
                   />
                 </div>
@@ -291,44 +312,58 @@ export default function AddBookPage() {
             </div>
 
             {/* Publication Details - Glass Card */}
-            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3">
               <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Publication Details</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">
+                  Publication Details
+                </h2>
               </div>
               <div className="p-3 sm:p-4 md:p-6 pt-0 sm:pt-0 space-y-4">
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="publisher" className={labelClass}>Publisher</Label>
+                    <Label htmlFor="publisher" className={labelClass}>
+                      Publisher
+                    </Label>
                     <input
                       id="publisher"
                       placeholder="Enter publisher name"
                       value={form.publisher}
-                      onChange={(e) => handleChange('publisher', e.target.value)}
+                      onChange={(e) =>
+                        handleChange("publisher", e.target.value)
+                      }
                       className={inputClass(false)}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="publishedYear" className={labelClass}>Published Year</Label>
+                    <Label htmlFor="publishedYear" className={labelClass}>
+                      Published Year
+                    </Label>
                     <input
                       id="publishedYear"
                       type="number"
                       placeholder="e.g., 2024"
                       value={form.publishedYear}
-                      onChange={(e) => handleChange('publishedYear', e.target.value)}
+                      onChange={(e) =>
+                        handleChange("publishedYear", e.target.value)
+                      }
                       className={inputClass(errors.publishedYear)}
                     />
                     {errors.publishedYear && (
-                      <p className="text-xs text-[#C25B4F]">{errors.publishedYear}</p>
+                      <p className="text-xs text-[#C25B4F]">
+                        {errors.publishedYear}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="language" className={labelClass}>Language</Label>
+                    <Label htmlFor="language" className={labelClass}>
+                      Language
+                    </Label>
                     <Select
                       value={form.language}
-                      onValueChange={(val) => handleChange('language', val)}
+                      onValueChange={(val) => handleChange("language", val)}
                     >
                       <SelectTrigger className="rounded-xl h-11 sm:h-12 bg-[#F9FAFB] border border-[#E5E7EB] text-[#1F2937]">
                         <SelectValue placeholder="Select language" />
@@ -346,13 +381,15 @@ export default function AddBookPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="pages" className={labelClass}>Number of Pages</Label>
+                    <Label htmlFor="pages" className={labelClass}>
+                      Number of Pages
+                    </Label>
                     <input
                       id="pages"
                       type="number"
                       placeholder="e.g., 350"
                       value={form.pages}
-                      onChange={(e) => handleChange('pages', e.target.value)}
+                      onChange={(e) => handleChange("pages", e.target.value)}
                       className={inputClass(errors.pages)}
                     />
                     {errors.pages && (
@@ -367,9 +404,11 @@ export default function AddBookPage() {
           {/* Sidebar */}
           <div className="space-y-4 sm:space-y-6">
             {/* Inventory & Location - Glass Card */}
-            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3">
               <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Inventory & Location</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">
+                  Inventory & Location
+                </h2>
               </div>
               <div className="p-3 sm:p-4 md:p-6 pt-0 sm:pt-0 space-y-4">
                 <div className="space-y-2">
@@ -383,38 +422,50 @@ export default function AddBookPage() {
                     value={form.totalCopies}
                     onChange={(e) => {
                       const val = e.target.value;
-                      handleChange('totalCopies', val);
+                      handleChange("totalCopies", val);
                       if (parseInt(val) < parseInt(form.availableCopies)) {
-                        handleChange('availableCopies', val);
+                        handleChange("availableCopies", val);
                       }
                     }}
                     className={inputClass(errors.totalCopies)}
                   />
                   {errors.totalCopies && (
-                    <p className="text-xs text-[#C25B4F]">{errors.totalCopies}</p>
+                    <p className="text-xs text-[#C25B4F]">
+                      {errors.totalCopies}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="availableCopies" className={labelClass}>Available Copies</Label>
+                  <Label htmlFor="availableCopies" className={labelClass}>
+                    Available Copies
+                  </Label>
                   <input
                     id="availableCopies"
                     type="number"
                     min="0"
                     value={form.availableCopies}
-                    onChange={(e) => handleChange('availableCopies', e.target.value)}
+                    onChange={(e) =>
+                      handleChange("availableCopies", e.target.value)
+                    }
                     className={inputClass(errors.availableCopies)}
                   />
                   {errors.availableCopies && (
-                    <p className="text-xs text-[#C25B4F]">{errors.availableCopies}</p>
+                    <p className="text-xs text-[#C25B4F]">
+                      {errors.availableCopies}
+                    </p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="shelfLocation" className={labelClass}>Shelf Location</Label>
+                  <Label htmlFor="shelfLocation" className={labelClass}>
+                    Shelf Location
+                  </Label>
                   <input
                     id="shelfLocation"
                     placeholder="e.g., A3-R2-S5"
                     value={form.shelfLocation}
-                    onChange={(e) => handleChange('shelfLocation', e.target.value)}
+                    onChange={(e) =>
+                      handleChange("shelfLocation", e.target.value)
+                    }
                     className={inputClass(false)}
                   />
                 </div>
@@ -422,18 +473,22 @@ export default function AddBookPage() {
             </div>
 
             {/* Cover Image - Glass Card */}
-            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+            <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3">
               <div className="p-3 sm:p-4 md:p-6 pb-2 sm:pb-4">
-                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Cover Image</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">
+                  Cover Image
+                </h2>
               </div>
               <div className="p-3 sm:p-4 md:p-6 pt-0 sm:pt-0 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="coverImage" className={labelClass}>Image URL</Label>
+                  <Label htmlFor="coverImage" className={labelClass}>
+                    Image URL
+                  </Label>
                   <input
                     id="coverImage"
                     placeholder="https://example.com/cover.jpg"
                     value={form.coverImage}
-                    onChange={(e) => handleChange('coverImage', e.target.value)}
+                    onChange={(e) => handleChange("coverImage", e.target.value)}
                     className={inputClass(false)}
                   />
                 </div>
@@ -444,7 +499,7 @@ export default function AddBookPage() {
                       alt="Cover preview"
                       className="w-full h-48 object-cover"
                       onError={(e) => {
-                        e.target.style.display = 'none';
+                        e.target.style.display = "none";
                       }}
                     />
                   </div>
@@ -460,7 +515,7 @@ export default function AddBookPage() {
                 disabled={submitting}
               >
                 <Save className="h-4 w-4" />
-                {submitting ? 'Adding Book...' : 'Add Book'}
+                {submitting ? "Adding Book..." : "Add Book"}
               </button>
               <button
                 type="button"
@@ -475,7 +530,7 @@ export default function AddBookPage() {
               <button
                 type="button"
                 className="w-full inline-flex items-center justify-center gap-2 h-10 rounded-xl sm:rounded-2xl text-sm font-medium text-[#6B7280] hover:text-[#1F2937] hover:bg-[#7C9AA5]/10 transition-all duration-200"
-                onClick={() => router.push('/librarian/books')}
+                onClick={() => router.push("/librarian/books")}
               >
                 <BookCheck className="h-4 w-4" />
                 Go to Books List
