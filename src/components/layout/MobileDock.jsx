@@ -42,12 +42,13 @@ function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
+const transitionStyle = 'all 0.4s cubic-bezier(0.32, 0.72, 0, 1)';
+
 export default function MobileDock({ role = 'student' }) {
   const router = useRouter();
   const pathname = usePathname();
   const items = role === 'librarian' || role === 'admin' ? librarianItems : studentItems;
 
-  // Find the active index based on current path
   const activeIndex = useMemo(() => {
     const exact = items.findIndex((item) => pathname === item.href);
     if (exact !== -1) return exact;
@@ -73,7 +74,6 @@ export default function MobileDock({ role = 'student' }) {
     [router, items]
   );
 
-  // Swipe support
   const handleTouchStart = useCallback((e) => {
     setTouchStart(e.touches[0].clientX);
   }, []);
@@ -85,11 +85,9 @@ export default function MobileDock({ role = 'student' }) {
       const diff = touchStart - endX;
 
       if (diff > 40) {
-        // Swipe left → next
         const next = mod(active + 1, items.length);
         handleNavigate(next);
       } else if (diff < -40) {
-        // Swipe right → previous
         const prev = mod(active - 1, items.length);
         handleNavigate(prev);
       }
@@ -98,9 +96,9 @@ export default function MobileDock({ role = 'student' }) {
     [touchStart, active, items.length, handleNavigate]
   );
 
-  // Render visible tabs around active
   const maxVisible = 3;
-  const centerX = 50; // percent
+  const centerX = 50;
+  const spacing = 72;
 
   return (
     <div
@@ -117,34 +115,36 @@ export default function MobileDock({ role = 'student' }) {
             const isActive = offset === 0;
             const Icon = item.icon;
 
-            // Position calculation
-            const spacing = 72;
-            const leftPercent = centerX;
+            const dist = Math.abs(offset);
             const leftOffset = offset * spacing;
-
-            // 3D arc effect
-            const scale = isActive ? 1.18 : 0.72 + (1 - Math.abs(offset) * 0.14);
-            const translateY = isActive ? -22 : Math.abs(offset) * 8;
-            const rotateX = Math.abs(offset) * 8;
-            const opacity = 1 - Math.abs(offset) * 0.2;
+            const scale = isActive ? 1.12 : 0.85 - dist * 0.04;
+            const opacity = dist === 0 ? 1 : dist === 1 ? 0.55 : 0.15;
 
             return (
               <button
                 key={`${idx}-${offset}`}
                 className={`dock-tab ${isActive ? 'dock-tab-active' : ''}`}
                 style={{
-                  left: `calc(${leftPercent}% + ${leftOffset}px - 28px)`,
-                  opacity: Math.max(opacity, 0),
-                  transform: `translateY(${translateY}px) scale(${scale}) rotateX(${rotateX}deg)`,
+                  left: `calc(${centerX}% + ${leftOffset}px - 28px)`,
+                  opacity,
+                  transform: `scale(${scale})`,
+                  transition: transitionStyle,
                 }}
                 onClick={() => handleNavigate(idx)}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
               >
-                <span className={`dock-label ${isActive ? 'dock-label-visible' : ''}`}>
+                <span
+                  className={`dock-label ${isActive ? 'dock-label-visible' : ''}`}
+                  style={{ transition: transitionStyle }}
+                >
                   {item.label}
                 </span>
-                <Icon className="dock-icon" strokeWidth={isActive ? 2.2 : 1.8} />
+                <Icon
+                  className="dock-icon"
+                  strokeWidth={isActive ? 2.2 : 1.5}
+                  style={{ transition: transitionStyle }}
+                />
               </button>
             );
           })}

@@ -105,7 +105,7 @@ export default function Navbar({ user, activePath }) {
     <header className="sticky top-0 z-20  backdrop-blur-md pt-5">
       <div className="flex h-14 sm:h-16 items-center gap-3 sm:gap-4 px-3 sm:px-4 lg:px-8">
         {/* Mobile menu spacer for sheet trigger */}
-        <div className="w-10 lg:hidden" />
+        {/* <div className="w-10 lg:hidden" /> */}
 
         {/* Page Title */}
         <div className="hidden lg:block min-w-0">
@@ -116,7 +116,7 @@ export default function Navbar({ user, activePath }) {
 
         {/* Mobile page title */}
         <div className="lg:hidden flex-1 min-w-0">
-          <h2 className="text-sm font-semibold text-white truncate">
+          <h2 className="text-md font-semibold text-white truncate">
             {pageTitle}
           </h2>
         </div>

@@ -217,14 +217,14 @@ export default function Sidebar({ items, currentPath, role, user }) {
       {/* Mobile Sidebar (Sheet) */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="lg:hidden fixed top-4 left-4 z-40 h-10 w-10 rounded-xl bg-white/80 backdrop-blur-md shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-[#5D7480] hover:bg-white/95 hover:text-[#1F2937] transition-all duration-200 border border-white/50"
             aria-label="Open navigation menu"
           >
             <Menu className="h-5 w-5" />
-          </Button>
+          </Button> */}
         </SheetTrigger>
         <SheetContent side="left" className="w-60 p-0 bg-[#688997] border-0">
           <SheetHeader className="sr-only">

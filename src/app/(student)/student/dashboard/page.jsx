@@ -220,7 +220,7 @@ export default function StudentDashboardPage() {
   }
 
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-6 page-enter pb-20">
       {/* Header */}
       {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">
@@ -636,7 +636,7 @@ export default function StudentDashboardPage() {
         <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
           <div className="flex items-center justify-between p-4 sm:p-6 pb-2">
             <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">
-              Recommended for You
+              Recommended  for You
             </h2>
             <Button
               variant="ghost"

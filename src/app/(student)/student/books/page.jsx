@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from "react";
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Search,
   BookOpen,
@@ -12,37 +12,37 @@ import {
   ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
-import EmptyState from '@/components/shared/EmptyState';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import apiFetch from '@/lib/fetcher';
-import { toast } from 'sonner';
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import EmptyState from "@/components/shared/EmptyState";
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import apiFetch from "@/lib/fetcher";
+import { toast } from "sonner";
 
 const COVER_GRADIENTS = [
-  'from-[#7C9AA5]/30 to-[#5D7480]/30',
-  'from-[#7CCB7A]/30 to-[#6B8F83]/30',
-  'from-[#F3C47A]/30 to-[#C4952A]/30',
-  'from-[#84C7E8]/30 to-[#4A8DB7]/30',
-  'from-[#A7C2B0]/30 to-[#6B8F83]/30',
+  "from-[#7C9AA5]/30 to-[#5D7480]/30",
+  "from-[#7CCB7A]/30 to-[#6B8F83]/30",
+  "from-[#F3C47A]/30 to-[#C4952A]/30",
+  "from-[#84C7E8]/30 to-[#4A8DB7]/30",
+  "from-[#A7C2B0]/30 to-[#6B8F83]/30",
 ];
 
 function getCoverGradient(index) {
@@ -57,13 +57,13 @@ function StarRating({ rating }) {
           key={star}
           className={`h-3.5 w-3.5 ${
             star <= Math.round(rating)
-              ? 'fill-[#F3C47A] text-[#F3C47A]'
-              : 'text-[#E5E7EB]'
+              ? "fill-[#F3C47A] text-[#F3C47A]"
+              : "text-[#E5E7EB]"
           }`}
         />
       ))}
       <span className="text-xs text-[#6B7280] ml-1">
-        ({rating?.toFixed(1) || '0.0'})
+        ({rating?.toFixed(1) || "0.0"})
       </span>
     </div>
   );
@@ -78,20 +78,22 @@ export default function BooksBrowsePage() {
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [category, setCategory] = useState(searchParams.get('category') || 'all');
-  const [availability, setAvailability] = useState(
-    searchParams.get('availability') || 'all'
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "all",
   );
-  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
-  const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
+  const [availability, setAvailability] = useState(
+    searchParams.get("availability") || "all",
+  );
+  const [sort, setSort] = useState(searchParams.get("sort") || "newest");
+  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
   const [filterOpen, setFilterOpen] = useState(false);
 
   const limit = 12;
 
   const loadCategories = useCallback(async () => {
     try {
-      const res = await apiFetch('/books/categories');
+      const res = await apiFetch("/books/categories");
       setCategories(res.data || []);
     } catch (error) {
       // silent fail for categories
@@ -106,11 +108,11 @@ export default function BooksBrowsePage() {
         limit: limit.toString(),
       });
 
-      if (search.trim()) params.set('search', search.trim());
-      if (category && category !== 'all') params.set('category', category);
-      if (availability && availability !== 'all')
-        params.set('availability', availability);
-      if (sort) params.set('sort', sort);
+      if (search.trim()) params.set("search", search.trim());
+      if (category && category !== "all") params.set("category", category);
+      if (availability && availability !== "all")
+        params.set("availability", availability);
+      if (sort) params.set("sort", sort);
 
       const res = await apiFetch(`/books?${params.toString()}`);
       const data = res.data;
@@ -118,7 +120,7 @@ export default function BooksBrowsePage() {
       setBooks(data.items || []);
       setPagination(data.pagination || { page: 1, pages: 1, total: 0 });
     } catch (error) {
-      toast.error('Failed to load books');
+      toast.error("Failed to load books");
       setBooks([]);
     } finally {
       setLoading(false);
@@ -140,23 +142,33 @@ export default function BooksBrowsePage() {
   }
 
   function clearFilters() {
-    setSearch('');
-    setCategory('all');
-    setAvailability('all');
-    setSort('newest');
+    setSearch("");
+    setCategory("all");
+    setAvailability("all");
+    setSort("newest");
     setPage(1);
   }
 
   const hasActiveFilters =
-    search || (category && category !== 'all') ||
-    (availability && availability !== 'all') || (sort && sort !== 'newest');
+    search ||
+    (category && category !== "all") ||
+    (availability && availability !== "all") ||
+    (sort && sort !== "newest");
 
   const FilterControls = () => (
     <div className="space-y-4">
       {/* Category Filter */}
       <div className="space-y-2">
-        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">Category</Label>
-        <Select value={category} onValueChange={(val) => { setCategory(val); setPage(1); }}>
+        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">
+          Category
+        </Label>
+        <Select
+          value={category}
+          onValueChange={(val) => {
+            setCategory(val);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] h-11 sm:h-12">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
@@ -175,8 +187,16 @@ export default function BooksBrowsePage() {
 
       {/* Availability Filter */}
       <div className="space-y-2">
-        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">Availability</Label>
-        <Select value={availability} onValueChange={(val) => { setAvailability(val); setPage(1); }}>
+        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">
+          Availability
+        </Label>
+        <Select
+          value={availability}
+          onValueChange={(val) => {
+            setAvailability(val);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] h-11 sm:h-12">
             <SelectValue placeholder="All" />
           </SelectTrigger>
@@ -191,8 +211,16 @@ export default function BooksBrowsePage() {
 
       {/* Sort */}
       <div className="space-y-2">
-        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">Sort By</Label>
-        <Select value={sort} onValueChange={(val) => { setSort(val); setPage(1); }}>
+        <Label className="text-xs sm:text-sm font-medium text-[#6B7280]">
+          Sort By
+        </Label>
+        <Select
+          value={sort}
+          onValueChange={(val) => {
+            setSort(val);
+            setPage(1);
+          }}
+        >
           <SelectTrigger className="rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480] h-11 sm:h-12">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -222,7 +250,6 @@ export default function BooksBrowsePage() {
 
   return (
     <div className="page-enter space-y-4 sm:space-y-6">
-
       {/* Search Bar + Filter Toggle */}
       <div className="flex flex-col sm:flex-row gap-3">
         <form onSubmit={handleSearch} className="flex-1 flex gap-2">
@@ -247,26 +274,25 @@ export default function BooksBrowsePage() {
         {/* Mobile filter toggle */}
         <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
           <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              className="lg:hidden shrink-0 rounded-xl sm:rounded-2xl border-[#E5E7EB] bg-white/80 backdrop-blur-sm h-11 sm:h-12 transition-all duration-200"
-            >
-              <SlidersHorizontal className="h-4 w-4 mr-2" />
+            <button className="lg:hidden inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors">
+              <SlidersHorizontal className="h-4 w-4" />
               Filters
-            </Button>
+            </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-72 sm:w-80">
-            <SheetHeader>
-              <SheetTitle>Filters</SheetTitle>
-            </SheetHeader>
-            <div className="mt-4">
+          <SheetContent side="right" className="w-80 p-0 flex flex-col">
+            <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-neutral-100">
+              <h2 className="text-base font-semibold text-neutral-900">
+                Filters
+              </h2>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 py-5">
               <FilterControls />
             </div>
           </SheetContent>
         </Sheet>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex gap-6  pb-20 rounded-3xl sm:pb-6 md:pb-8">
         {/* Desktop Sidebar Filters */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-5 sticky top-4">
@@ -288,10 +314,10 @@ export default function BooksBrowsePage() {
               title="No books found"
               description={
                 hasActiveFilters
-                  ? 'Try adjusting your filters or search terms.'
-                  : 'The library catalog is currently empty.'
+                  ? "Try adjusting your filters or search terms."
+                  : "The library catalog is currently empty."
               }
-              actionLabel={hasActiveFilters ? 'Clear Filters' : undefined}
+              actionLabel={hasActiveFilters ? "Clear Filters" : undefined}
               onAction={hasActiveFilters ? clearFilters : undefined}
             />
           ) : (
@@ -306,68 +332,73 @@ export default function BooksBrowsePage() {
                 {books.map((book, index) => {
                   const catName =
                     book.category?.name ||
-                    (typeof book.category === 'string' ? '' : 'Uncategorized');
+                    (typeof book.category === "string" ? "" : "Uncategorized");
 
                   return (
                     <Link
                       key={book._id}
                       href={`/student/books/${book._id}`}
-                      className="group"
+                      className="group block"
                     >
-                      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:border-[#7C9AA5]/40 h-full flex flex-col">
-                        {/* Cover Image Area */}
+                      <div className="rounded-2xl bg-white border border-neutral-200/80 shadow-sm overflow-hidden transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-neutral-300 h-full flex flex-col">
+                        {/* Cover */}
                         <div
-                          className={`aspect-[4/3] bg-gradient-to-br ${getCoverGradient(
-                            index
+                          className={`sm:aspect-[4/3] aspect-square bg-gradient-to-br ${getCoverGradient(
+                            index,
                           )} flex items-center justify-center relative overflow-hidden`}
                         >
                           {book.coverImage ? (
                             <img
                               src={book.coverImage}
                               alt={book.title}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                             />
                           ) : (
-                            <BookOpen className="h-8 sm:h-12 w-8 sm:w-12 text-[#7C9AA5]/40" />
+                            <BookOpen className="h-8 w-8 sm:h-10 sm:w-10 text-white/20" />
                           )}
-                          {/* Availability Badge */}
-                          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
-                            {book.availableCopies > 0 ? (
-                              <span className="inline-block rounded-lg sm:rounded-xl px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-medium bg-[#E8F0EC] text-[#6B8F83]">
-                                Available
-                              </span>
-                            ) : (
-                              <span className="inline-block rounded-lg sm:rounded-xl px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-medium bg-[#FDE8E6] text-[#C25B4F]">
-                                Unavailable
-                              </span>
-                            )}
-                          </div>
+
+                          {/* Availability pill */}
+                          {book.availableCopies > 0 ? (
+                            <span className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 text-[9px] sm:text-[10px] font-medium tracking-wide uppercase bg-white/90 backdrop-blur-sm text-emerald-700 rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+                              Available
+                            </span>
+                          ) : (
+                            <span className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 text-[9px] sm:text-[10px] font-medium tracking-wide uppercase bg-white/90 backdrop-blur-sm text-red-600 rounded-full px-2 sm:px-2.5 py-0.5 sm:py-1 shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+                              Unavailable
+                            </span>
+                          )}
                         </div>
 
-                        <div className="p-2.5 sm:p-3 md:p-4 flex-1 flex flex-col">
-                          <h3 className="font-semibold text-xs sm:text-sm truncate group-hover:text-[#5D7480] transition-colors text-[#1F2937]">
+                        {/* Info */}
+                        <div className="p-2.5 sm:p-4 flex-1 flex flex-col gap-1 sm:gap-1.5">
+                          <h3 className="text-[13px] sm:text-sm font-medium text-neutral-900 truncate leading-snug group-hover:text-neutral-600 transition-colors">
                             {book.title}
                           </h3>
-                          <p className="text-[10px] sm:text-xs text-[#6B7280] mt-0.5 truncate">
+                          <p className="text-[11px] sm:text-xs text-neutral-400 truncate">
                             {book.author}
                           </p>
 
-                          <div className="flex items-center justify-between mt-1.5 sm:mt-2">
-                            {catName && catName !== 'Uncategorized' ? (
-                              <span className="text-[10px] sm:text-xs font-medium rounded-lg sm:rounded-xl px-1.5 py-0.5 sm:px-2 sm:py-0.5 bg-[#E3F2FA] text-[#4A8DB7] truncate max-w-[60%]">
+                          <div className="flex flex-wrap items-center justify-between gap-1 mt-auto pt-1">
+                            {catName && catName !== "Uncategorized" ? (
+                              <span
+                                className="
+        text-[9px] sm:text-[10px]
+        font-medium uppercase tracking-wider
+        text-neutral-400 bg-neutral-100
+        rounded-md px-1.5 sm:px-2 py-0.5
+        flex-1 min-w-0 truncate
+      "
+                              >
                                 {catName}
                               </span>
                             ) : (
                               <div />
                             )}
-                            <StarRating rating={book.rating || 0} />
-                          </div>
 
-                          {book.availableCopies > 0 && (
-                            <p className="text-[10px] sm:text-xs text-[#6B7280] mt-1.5 sm:mt-2 hidden sm:block">
-                              {book.availableCopies} of {book.totalCopies} copies available
-                            </p>
-                          )}
+                            <div className="shrink-0">
+                              <StarRating rating={book.rating || 0} />
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -407,19 +438,19 @@ export default function BooksBrowsePage() {
                         return (
                           <Button
                             key={pageNum}
-                            variant={page === pageNum ? 'default' : 'outline'}
+                            variant={page === pageNum ? "default" : "outline"}
                             size="sm"
                             className={
                               page === pageNum
-                                ? 'bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200'
-                                : 'rounded-xl sm:rounded-2xl border-[#E5E7EB] text-[#6B7280] transition-all duration-200'
+                                ? "bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl transition-all duration-200"
+                                : "rounded-xl sm:rounded-2xl border-[#E5E7EB] text-[#6B7280] transition-all duration-200"
                             }
                             onClick={() => setPage(pageNum)}
                           >
                             {pageNum}
                           </Button>
                         );
-                      }
+                      },
                     )}
                   </div>
 

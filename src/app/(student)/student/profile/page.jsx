@@ -148,7 +148,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="page-enter space-y-4 sm:space-y-6 max-w-3xl">
+    <div className="page-enter space-y-4 sm:space-y-6 max-w-3xl pb-20">
       {/* Header */}
       {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Profile</h1>
@@ -158,7 +158,7 @@ export default function ProfilePage() {
       </div> */}
 
       {/* Profile Overview Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]  p-6">
         <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           <div className="relative group">
             <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-[#DDE7EA]">
@@ -315,7 +315,7 @@ export default function ProfilePage() {
       {/* Change Password - Separate Card */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
         <div
-          className="p-3 sm:p-4 md:p-6 pb-2 cursor-pointer flex items-center justify-between"
+          className="p-6 sm:p-4 md:p-6  cursor-pointer flex items-center justify-between"
           onClick={() => setShowPasswordSection(!showPasswordSection)}
         >
           <div>
@@ -436,7 +436,7 @@ export default function ProfilePage() {
 
       {/* Account Info */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <div className="p-3 sm:p-4 md:p-6 pb-2">
+        <div className="p-6 sm:p-4 md:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Account Information</h2>
         </div>
         <div className="px-3 sm:px-4 md:px-6 pb-3 sm:pb-4 md:pb-6">
