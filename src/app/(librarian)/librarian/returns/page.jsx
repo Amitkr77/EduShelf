@@ -82,7 +82,7 @@ export default function ReturnsPage() {
       const daysOverdue = res.data?.daysOverdue || 0;
       if (daysOverdue > 0) {
         toast.success(
-          `Book returned successfully. Fine of $${(
+          `Book returned successfully. Fine of ₹${(
             daysOverdue * 2
           ).toFixed(2)} applied for ${daysOverdue} day(s) overdue.`
         );
@@ -241,7 +241,7 @@ export default function ReturnsPage() {
                     {isOverdue && (
                       <div className="mt-1 flex items-center gap-1 text-xs text-[#C25B4F]">
                         <DollarSign className="h-3 w-3" />
-                        <span className="font-medium">Fine: ${estimatedFine}</span>
+                        <span className="font-medium">Fine: ₹{estimatedFine}</span>
                       </div>
                     )}
                     <div className="mt-3 flex items-center gap-2">
@@ -352,7 +352,7 @@ export default function ReturnsPage() {
                             <div className="flex items-center gap-1 text-[#C25B4F]">
                               <DollarSign className="h-3 w-3" />
                               <span className="text-sm font-medium">
-                                ${estimatedFine}
+                                ₹{estimatedFine}
                               </span>
                             </div>
                           ) : (
@@ -422,7 +422,7 @@ export default function ReturnsPage() {
                       actionDialog.item &&
                       getDaysOverdue(actionDialog.item.dueDate) > 0;
                     return isOverdue
-                      ? `Are you sure you want to return "${actionDialog.item?.bookId?.title}"? This book is overdue by ${getDaysOverdue(actionDialog.item?.dueDate)} day(s). A fine of $${getEstimatedFine(actionDialog.item?.dueDate)} will be applied.`
+                      ? `Are you sure you want to return "${actionDialog.item?.bookId?.title}"? This book is overdue by ${getDaysOverdue(actionDialog.item?.dueDate)} day(s). A fine of ₹${getEstimatedFine(actionDialog.item?.dueDate)} will be applied.`
                       : `Are you sure you want to return "${actionDialog.item?.bookId?.title}" borrowed by ${actionDialog.item?.userId?.name}?`;
                   })()
                 : `Are you sure you want to renew "${actionDialog.item?.bookId?.title}"? The due date will be extended by 14 days from the current due date (${formatDate(actionDialog.item?.dueDate)}).`}

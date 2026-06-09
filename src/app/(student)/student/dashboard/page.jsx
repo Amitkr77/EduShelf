@@ -248,7 +248,7 @@ export default function StudentDashboardPage() {
         />
         <StatsCard
           title="Pending Fines"
-          value={`$${stats.fines.toFixed(2)}`}
+          value={`₹${stats.fines.toFixed(2)}`}
           icon={AlertTriangle}
           color="rose"
         />

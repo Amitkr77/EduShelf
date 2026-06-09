@@ -276,7 +276,7 @@ export default function StudentsPage() {
                         {stats.fines > 0 && (
                           <span className="text-[#C25B4F] flex items-center gap-1">
                             <DollarSign className="h-3 w-3" />
-                            ${stats.fines.toFixed(2)}
+                            ₹{stats.fines.toFixed(2)}
                           </span>
                         )}
                       </div>

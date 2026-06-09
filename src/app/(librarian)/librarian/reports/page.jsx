@@ -769,7 +769,7 @@ export default function ReportsPage() {
                 />
                 <StatsCard
                   title="Total Fines"
-                  value={`$${(overdueReport?.summary?.totalCalculatedFines || 0).toFixed(2)}`}
+                  value={`₹${(overdueReport?.summary?.totalCalculatedFines || 0).toFixed(2)}`}
                   icon={DollarSign}
                   color="amber"
                 />
@@ -781,7 +781,7 @@ export default function ReportsPage() {
                 />
                 <StatsCard
                   title="Pending Fines"
-                  value={`$${(overdueReport?.summary?.pendingFinesAmount || 0).toFixed(2)}`}
+                  value={`₹${(overdueReport?.summary?.pendingFinesAmount || 0).toFixed(2)}`}
                   icon={Receipt}
                   color="emerald"
                 />
@@ -964,25 +964,25 @@ export default function ReportsPage() {
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
                   title="Grand Total"
-                  value={`$${(financialReport?.summary?.grandTotal || 0).toFixed(2)}`}
+                  value={`₹${(financialReport?.summary?.grandTotal || 0).toFixed(2)}`}
                   icon={DollarSign}
                   color="emerald"
                 />
                 <StatsCard
                   title="Collected"
-                  value={`$${(financialReport?.summary?.totalCollected || 0).toFixed(2)}`}
+                  value={`₹${(financialReport?.summary?.totalCollected || 0).toFixed(2)}`}
                   icon={TrendingUp}
                   color="teal"
                 />
                 <StatsCard
                   title="Pending"
-                  value={`$${(financialReport?.summary?.totalPending || 0).toFixed(2)}`}
+                  value={`₹${(financialReport?.summary?.totalPending || 0).toFixed(2)}`}
                   icon={AlertTriangle}
                   color="amber"
                 />
                 <StatsCard
                   title="Waived"
-                  value={`$${(financialReport?.summary?.totalWaived || 0).toFixed(2)}`}
+                  value={`₹${(financialReport?.summary?.totalWaived || 0).toFixed(2)}`}
                   icon={Activity}
                   color="rose"
                 />
@@ -1111,7 +1111,7 @@ export default function ReportsPage() {
                                 </span>
                               </div>
                               <span className="text-sm font-semibold text-[#1F2937]">
-                                ${item.value.toFixed(2)}
+                                ₹{item.value.toFixed(2)}
                               </span>
                             </div>
                           ))}
@@ -1158,13 +1158,13 @@ export default function ReportsPage() {
                                   {item.period}
                                 </TableCell>
                                 <TableCell className="text-right text-sm text-[#1F2937]">
-                                  ${item.totalAmount?.toFixed(2)}
+                                  ₹{item.totalAmount?.toFixed(2)}
                                 </TableCell>
                                 <TableCell className="text-right text-sm text-[#6B8F83] hidden sm:table-cell">
-                                  ${item.paidAmount?.toFixed(2)}
+                                  ₹{item.paidAmount?.toFixed(2)}
                                 </TableCell>
                                 <TableCell className="text-right text-sm text-[#C4952A] hidden md:table-cell">
-                                  ${item.pendingAmount?.toFixed(2)}
+                                  ₹{item.pendingAmount?.toFixed(2)}
                                 </TableCell>
                               </TableRow>
                             ))}

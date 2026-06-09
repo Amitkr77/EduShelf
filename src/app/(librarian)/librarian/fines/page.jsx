@@ -250,25 +250,25 @@ export default function FinesPage() {
       <div className="grid gap-3 sm:gap-5 grid-cols-2 xl:grid-cols-4">
         <StatsCard
           title="Total Fines"
-          value={`$${summary.total.toFixed(2)}`}
+          value={`₹${summary.total.toFixed(2)}`}
           icon={Receipt}
           color="emerald"
         />
         <StatsCard
           title="Collected"
-          value={`$${summary.collected.toFixed(2)}`}
+          value={`₹${summary.collected.toFixed(2)}`}
           icon={DollarSign}
           color="teal"
         />
         <StatsCard
           title="Pending"
-          value={`$${summary.pending.toFixed(2)}`}
+          value={`₹${summary.pending.toFixed(2)}`}
           icon={AlertTriangle}
           color="amber"
         />
         <StatsCard
           title="Waived"
-          value={`$${summary.waived.toFixed(2)}`}
+          value={`₹${summary.waived.toFixed(2)}`}
           icon={Ban}
           color="rose"
         />
@@ -345,7 +345,7 @@ export default function FinesPage() {
                   </div>
                   <div className="mt-2 flex items-center justify-between">
                     <span className="text-sm font-semibold text-[#1F2937]">
-                      ${fine.amount?.toFixed(2)}
+                      ₹{fine.amount?.toFixed(2)}
                     </span>
                     <span className="text-xs text-[#6B7280]">
                       {fine.daysOverdue}d overdue
@@ -419,7 +419,7 @@ export default function FinesPage() {
                       </TableCell>
                       <TableCell className="text-center">
                         <span className="text-sm font-semibold text-[#1F2937]">
-                          ${fine.amount?.toFixed(2)}
+                          ₹{fine.amount?.toFixed(2)}
                         </span>
                       </TableCell>
                       <TableCell className="text-center hidden sm:table-cell">
@@ -519,8 +519,8 @@ export default function FinesPage() {
             </DialogTitle>
             <DialogDescription className="text-[#6B7280]">
               {actionDialog.type === 'pay'
-                ? `Are you sure you want to mark the fine of $${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name}) as paid?`
-                : `Are you sure you want to waive the fine of $${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name})? The student will no longer be required to pay this fine.`}
+                ? `Are you sure you want to mark the fine of ₹${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name}) as paid?`
+                : `Are you sure you want to waive the fine of ₹${actionDialog.fine?.amount?.toFixed(2)} for "${actionDialog.fine?.bookId?.title}" (borrowed by ${actionDialog.fine?.userId?.name})? The student will no longer be required to pay this fine.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col sm:flex-row gap-2">
