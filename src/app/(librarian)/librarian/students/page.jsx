@@ -293,7 +293,7 @@ export default function StudentsPage() {
             </div>
 
             {/* Desktop Table */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden sm:block overflow-x-auto p-4">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-neutral-100">

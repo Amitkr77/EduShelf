@@ -227,7 +227,7 @@ export default function FinesPage() {
   });
 
   return (
-    <div className="space-y-4 sm:space-y-6 page-enter">
+    <div className="space-y-4 sm:space-y-6 page-enter pb-30">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         {/* <div>

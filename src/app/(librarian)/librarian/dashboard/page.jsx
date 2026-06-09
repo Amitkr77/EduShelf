@@ -19,6 +19,7 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
   AreaChart as AreaChartIcon,
+  IndianRupee,
 } from "lucide-react";
 import {
   LineChart,
@@ -430,8 +431,8 @@ export default function LibrarianDashboardPage() {
         />
         <StatsCard
           title="Fines Collected"
-          value={`$${stats.totalFinesCollected}`}
-          icon={DollarSign}
+          value={`₹${stats.totalFinesCollected}`}
+          icon={IndianRupee}
           color="emerald"
         />
       </div>

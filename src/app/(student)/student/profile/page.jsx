@@ -476,7 +476,7 @@ export default function ProfilePage() {
       {/* Account Info */}
       <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-xl border border-white/50 shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="px-4 sm:px-6 py-4 border-b border-neutral-100">
+        <div className="px-4 sm:px-6 pt-4 border-b border-neutral-100">
           <h2 className="text-lg font-semibold text-neutral-900">
             Account Information
           </h2>
@@ -489,7 +489,7 @@ export default function ProfilePage() {
         <div className="p-4 sm:p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 ">
             {/* Created */}
-            <div className="rounded-xl border border-neutral-100 bg-neutral-50/70 p-4">
+            <div className="rounded-xl border border-neutral-100 bg-neutral-50/70 p-2">
               <div className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4 text-neutral-500 shrink-0" />
                 <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
@@ -509,7 +509,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Updated */}
-            <div className="rounded-xl border border-neutral-100 bg-neutral-50/70 p-4">
+            <div className="rounded-xl border border-neutral-100 bg-neutral-50/70 p-2">
               <div className="flex items-center gap-2">
                 <Clock3 className="h-4 w-4 text-neutral-500 shrink-0" />
                 <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">

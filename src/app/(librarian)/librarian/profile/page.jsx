@@ -148,7 +148,7 @@ export default function LibrarianProfilePage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl pb-30">
       {/* Header */}
       {/* <div>
         <h1 className="text-2xl sm:text-3xl lg:text-[42px] font-bold tracking-tight text-[#1F2937]">My Profile</h1>
@@ -158,7 +158,7 @@ export default function LibrarianProfilePage() {
       </div> */}
 
       {/* Profile Overview Card */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-4 sm:p-6">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 ">
         <div className="flex flex-col sm:flex-row items-center gap-6">
           <div className="relative group">
             <Avatar className="h-24 w-24 border-4 border-[#DDE7EA]">
@@ -198,14 +198,14 @@ export default function LibrarianProfilePage() {
       </div>
 
       {/* Edit Profile Form */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
-        <div className="p-4 sm:p-6 pb-2">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 ">
+        <div className="p-4 sm:p-6 pb-3">
           <h2 className="text-base sm:text-lg font-semibold text-[#1F2937]">Edit Profile</h2>
           <p className="text-sm text-[#6B7280] mt-1">
             Update your personal information.
           </p>
         </div>
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
             {/* Name */}
             <div className="space-y-2">
@@ -299,7 +299,7 @@ export default function LibrarianProfilePage() {
       </div>
 
       {/* Change Password */}
-      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)]">
+      <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] overflow-hidden p-3 ">
         <div
           className="p-4 sm:p-6 pb-2 cursor-pointer flex items-center justify-between"
           onClick={() => setShowPasswordSection(!showPasswordSection)}

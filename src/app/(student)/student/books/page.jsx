@@ -252,21 +252,52 @@ export default function BooksBrowsePage() {
     <div className="page-enter space-y-4 sm:space-y-6">
       {/* Search Bar + Filter Toggle */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-1"
+        >
+          {/* Input */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+
             <Input
               type="search"
               placeholder="Search by title, author, or ISBN..."
-              className="pl-9 h-11 sm:h-12 rounded-xl bg-[#F9FAFB] border-[#E5E7EB] focus-visible:ring-2 focus-visible:ring-[#5D7480]"
+              className="
+        pl-9 pr-3
+        h-11 sm:h-12
+        rounded-xl
+        bg-[#F9FAFB]
+        border-[#E5E7EB]
+        focus-visible:ring-2
+        focus-visible:ring-[#5D7480]
+        focus-visible:border-transparent
+        transition-all
+      "
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+
+          {/* Button */}
           <Button
             type="submit"
-            className="bg-[#7C9AA5] hover:bg-[#5D7480] text-white rounded-xl sm:rounded-2xl shrink-0 transition-all duration-200 hover:-translate-y-0.5"
+            className="
+      w-full sm:w-auto
+      h-11 sm:h-12
+      px-5
+      bg-[#7C9AA5]
+      hover:bg-[#5D7480]
+      text-white
+      rounded-xl
+      transition-all duration-200
+      hover:-translate-y-0.5
+      active:scale-95
+      flex items-center justify-center gap-2
+      shrink-0
+    "
           >
+            <Search className="h-4 w-4" />
             Search
           </Button>
         </form>
@@ -274,17 +305,34 @@ export default function BooksBrowsePage() {
         {/* Mobile filter toggle */}
         <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
           <SheetTrigger asChild>
-            <button className="lg:hidden inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-neutral-200 bg-white text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-colors">
-              <SlidersHorizontal className="h-4 w-4" />
+            <button
+              className="
+      lg:hidden
+      inline-flex items-center gap-2
+      h-10 sm:h-11
+      px-4
+      rounded-xl
+      border border-neutral-200
+      bg-white
+      text-sm font-medium text-neutral-700
+      shadow-sm
+      hover:bg-neutral-50
+      hover:border-neutral-300
+      hover:-translate-y-0.5
+      active:scale-95
+      transition-all duration-200
+    "
+            >
+              <SlidersHorizontal className="h-4 w-4 text-neutral-600" />
               Filters
             </button>
           </SheetTrigger>
           <SheetContent side="right" className="w-80 p-0 flex flex-col">
-            <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-neutral-100">
-              <h2 className="text-base font-semibold text-neutral-900">
+            <SheetHeader className="px-5 pt-6 pb-4 border-b border-neutral-100">
+              <SheetTitle className="text-base font-semibold text-neutral-900">
                 Filters
-              </h2>
-            </div>
+              </SheetTitle>
+            </SheetHeader>
             <div className="flex-1 overflow-y-auto px-5 py-5">
               <FilterControls />
             </div>
@@ -292,7 +340,7 @@ export default function BooksBrowsePage() {
         </Sheet>
       </div>
 
-      <div className="flex gap-6  pb-20 rounded-3xl sm:pb-6 md:pb-8">
+      <div className="flex gap-6 pb-30 rounded-3xl sm:pb-6 md:pb-8">
         {/* Desktop Sidebar Filters */}
         <aside className="hidden lg:block w-64 shrink-0">
           <div className="rounded-2xl sm:rounded-3xl bg-white/90 backdrop-blur-[20px] border border-white/40 shadow-[0_2px_8px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-5 sticky top-4">
